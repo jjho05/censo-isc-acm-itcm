@@ -219,8 +219,9 @@ function guardarRespuesta(nueva) {
   }
 
   // Buscar si ya existe por número de control solo si se proporcionó uno válido y no anónimo
-  const tieneControl = nueva.numeroControl && String(nueva.numeroControl).trim().length >= 8 && nueva.numeroControl !== 'Anónimo';
-  const index = tieneControl ? respuestas.findIndex(r => r.numeroControl === nueva.numeroControl) : -1;
+  const ncUpper = nueva.numeroControl ? String(nueva.numeroControl).trim().toUpperCase() : '';
+  const tieneControl = ncUpper.length >= 8 && ncUpper !== 'ANÓNIMO';
+  const index = tieneControl ? respuestas.findIndex(r => String(r.numeroControl).trim().toUpperCase() === ncUpper) : -1;
   
   if (index >= 0) {
     // Actualizar registro existente
@@ -497,7 +498,7 @@ const server = http.createServer((req, res) => {
   const pathname = parsedUrl.pathname;
 
   // 1. ENDPOINTS DE LA API REST
-  if (req.method === 'POST' && (pathname === '/api/submit' || pathname === '/api/respuestas')) {
+  if (req.method === 'POST' && (pathname === '/api/submit' || pathname === '/api/respuestas' || pathname === '/api/encuesta')) {
     // Protección Rate Limiting por IP
     const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
     if (!checkRateLimit(clientIp)) {
@@ -531,9 +532,12 @@ const server = http.createServer((req, res) => {
         
         // Sanitización de datos de contacto (100% opcionales para garantizar anonimato)
         let nombre = typeof payload.nombre === 'string' ? payload.nombre.trim() : '';
-        let numeroControl = typeof payload.numeroControl === 'string' ? payload.numeroControl.trim() : '';
+        let numeroControl = typeof payload.numeroControl === 'string' ? payload.numeroControl.trim().toUpperCase() : '';
         let correo = typeof payload.correo === 'string' ? payload.correo.trim().toLowerCase() : '';
         let telefono = typeof payload.telefono === 'string' ? payload.telefono.trim().replace(/\D/g, '') : '';
+        if (telefono.length === 12 && telefono.startsWith('52')) {
+          telefono = telefono.slice(2);
+        }
         const buzonAbierto = typeof payload.buzonAbierto === 'string' ? payload.buzonAbierto.trim() : '';
 
         // Si se proporcionan datos de contacto, validamos que su formato sea correcto
@@ -542,9 +546,12 @@ const server = http.createServer((req, res) => {
           return res.end(JSON.stringify({ success: false, error: 'El Nombre Completo no debe exceder 120 caracteres.' }));
         }
 
-        if (!numeroControl || !/^\d{8}$/.test(numeroControl)) {
+        if (!numeroControl || !/^[C]?\d{8}$/i.test(numeroControl)) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
-          return res.end(JSON.stringify({ success: false, error: 'El Número de Control es obligatorio y debe contener exactamente 8 dígitos numéricos del ITCM.' }));
+          return res.end(JSON.stringify({ 
+            success: false, 
+            error: 'El Número de Control es obligatorio y debe contener 8 dígitos numéricos (o la letra C + 8 dígitos en caso de cambio de carrera).' 
+          }));
         }
 
         if (!correo || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo) || correo.length > 120) {

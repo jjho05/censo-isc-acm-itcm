@@ -36,12 +36,14 @@ export default async function handler(req, res) {
       });
     }
 
-    if (!/^\d{8}$/.test(String(payload.numeroControl).trim())) {
+    const nc = String(payload.numeroControl || '').trim().toUpperCase();
+    if (!nc || !/^[C]?\d{8}$/i.test(nc)) {
       return res.status(400).json({
         success: false,
-        error: 'El Número de Control debe contener exactamente 8 dígitos.'
+        error: 'El Número de Control debe contener 8 dígitos (o la letra C + 8 dígitos para cambio de carrera).'
       });
     }
+    payload.numeroControl = nc;
 
     // Agregar marca temporal si no viene
     payload.timestamp = payload.timestamp || new Date().toISOString();

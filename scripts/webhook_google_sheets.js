@@ -188,13 +188,13 @@ function doPost(e) {
       formatVal(data.comentarios_finales)
     ];
 
-    // Verificar si ya existe el número de control en la columna D (índice 4)
-    const control = String(data.numeroControl || "").trim();
+    // Verificar si ya existe el número de control en la columna E (índice 4)
+    const control = String(data.numeroControl || "").trim().toUpperCase();
     let rowIndex = -1;
     if (control.length >= 8) {
       const allData = sheet.getDataRange().getValues();
       for (let i = 1; i < allData.length; i++) {
-        if (String(allData[i][3]).trim() === control) {
+        if (String(allData[i][4]).trim().toUpperCase() === control) {
           rowIndex = i + 1;
           break;
         }

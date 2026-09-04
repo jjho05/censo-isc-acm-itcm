@@ -133,7 +133,7 @@
       <!-- ================================================================
            FORMULARIO WIZARD (11 MÓDULOS)
            ================================================================ -->
-      <form id="surveyForm" style="display: none;">
+      <form id="surveyForm" novalidate style="display: none;">
 
         <!-- PASO 1: Módulo 1: Registro y Contexto Personal -->
         <div class="wizard-step" data-step="1" style="display: none;">
@@ -144,9 +144,9 @@
           </div>
 
           <div class="question-block" id="qblock_numeroControl">
-            <label class="question-title">1. Número de control (8 dígitos) <span style="color: var(--danger); font-weight: 700;">*</span></label>
-            <p class="question-help">Se solicita exclusivamente para control de participación, validación de padrón estudiantil y eliminación de duplicados. No se incluye en gráficas, informes públicos ni cruces analíticos.</p>
-            <input type="text" id="numeroControl" name="numeroControl" class="input-control" placeholder="Ej. 22070123" pattern="[0-9]{8}" maxlength="8" inputmode="numeric" required>
+            <label class="question-title">1. Número de control (8 dígitos o C + 8 dígitos) <span style="color: var(--danger); font-weight: 700;">*</span></label>
+            <p class="question-help">Se solicita exclusivamente para control de participación, validación de padrón estudiantil y eliminación de duplicados (ej. 22070123 o C21070456 para cambio de carrera). No se incluye en gráficas, informes públicos ni cruces analíticos.</p>
+            <input type="text" id="numeroControl" name="numeroControl" class="input-control" placeholder="Ej. 22070123 o C21070456" pattern="[cC]?[0-9]{8}" maxlength="9" style="text-transform: uppercase;" required>
           </div>
 
           <div class="question-block" id="qblock_correo">

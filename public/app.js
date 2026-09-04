@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --------------------------------------------------------------------------
-  // 3. VALIDACIÓN CONTEXTUAL POR PASO
+  // 3. VALIDACIÓN CONTEXTUAL POR PASO Y ROBUSTEZ DE CAMPOS
   // --------------------------------------------------------------------------
   function validateCurrentStep() {
     const activeStepEl = document.querySelector(`.wizard-step[data-step="${currentStep}"], .form-step[data-step="${currentStep}"]`);
@@ -196,24 +196,43 @@ document.addEventListener('DOMContentLoaded', () => {
     // Validación Módulo 1: Registro y Contexto Personal
     if (currentStep === 1) {
       const control = document.getElementById('numeroControl');
-      if (!control || !/^\d{8}$/.test(control.value.trim())) {
-        showToast('El Número de Control es obligatorio y debe tener exactamente 8 dígitos.', 'error');
-        if (control) control.focus();
+      const valControl = control ? control.value.trim().toUpperCase() : '';
+      if (!control || !/^[C]?\d{8}$/i.test(valControl)) {
+        showToast('El Número de Control debe tener 8 dígitos (o la letra "C" + 8 dígitos si es cambio de carrera).', 'error');
+        if (control) {
+          control.focus();
+          control.classList.add('input-error');
+        }
         return false;
+      }
+      if (control) {
+        control.value = valControl;
+        control.classList.remove('input-error');
       }
 
       const correo = document.getElementById('correo');
-      if (!correo || !correo.value.trim() || !correo.checkValidity()) {
-        showToast('Por favor introduce un Correo Electrónico válido.', 'error');
-        if (correo) correo.focus();
+      const valCorreo = correo ? correo.value.trim().toLowerCase() : '';
+      if (!correo || !valCorreo || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valCorreo)) {
+        showToast('Por favor introduce un Correo Electrónico válido (institucional o personal).', 'error');
+        if (correo) {
+          correo.focus();
+          correo.classList.add('input-error');
+        }
         return false;
       }
+      if (correo) correo.classList.remove('input-error');
 
       const tel = document.getElementById('telefono');
-      if (tel && tel.value.trim() && !/^\d{10}$/.test(tel.value.trim().replace(/\D/g, ''))) {
-        showToast('El teléfono debe tener 10 dígitos numéricos.', 'error');
-        tel.focus();
-        return false;
+      if (tel && tel.value.trim()) {
+        const cleanTel = tel.value.trim().replace(/\D/g, '');
+        const finalTel = (cleanTel.length === 12 && cleanTel.startsWith('52')) ? cleanTel.slice(2) : cleanTel;
+        if (finalTel.length !== 10) {
+          showToast('El teléfono debe tener 10 dígitos numéricos para contacto vía WhatsApp.', 'error');
+          tel.focus();
+          tel.classList.add('input-error');
+          return false;
+        }
+        tel.classList.remove('input-error');
       }
 
       const edad = document.getElementById('edad');
@@ -246,6 +265,45 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!situacion) {
         showToast('Por favor selecciona tu Situación laboral.', 'error');
         return false;
+      }
+    } else {
+      // Robustez para Pasos 2 a 11: Validar preguntas obligatorias dentro del paso activo
+      const requiredRadios = activeStepEl.querySelectorAll('input[type="radio"][required]');
+      const checkedGroups = new Set();
+      
+      for (const radio of requiredRadios) {
+        const groupName = radio.name;
+        if (checkedGroups.has(groupName)) continue;
+        checkedGroups.add(groupName);
+
+        // Verificar si está respondido en escritorio o móvil
+        const selected = form.querySelector(`input[name="${groupName}"]:checked`) ||
+                         form.querySelector(`input[name="${groupName}_mob"]:checked`);
+        if (!selected) {
+          const qBlock = radio.closest('.question-block') || radio.closest('tr') || radio.closest('.matrix-mobile-row');
+          const titleEl = qBlock ? qBlock.querySelector('.question-title, .matrix-row-title, .matrix-mobile-row-label') : null;
+          const qTitle = titleEl ? titleEl.textContent.trim().replace(/\*$/, '').trim() : 'una pregunta obligatoria';
+          showToast(`Por favor responde: "${qTitle}"`, 'error');
+          if (qBlock) {
+            qBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            qBlock.style.transition = 'background-color 0.3s ease';
+            qBlock.style.backgroundColor = 'rgba(239, 68, 68, 0.08)';
+            setTimeout(() => { qBlock.style.backgroundColor = ''; }, 2000);
+          }
+          return false;
+        }
+      }
+
+      const requiredSelects = activeStepEl.querySelectorAll('select[required]');
+      for (const select of requiredSelects) {
+        if (!select.value) {
+          const qBlock = select.closest('.question-block');
+          const titleEl = qBlock ? qBlock.querySelector('.question-title') : null;
+          const qTitle = titleEl ? titleEl.textContent.trim().replace(/\*$/, '').trim() : 'un campo requerido';
+          showToast(`Por favor selecciona: "${qTitle}"`, 'error');
+          select.focus();
+          return false;
+        }
       }
     }
 
@@ -389,6 +447,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // --------------------------------------------------------------------------
   // 7. EVENT LISTENERS Y TRANSICIONES
   // --------------------------------------------------------------------------
+
+  const numControlInput = document.getElementById('numeroControl');
+  if (numControlInput) {
+    numControlInput.addEventListener('input', () => {
+      numControlInput.value = numControlInput.value.toUpperCase();
+    });
+  }
 
   // Iniciar encuesta desde la pantalla de bienvenida
   if (btnStartSurvey) {
