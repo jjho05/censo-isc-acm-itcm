@@ -1,16 +1,18 @@
 /**
  * ============================================================================
- * SERVIDOR NATIVO SOBERANO: CENSO ESTUDIANTIL ACM ITCM 2026-2027
+ * SERVIDOR NATIVO SOBERANO: ENCUESTA DE FORMACIÓN ISC ACM ITCM 2026–2027
  * ============================================================================
  * Autor: Jesús Javier Hernández Olvera (N.C. 23070477)
  * Arquitectura: Node.js Nativo (Zero Dependencies / 100% Portátil)
  * Endpoints:
- *   - GET  /                  -> Formulario web responsive para alumnos
- *   - GET  /dashboard         -> Panel de resultados en vivo para campaña
+ *   - GET  /                  -> Formulario web responsive para alumnos (25 preguntas)
+ *   - GET  /dashboard         -> Panel de resultados en vivo para gestión y campaña
  *   - POST /api/submit        -> Recepción y guardado de respuestas (JSON + CSV)
  *   - GET  /api/stats         -> Métricas y KPIs agregados en tiempo real
- *   - GET  /api/export-csv    -> Descarga del dataset completo para Excel
- *   - GET  /api/voluntarios   -> Directorio de alumnos que desean integrarse
+ *   - GET  /api/respuestas    -> Dataset de respuestas (anonimizado en modo público)
+ *   - GET  /api/export-csv    -> Descarga del dataset completo para Excel (con clave de admin)
+ *   - GET  /api/voluntarios   -> Directorio de alumnos que desean integrarse a comités
+ *   - GET  /api/sync-sheets   -> Endpoint manual para forzar sincronización con Google Sheets
  * ============================================================================
  */
 
@@ -25,6 +27,9 @@ const DATA_DIR = path.join(__dirname, 'datos');
 const JSON_FILE = path.join(DATA_DIR, 'respuestas.json');
 const CSV_FILE = path.join(DATA_DIR, 'respuestas.csv');
 
+// Claves de administración autorizadas
+const ADMIN_KEYS = new Set(['acm2026', 'olvera2026', 'itcm2026']);
+
 // Asegurar existencia del directorio de datos y archivos base
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -34,97 +39,58 @@ if (!fs.existsSync(JSON_FILE)) {
   fs.writeFileSync(JSON_FILE, JSON.stringify([], null, 2), 'utf8');
 }
 
-// Inicializar encabezados de CSV si no existe
+// Encabezados oficiales de las 25 preguntas sintetizadas
 const CSV_HEADERS = [
   "timestamp",
   "fechaActualizacion",
   "id",
-  "nombre",
   "numeroControl",
   "correo",
-  "telefono",
-  "edad",
-  "genero",
   "semestre",
   "turno",
   "situacion_laboral",
-  "horas_trabajo",
   "rec_pc",
-  "rec_internet",
-  "rec_espacio",
-  "tiempo_traslado",
-  "cuidado_familia",
-  "sistema_operativo",
-  "horas_autonomas",
+  "satisfaccion_practica",
   "materias_dificultad",
-  "factores_dificultad",
-  "oportunidades_proyectos",
+  "experiencias_proyectos",
   "eq_coordinacion",
-  "eq_distribucion",
-  "eq_herramientas",
-  "fortalezas_itcm",
+  "eq_codigo_ajeno",
+  "eq_git_compartido",
+  "eq_revision_pares",
+  "eq_conflictos",
+  "dom_programacion",
   "dom_git",
-  "dom_db",
-  "dom_web",
-  "dom_movil",
-  "dom_cloud",
-  "dom_devops",
-  "dom_sec",
-  "dom_ia",
-  "fnt_lenguajes",
-  "fnt_arquitectura",
-  "fnt_despliegue",
-  "experiencia_laboral_ti",
+  "dom_debugging",
+  "dom_testing",
+  "dom_linux",
+  "dom_db_apis",
+  "dom_docs",
+  "dom_aprender_tech",
+  "fuente_aprendizaje",
+  "habilidades_fuera_aula",
+  "ing_tecnico",
+  "conf_explicar_proyecto",
+  "conf_codigo_existente",
+  "conf_aprender_tech",
+  "conf_trabajo_equipo",
+  "conf_entrevista_tecnica",
+  "preparacion_laboral_general",
+  "experiencia_entrevistas",
   "portafolio_github",
-  "ing_lectura",
-  "ing_comunicacion",
-  "rec_algoritmos",
-  "rec_cv",
-  "rec_entrevistas",
-  "necesidad_laboral_urgente",
-  "frecuencia_ia",
-  "usos_ia",
-  "ia_inspeccion",
-  "ia_pruebas",
-  "ia_copia_directa",
-  "opinion_especialidad",
-  "reto_residencia",
-  "participacion_innovatecnm",
-  "rol_aspirado",
-  "lab_rendimiento",
-  "lab_red",
-  "lab_software",
-  "lab_ambiente",
-  "deficiencias_urgentes",
-  "salud_visual",
-  "salud_postural",
-  "salud_estres",
-  "actividades_integracion",
+  "uso_ia",
+  "desarrollo_software_comunitario",
   "interes_talleres",
   "formato_eventos_masivos",
-  "factores_asistencia",
-  "iniciativa_acm_w",
-  "interes_mentoria",
-  "desarrollo_software_comunitario",
+  "disponibilidad_actividades",
   "voluntariado_comites",
-  "horario_conveniente",
-  "duracion_talleres",
-  "canales_comunicacion",
-  "af_biblioteca",
-  "af_credencial",
-  "af_networking",
-  "af_descuentos",
-  "disposicion_sustentabilidad",
-  "prioridad_mesa_directiva",
-  "propuesta_cambio_unico",
-  "comentarios_finales"
+  "propuesta_cambio_unico"
 ];
 
 if (!fs.existsSync(CSV_FILE)) {
   fs.writeFileSync(CSV_FILE, '\ufeff' + CSV_HEADERS.map(h => `"${h}"`).join(',') + '\n', 'utf8');
 }
 
-// Tipos MIME para servir estáticos
+// Tipos MIME para servir archivos estáticos
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
@@ -138,64 +104,61 @@ const MIME_TYPES = {
   '.csv': 'text/csv; charset=utf-8'
 };
 
-// Claves autorizadas de administración para consultar PII y exportar padrón
-const VALID_ADMIN_KEYS = ['acm2026', 'olvera2026', 'itcm2026'];
-
-// Limitador de tasa en memoria (15 envíos por minuto por IP)
+// Rate Limiting en memoria: Máximo 30 peticiones por minuto por IP
 const rateLimitMap = new Map();
-const RATE_LIMIT_WINDOW_MS = 60 * 1000;
-const MAX_SUBMITS_PER_WINDOW = 15;
+const RATE_LIMIT_WINDOW = 60 * 1000;
+const RATE_LIMIT_MAX = 30;
 
 function checkRateLimit(ip) {
   const now = Date.now();
-  const record = rateLimitMap.get(ip) || { count: 0, resetTime: now + RATE_LIMIT_WINDOW_MS };
-  
-  if (now > record.resetTime) {
-    record.count = 1;
-    record.resetTime = now + RATE_LIMIT_WINDOW_MS;
-    rateLimitMap.set(ip, record);
+  const entry = rateLimitMap.get(ip);
+  if (!entry || now - entry.start > RATE_LIMIT_WINDOW) {
+    rateLimitMap.set(ip, { start: now, count: 1 });
     return true;
   }
-  
-  if (record.count >= MAX_SUBMITS_PER_WINDOW) {
-    return false;
-  }
-  
-  record.count++;
-  rateLimitMap.set(ip, record);
-  return true;
+  entry.count++;
+  return entry.count <= RATE_LIMIT_MAX;
 }
 
-function esAdminAutorizado(req, parsedUrl) {
-  const headerKey = req.headers['x-admin-key'] || '';
-  const authHeader = req.headers['authorization'] || '';
-  const queryKey = parsedUrl.searchParams.get('key') || '';
-  
-  let bearerKey = '';
-  if (authHeader.startsWith('Bearer ')) {
-    bearerKey = authHeader.substring(7).trim();
+// Limpieza periódica del mapa de Rate Limit cada 5 minutos
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, entry] of rateLimitMap.entries()) {
+    if (now - entry.start > RATE_LIMIT_WINDOW) {
+      rateLimitMap.delete(ip);
+    }
   }
+}, 5 * 60 * 1000);
 
-  const candidate = (headerKey || queryKey || bearerKey).trim();
-  return VALID_ADMIN_KEYS.includes(candidate);
+function esAdminAutorizado(req, parsedUrl) {
+  const headerKey = req.headers['x-admin-key'];
+  if (headerKey && ADMIN_KEYS.has(headerKey.trim())) return true;
+  const queryKey = parsedUrl.searchParams.get('key');
+  if (queryKey && ADMIN_KEYS.has(queryKey.trim())) return true;
+  return false;
 }
 
 function obtenerIPLocal() {
   const interfaces = os.networkInterfaces();
-  for (const name of Object.keys(interfaces)) {
-    for (const iface of interfaces[name]) {
-      if (iface.family === 'IPv4' && !iface.internal) {
-        return iface.address;
+  for (const devName in interfaces) {
+    const iface = interfaces[devName];
+    for (let i = 0; i < iface.length; i++) {
+      const alias = iface[i];
+      if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
+        return alias.address;
       }
     }
   }
-  return 'localhost';
+  return '127.0.0.1';
 }
 
 function leerRespuestas() {
   try {
-    const data = fs.readFileSync(JSON_FILE, 'utf8');
-    return JSON.parse(data);
+    if (!fs.existsSync(JSON_FILE)) return [];
+    const data = fs.readFileSync(JSON_FILE, 'utf8').trim();
+    if (!data) return [];
+    const parsed = JSON.parse(data);
+    return Array.isArray(parsed) ? parsed : [];
   } catch (err) {
     console.error('[!] Error leyendo respuestas.json:', err.message);
     return [];
@@ -218,21 +181,19 @@ function guardarRespuesta(nueva) {
     nueva.id = 'resp_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8);
   }
 
-  // Buscar si ya existe por número de control solo si se proporcionó uno válido y no anónimo
+  // Deduplicación por número de control
   const ncUpper = nueva.numeroControl ? String(nueva.numeroControl).trim().toUpperCase() : '';
   const tieneControl = ncUpper.length >= 8 && ncUpper !== 'ANÓNIMO';
   const index = tieneControl ? respuestas.findIndex(r => String(r.numeroControl).trim().toUpperCase() === ncUpper) : -1;
   
   if (index >= 0) {
-    // Actualizar registro existente
     respuestas[index] = { ...respuestas[index], ...nueva, fechaActualizacion: new Date().toISOString() };
   } else {
-    // Insertar nuevo registro
     nueva.timestamp = new Date().toISOString();
     respuestas.push(nueva);
   }
   
-  // Escritura atómica en JSON para evitar corrupción por apagón
+  // Escritura atómica en JSON
   const tempJson = JSON_FILE + '.tmp';
   fs.writeFileSync(tempJson, JSON.stringify(respuestas, null, 2), 'utf8');
   fs.renameSync(tempJson, JSON_FILE);
@@ -247,7 +208,7 @@ function guardarRespuesta(nueva) {
   fs.writeFileSync(tempCsv, '\ufeff' + csvLines.join('\n') + '\n', 'utf8');
   fs.renameSync(tempCsv, CSV_FILE);
 
-  // Copia de seguridad periódica cada 25 encuestas
+  // Auto-backup cada 25 encuestas
   if (respuestas.length > 0 && respuestas.length % 25 === 0) {
     try {
       const backupPath = path.join(DATA_DIR, `respuestas_backup_${respuestas.length}.json`);
@@ -267,65 +228,34 @@ function calcularEstadisticas(respuestas) {
     return { total: 0 };
   }
 
-  // Diccionarios de agregación exhaustiva
+  // Diccionarios de conteo para cada variable
   const conteoSemestre = {};
   const conteoTurno = {};
   const conteoSituacionLaboral = {};
-  const conteoDisponibilidadLaptop = {};
-  const conteoSO = {};
+  const conteoRecPc = {};
+  const conteoSatisfaccionPractica = {};
   const conteoMaterias = {};
-  const conteoCausasReprobacion = {};
-  const conteoRiesgoBaja = {};
-  const conteoLenguajes = {};
-  const conteoFrecuenciaIA = {};
-  const conteoImpactoIA = {};
-  const conteoUrgenciaTutorias = {};
-  const conteoGitHub = {};
-  const conteoLinkedIn = {};
-  const conteoIngles = {};
-  const conteoCertificaciones = {};
-  const conteoConfianzaEntrevista = {};
-  const conteoEspecialidad = {};
-  const conteoPreocupacionResidencia = {};
-  const conteoInnovaTecNM = {};
-  const conteoRoles = {};
-  const conteoEvaluacionLabs = {};
-  const conteoDeficienciasLabs = {};
-  const conteoSoberania = {};
-  const conteoDisposicionDev = {};
-  const conteoClimaEstudiantil = {};
-  const conteoSindromeImpostor = {};
-  const conteoActividadesHorasMuertas = {};
-  const conteoFaltaEventosApatia = {};
-  const conteoTalleres = {};
-  const conteoEventos = {};
-  const conteoSoftSkills = {};
-  const conteoApoyoACMW = {};
-  const conteoAlumniMentoring = {};
-  const conteoErgonomiaLabs = {};
-  const conteoProblemasSalud = {};
-  const conteoConvivenciasEstudiantiles = {};
-  const conteoHorarioTalleres = {};
-  const conteoDuracionTalleres = {};
-  const conteoCajaDeCristal = {};
-  const conteoCanalesAvisos = {};
-  const conteoPerfilPresidente = {};
-  const conteoComites = {};
+  const conteoExperienciasProyectos = {};
+  const conteoFuenteAprendizaje = {};
+  const conteoHabilidadesFueraAula = {};
+  const conteoIngTecnico = {};
+  const conteoPreparacionLaboral = {};
+  const conteoExperienciaEntrevistas = {};
+  const conteoPortafolioGithub = {};
+  const conteoUsoIA = {};
+  const conteoDesarrolloSoftwareComunitario = {};
+  const conteoInteresTalleres = {};
+  const conteoFormatoEventosMasivos = {};
+  const conteoDisponibilidadActividades = {};
+  const conteoVoluntariadoComites = {};
+
+  // Matrices
+  const conteoDinamicasEquipo = {};
+  const conteoDominioHerramientas = {};
+  const conteoConfianzaSituaciones = {};
 
   const buzonAbierto = [];
   const directorioVoluntarios = [];
-
-  let sumaTutorias = 0;
-  let tutoriasAltaUrgencia = 0;
-  let sumaEvaluacionLabs = 0;
-  let countLabs = 0;
-
-  function getField(r, ...keys) {
-    for (const k of keys) {
-      if (r[k] !== undefined && r[k] !== null && r[k] !== '') return r[k];
-    }
-    return null;
-  }
 
   function addCount(val, map) {
     if (!val) return;
@@ -341,71 +271,61 @@ function calcularEstadisticas(respuestas) {
   }
 
   respuestas.forEach(r => {
-    addCount(getField(r, 'semestre'), conteoSemestre);
-    addCount(getField(r, 'turno'), conteoTurno);
-    addCount(getField(r, 'situacion_laboral', 'situacionLaboral'), conteoSituacionLaboral);
-    addCount(getField(r, 'rec_pc', 'disponibilidadLaptop'), conteoDisponibilidadLaptop);
-    addCount(getField(r, 'sistema_operativo', 'sistemaOperativo'), conteoSO);
-    addCount(getField(r, 'materias_dificultad', 'materiasDificiles'), conteoMaterias);
-    addCount(getField(r, 'factores_dificultad', 'causasReprobacion'), conteoCausasReprobacion);
-    addCount(getField(r, 'fnt_lenguajes', 'lenguajesDominados'), conteoLenguajes);
-    addCount(getField(r, 'frecuencia_ia', 'frecuenciaIA'), conteoFrecuenciaIA);
-    addCount(getField(r, 'ia_copia_directa', 'impactoIA'), conteoImpactoIA);
-    addCount(getField(r, 'interes_mentoria', 'urgenciaTutorias'), conteoUrgenciaTutorias);
-    addCount(getField(r, 'portafolio_github', 'githubEstado'), conteoGitHub);
-    addCount(getField(r, 'rec_entrevistas', 'confianzaEntrevista'), conteoConfianzaEntrevista);
-    addCount(getField(r, 'opinion_especialidad', 'especialidadInteres'), conteoEspecialidad);
-    addCount(getField(r, 'reto_residencia', 'preocupacionResidencia'), conteoPreocupacionResidencia);
-    addCount(getField(r, 'participacion_innovatecnm', 'innovaTecNM'), conteoInnovaTecNM);
-    addCount(getField(r, 'rol_aspirado', 'rolesAspirados'), conteoRoles);
-    addCount(getField(r, 'deficiencias_urgentes', 'deficienciasLabs'), conteoDeficienciasLabs);
-    addCount(getField(r, 'desarrollo_software_comunitario', 'soberaniaTecnologica'), conteoSoberania);
-    addCount(getField(r, 'interes_talleres', 'talleresMastery'), conteoTalleres);
-    addCount(getField(r, 'formato_eventos_masivos', 'eventosMasivos'), conteoEventos);
-    addCount(getField(r, 'iniciativa_acm_w', 'apoyoACMW'), conteoApoyoACMW);
-    addCount(getField(r, 'salud_estres', 'sindromeImpostor'), conteoSindromeImpostor);
-    addCount(getField(r, 'salud_postural', 'ergonomiaLabs'), conteoErgonomiaLabs);
-    addCount(getField(r, 'salud_visual', 'problemasSalud'), conteoProblemasSalud);
-    addCount(getField(r, 'actividades_integracion', 'convivenciasEstudiantiles'), conteoConvivenciasEstudiantiles);
-    addCount(getField(r, 'horario_conveniente', 'horarioTalleres'), conteoHorarioTalleres);
-    addCount(getField(r, 'duracion_talleres', 'duracionTalleres'), conteoDuracionTalleres);
-    addCount(getField(r, 'canales_comunicacion', 'canalesAvisos'), conteoCanalesAvisos);
-    addCount(getField(r, 'prioridad_mesa_directiva', 'perfilPresidente'), conteoPerfilPresidente);
+    addCount(r.semestre, conteoSemestre);
+    addCount(r.turno, conteoTurno);
+    addCount(r.situacion_laboral, conteoSituacionLaboral);
+    addCount(r.rec_pc, conteoRecPc);
+    addCount(r.satisfaccion_practica, conteoSatisfaccionPractica);
+    addCount(r.materias_dificultad, conteoMaterias);
+    addCount(r.experiencias_proyectos, conteoExperienciasProyectos);
+    addCount(r.fuente_aprendizaje, conteoFuenteAprendizaje);
+    addCount(r.habilidades_fuera_aula, conteoHabilidadesFueraAula);
+    addCount(r.ing_tecnico, conteoIngTecnico);
+    addCount(r.preparacion_laboral_general, conteoPreparacionLaboral);
+    addCount(r.experiencia_entrevistas, conteoExperienciaEntrevistas);
+    addCount(r.portafolio_github, conteoPortafolioGithub);
+    addCount(r.uso_ia, conteoUsoIA);
+    addCount(r.desarrollo_software_comunitario, conteoDesarrolloSoftwareComunitario);
+    addCount(r.interes_talleres, conteoInteresTalleres);
+    addCount(r.formato_eventos_masivos, conteoFormatoEventosMasivos);
+    addCount(r.disponibilidad_actividades, conteoDisponibilidadActividades);
+    addCount(r.voluntariado_comites, conteoVoluntariadoComites);
 
-    // Tutorías / Mentoría
-    const mentoriaVal = getField(r, 'interes_mentoria', 'urgenciaTutorias');
-    if (mentoriaVal) {
-      const s = String(mentoriaVal).toLowerCase();
-      if (s.includes('recibir mentoría') || s.includes('ambas modalidades') || s === '4' || s === '5') {
-        tutoriasAltaUrgencia++;
+    // Subcampos de matrices
+    ['eq_coordinacion', 'eq_codigo_ajeno', 'eq_git_compartido', 'eq_revision_pares', 'eq_conflictos'].forEach(k => {
+      if (r[k]) {
+        if (!conteoDinamicasEquipo[k]) conteoDinamicasEquipo[k] = {};
+        addCount(r[k], conteoDinamicasEquipo[k]);
       }
-      const num = parseInt(mentoriaVal, 10);
-      if (!isNaN(num)) sumaTutorias += num;
-      else sumaTutorias += 4;
-    }
+    });
 
-    // Comités de voluntariado
-    const comitesVal = getField(r, 'voluntariado_comites', 'comitesVoluntariado');
+    ['dom_programacion', 'dom_git', 'dom_debugging', 'dom_testing', 'dom_linux', 'dom_db_apis', 'dom_docs', 'dom_aprender_tech'].forEach(k => {
+      if (r[k]) {
+        if (!conteoDominioHerramientas[k]) conteoDominioHerramientas[k] = {};
+        addCount(r[k], conteoDominioHerramientas[k]);
+      }
+    });
+
+    ['conf_explicar_proyecto', 'conf_codigo_existente', 'conf_aprender_tech', 'conf_trabajo_equipo', 'conf_entrevista_tecnica'].forEach(k => {
+      if (r[k]) {
+        if (!conteoConfianzaSituaciones[k]) conteoConfianzaSituaciones[k] = {};
+        addCount(r[k], conteoConfianzaSituaciones[k]);
+      }
+    });
+
+    // Voluntariado
+    const comitesVal = r.voluntariado_comites;
     if (comitesVal) {
       const arr = Array.isArray(comitesVal) ? comitesVal : [comitesVal];
-      arr.forEach(c => {
-        const str = String(c).trim();
-        if (str && !str.toLowerCase().includes("no deseo") && !str.toLowerCase().includes("no me interesa")) {
-          conteoComites[str] = (conteoComites[str] || 0) + 1;
-        }
-      });
-
       const esVoluntario = arr.some(c => {
         const str = String(c).toLowerCase();
-        return str.includes("comité") || str.includes("equipo") || (str.length > 5 && !str.includes("no deseo") && !str.includes("no me interesa") && !str.includes("únicamente como asistente") && !str.includes("solo asistente"));
+        return str.includes("comité") || (str.length > 5 && !str.includes("asistente") && !str.includes("no deseo"));
       });
 
       if (esVoluntario) {
         directorioVoluntarios.push({
-          nombre: r.nombre || 'Estudiante Voluntario',
           numeroControl: r.numeroControl || '-',
           correo: r.correo || '-',
-          telefono: r.telefono || '',
           semestre: r.semestre || '-',
           comites: arr,
           timestamp: r.timestamp
@@ -413,28 +333,11 @@ function calcularEstadisticas(respuestas) {
       }
     }
 
-    // Buzón abierto (comentarios finales y propuestas)
-    const coment = (r.comentarios_finales || '').trim();
+    // Buzón de propuestas (Pregunta 25)
     const prop = (r.propuesta_cambio_unico || '').trim();
-    const legBuzon = (r.buzonAbierto || '').trim();
-
-    if (coment && coment.length > 3) {
+    if (prop && prop.length > 3) {
       buzonAbierto.push({
-        texto: coment,
-        semestre: r.semestre || 'Semestre no especificado',
-        timestamp: r.timestamp
-      });
-    }
-    if (prop && prop.length > 3 && prop !== coment) {
-      buzonAbierto.push({
-        texto: `Propuesta de cambio: ${prop}`,
-        semestre: r.semestre || 'Semestre no especificado',
-        timestamp: r.timestamp
-      });
-    }
-    if (!coment && !prop && legBuzon && legBuzon.length > 3) {
-      buzonAbierto.push({
-        texto: legBuzon,
+        texto: prop,
         semestre: r.semestre || 'Semestre no especificado',
         timestamp: r.timestamp
       });
@@ -443,57 +346,37 @@ function calcularEstadisticas(respuestas) {
 
   return {
     total,
-    promedioUrgenciaTutorias: (sumaTutorias / total).toFixed(2),
-    pctAltaUrgenciaTutorias: ((tutoriasAltaUrgencia / total) * 100).toFixed(1),
-    promedioEvaluacionLabs: countLabs > 0 ? (sumaEvaluacionLabs / countLabs).toFixed(2) : '0.0',
     totalVoluntarios: directorioVoluntarios.length,
     conteoSemestre,
     conteoTurno,
     conteoSituacionLaboral,
-    conteoDisponibilidadLaptop,
-    conteoSO,
+    conteoRecPc,
+    conteoSatisfaccionPractica,
     conteoMaterias,
-    conteoCausasReprobacion,
-    conteoRiesgoBaja,
-    conteoLenguajes,
-    conteoFrecuenciaIA,
-    conteoImpactoIA,
-    conteoUrgenciaTutorias,
-    conteoGitHub,
-    conteoLinkedIn,
-    conteoIngles,
-    conteoCertificaciones,
-    conteoConfianzaEntrevista,
-    conteoEspecialidad,
-    conteoPreocupacionResidencia,
-    conteoInnovaTecNM,
-    conteoRoles,
-    conteoEvaluacionLabs,
-    conteoDeficienciasLabs,
-    conteoSoberania,
-    conteoDisposicionDev,
-    conteoClimaEstudiantil,
-    conteoSindromeImpostor,
-    conteoActividadesHorasMuertas,
-    conteoFaltaEventosApatia,
-    conteoTalleres,
-    conteoEventos,
-    conteoSoftSkills,
-    conteoApoyoACMW,
-    conteoAlumniMentoring,
-    conteoErgonomiaLabs,
-    conteoProblemasSalud,
-    conteoConvivenciasEstudiantiles,
-    conteoHorarioTalleres,
-    conteoDuracionTalleres,
-    conteoCajaDeCristal,
-    conteoCanalesAvisos,
-    conteoPerfilPresidente,
-    conteoComites,
+    conteoExperienciasProyectos,
+    conteoDinamicasEquipo,
+    conteoDominioHerramientas,
+    conteoFuenteAprendizaje,
+    conteoHabilidadesFueraAula,
+    conteoIngTecnico,
+    conteoConfianzaSituaciones,
+    conteoPreparacionLaboral,
+    conteoExperienciaEntrevistas,
+    conteoPortafolioGithub,
+    conteoUsoIA,
+    conteoDesarrolloSoftwareComunitario,
+    conteoInteresTalleres,
+    conteoFormatoEventosMasivos,
+    conteoDisponibilidadActividades,
+    conteoVoluntariadoComites,
+    // Alias para retrocompatibilidad con gráficas existentes
+    conteoSoberania: conteoDesarrolloSoftwareComunitario,
+    conteoTalleres: conteoInteresTalleres,
+    conteoEventos: conteoFormatoEventosMasivos,
+    conteoGitHub: conteoPortafolioGithub,
     buzonAbierto: buzonAbierto.reverse(),
     directorioVoluntarios: directorioVoluntarios.reverse(),
     ultimosRegistros: respuestas.slice(-10).reverse().map(r => ({
-      nombre: r.nombre,
       numeroControl: r.numeroControl,
       semestre: r.semestre,
       timestamp: r.timestamp
@@ -503,7 +386,6 @@ function calcularEstadisticas(respuestas) {
 
 // Servidor Principal
 const server = http.createServer((req, res) => {
-  // Inyección de Cabeceras de Seguridad HTTP Globales
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
@@ -514,7 +396,6 @@ const server = http.createServer((req, res) => {
 
   // 1. ENDPOINTS DE LA API REST
   if (req.method === 'POST' && (pathname === '/api/submit' || pathname === '/api/respuestas' || pathname === '/api/encuesta')) {
-    // Protección Rate Limiting por IP
     const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
     if (!checkRateLimit(clientIp)) {
       res.writeHead(429, { 'Content-Type': 'application/json' });
@@ -527,7 +408,6 @@ const server = http.createServer((req, res) => {
     let body = '';
     let payloadExceeded = false;
 
-    // Protección contra DoS: Límite de 512 KB por payload
     req.on('data', chunk => {
       if (payloadExceeded) return;
       body += chunk;
@@ -545,21 +425,8 @@ const server = http.createServer((req, res) => {
       try {
         const payload = JSON.parse(body);
         
-        // Sanitización de datos de contacto (100% opcionales para garantizar anonimato)
-        let nombre = typeof payload.nombre === 'string' ? payload.nombre.trim() : '';
         let numeroControl = typeof payload.numeroControl === 'string' ? payload.numeroControl.trim().toUpperCase() : '';
         let correo = typeof payload.correo === 'string' ? payload.correo.trim().toLowerCase() : '';
-        let telefono = typeof payload.telefono === 'string' ? payload.telefono.trim().replace(/\D/g, '') : '';
-        if (telefono.length === 12 && telefono.startsWith('52')) {
-          telefono = telefono.slice(2);
-        }
-        const buzonAbierto = typeof payload.buzonAbierto === 'string' ? payload.buzonAbierto.trim() : '';
-
-        // Si se proporcionan datos de contacto, validamos que su formato sea correcto
-        if (nombre && nombre.length > 120) {
-          res.writeHead(400, { 'Content-Type': 'application/json' });
-          return res.end(JSON.stringify({ success: false, error: 'El Nombre Completo no debe exceder 120 caracteres.' }));
-        }
 
         if (!numeroControl || !/^[C]?\d{8}$/i.test(numeroControl)) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
@@ -574,44 +441,31 @@ const server = http.createServer((req, res) => {
           return res.end(JSON.stringify({ success: false, error: 'El Correo Electrónico es obligatorio y debe tener un formato válido.' }));
         }
 
-        if (telefono && !/^\d{10}$/.test(telefono)) {
-          res.writeHead(400, { 'Content-Type': 'application/json' });
-          return res.end(JSON.stringify({ success: false, error: 'El Teléfono Celular debe contener exactamente 10 dígitos numéricos para WhatsApp.' }));
-        }
-
-        // Validación de datos académicos esenciales para rigor metodológico
         const semestre = typeof payload.semestre === 'string' ? payload.semestre.trim() : '';
         const turno = typeof payload.turno === 'string' ? payload.turno.trim() : '';
         const situacion_laboral = typeof payload.situacion_laboral === 'string' ? payload.situacion_laboral.trim() : '';
 
         if (!semestre) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
-          return res.end(JSON.stringify({ success: false, error: 'Por favor selecciona en qué semestre te encuentras inscrito.' }));
+          return res.end(JSON.stringify({ success: false, error: 'Por favor selecciona tu semestre o situación académica actual.' }));
         }
 
         if (!turno) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
-          return res.end(JSON.stringify({ success: false, error: 'Por favor selecciona el turno principal en el que estudias.' }));
+          return res.end(JSON.stringify({ success: false, error: 'Por favor selecciona tu turno predominante.' }));
         }
 
         if (!situacion_laboral) {
           res.writeHead(400, { 'Content-Type': 'application/json' });
-          return res.end(JSON.stringify({ success: false, error: 'Por favor selecciona tu situación laboral actual.' }));
+          return res.end(JSON.stringify({ success: false, error: 'Por favor selecciona tu situación laboral.' }));
         }
 
-        if (buzonAbierto && buzonAbierto.length > 2500) {
-          res.writeHead(400, { 'Content-Type': 'application/json' });
-          return res.end(JSON.stringify({ success: false, error: 'El texto del buzón no debe exceder 2,500 caracteres.' }));
-        }
-
-        payload.nombre = nombre || '';
         payload.numeroControl = numeroControl;
         payload.correo = correo;
-        payload.telefono = telefono || '';
 
         const resultado = guardarRespuesta(payload);
 
-        // Sincronización opcional en tiempo real con Google Sheets
+        // Sincronización en tiempo real con Google Sheets si está configurado
         if (process.env.GOOGLE_SHEET_WEBHOOK_URL) {
           fetch(process.env.GOOGLE_SHEET_WEBHOOK_URL, {
             method: 'POST',
@@ -669,17 +523,14 @@ const server = http.createServer((req, res) => {
     const esAdmin = esAdminAutorizado(req, parsedUrl);
 
     if (esAdmin) {
-      // Entrega dataset completo con datos de contacto (modo administrativo)
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify(respuestas));
     } else {
-      // Protección de Privacidad: Anonimización estricta de PII para acceso público
+      // Anonimización estricta de PII para acceso público
       const anonimizadas = respuestas.map(r => {
         const copia = { ...r };
-        delete copia.nombre;
         delete copia.numeroControl;
         delete copia.correo;
-        delete copia.telefono;
         return copia;
       });
       res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -698,22 +549,34 @@ const server = http.createServer((req, res) => {
 
     const respuestas = leerRespuestas();
     const voluntarios = respuestas.filter(r => {
-      const comites = r.voluntariado_comites || r.comitesVoluntariado;
-      return Array.isArray(comites) && comites.some(c => 
-        !c.toLowerCase().includes("no me interesa") && 
-        !c.toLowerCase().includes("no deseo") &&
-        !c.toLowerCase().includes("solo prefiero")
-      );
-    });
+      const comites = r.voluntariado_comites;
+      if (!comites) return false;
+      const arr = Array.isArray(comites) ? comites : [comites];
+      return arr.some(c => {
+        const str = String(c).toLowerCase();
+        return str.includes("comité") || (str.length > 5 && !str.includes("asistente") && !str.includes("no deseo"));
+      });
+    }).map(r => ({
+      numeroControl: r.numeroControl || '-',
+      correo: r.correo || '-',
+      semestre: r.semestre || '-',
+      comites: r.voluntariado_comites,
+      propuesta: r.propuesta_cambio_unico || '',
+      timestamp: r.timestamp
+    }));
+
     res.writeHead(200, { 'Content-Type': 'application/json' });
     return res.end(JSON.stringify(voluntarios));
   }
 
-  if (req.method === 'GET' && (pathname === '/api/sync-sheets' || pathname === '/api/sync')) {
+  if (req.method === 'GET' && pathname === '/api/sync-sheets') {
+    if (!esAdminAutorizado(req, parsedUrl)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      return res.end(JSON.stringify({ success: false, error: 'No autorizado' }));
+    }
     sincronizarDesdeGoogleSheets().then(() => {
-      const respuestas = leerRespuestas();
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ success: true, total: respuestas.length }));
+      res.end(JSON.stringify({ success: true, total: leerRespuestas().length }));
     }).catch(err => {
       res.writeHead(500, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ success: false, error: err.message }));
@@ -721,23 +584,21 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // 2. ENRUTAMIENTO DE PÁGINAS PRINCIPALES
-  let filePath = '';
-  if (pathname === '/' || pathname === '/index.html') {
-    filePath = path.join(PUBLIC_DIR, 'index.html');
-  } else if (pathname === '/dashboard' || pathname === '/dashboard.html') {
-    filePath = path.join(PUBLIC_DIR, 'dashboard.html');
-  } else {
-    filePath = path.join(PUBLIC_DIR, pathname);
+  // 2. ENRUTAMIENTO Y SERVICIO DE ARCHIVOS ESTÁTICOS
+  let sanitizedPath = path.normalize(pathname).replace(/^(\.\.[\/\\])+/, '');
+  if (sanitizedPath === '/' || sanitizedPath === '') {
+    sanitizedPath = '/index.html';
+  } else if (sanitizedPath === '/dashboard' || sanitizedPath === '/dashboard/') {
+    sanitizedPath = '/dashboard.html';
   }
 
-  // Seguridad: prevenir path traversal
+  const filePath = path.join(PUBLIC_DIR, sanitizedPath);
+
   if (!filePath.startsWith(PUBLIC_DIR)) {
-    res.writeHead(403, { 'Content-Type': 'text/plain' });
-    return res.end('Acceso denegado');
+    res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
+    return res.end('403: Acceso prohibido');
   }
 
-  // Servir archivo estático
   fs.stat(filePath, (err, stats) => {
     if (err || !stats.isFile()) {
       res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
@@ -794,15 +655,14 @@ async function sincronizarDesdeGoogleSheets() {
 server.listen(PORT, () => {
   const localIP = obtenerIPLocal();
   console.log('\n' + '='.repeat(70));
-  console.log('  🏛️  PLATAFORMA WEB: CENSO ESTUDIANTIL ISC ITCM 2026-2027');
+  console.log('  🏛️  PLATAFORMA WEB: ENCUESTA DE FORMACIÓN ISC ACM ITCM 2026–2027');
   console.log('  🚀  Capítulo Estudiantil ACM — Instituto Tecnológico de Ciudad Madero');
   console.log('='.repeat(70));
-  console.log(`  🟢 Servidor Local:    http://localhost:${PORT}`);
+  console.log(`  🟢 Servidor Local:      http://localhost:${PORT}`);
   console.log(`  📱 Acceso en Red/Wi-Fi: http://${localIP}:${PORT}`);
-  console.log(`  📊 Dashboard en Vivo: http://localhost:${PORT}/dashboard`);
+  console.log(`  📊 Dashboard en Vivo:   http://localhost:${PORT}/dashboard`);
   console.log('='.repeat(70));
-  console.log('  💡 Comparte el enlace de red o genera un código QR para salones.\n');
+  console.log('  💡 Asistente sintetizado de 25 preguntas (5 a 7 minutos)\n');
 
-  // Intentar restaurar datos desde Google Sheets si está configurado
   sincronizarDesdeGoogleSheets();
 });

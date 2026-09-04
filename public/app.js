@@ -1,16 +1,17 @@
 /**
  * ============================================================================
- * LÓGICA DE CLIENTE (STEPPER WIZARD, AUTOSAVE & SHARING): CENSO ACM ITCM 2026-2027
+ * LÓGICA DE CLIENTE: ENCUESTA DE FORMACIÓN ISC ACM ITCM 2026–2027
  * ============================================================================
- * Protocolo de Rigor Académico TecNM & ACM
- * Validación de Padrón, Protección de Privacidad y Manejo de Matrices Responsivas
+ * Protocolo de Rigor Metodológico TecNM & ACM
+ * Asistente de 25 Preguntas en 5 Pasos Ágiles (5 a 7 minutos)
+ * Validación de Padrón, Protección de Privacidad y Matrices Responsivas
  * ============================================================================
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-  const TOTAL_STEPS = 11;
+  const TOTAL_STEPS = 5;
   let currentStep = 1;
-  const DRAFT_KEY = 'acm_itcm_censo_draft_v2';
+  const DRAFT_KEY = 'acm_itcm_encuesta_25_v4';
 
   // Elementos DOM - Pantallas
   const welcomeScreen = document.getElementById('welcomeScreen');
@@ -28,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnPrev = document.getElementById('btnPrev');
   const btnNext = document.getElementById('btnNext');
   const btnSubmit = document.getElementById('btnSubmit');
-  const steps = document.querySelectorAll('.wizard-step, .form-step');
+  const steps = document.querySelectorAll('.wizard-step');
 
   // Elementos DOM - Difusión y Compartir
   const btnShareIntroWhatsApp = document.getElementById('btnShareIntroWhatsApp');
@@ -44,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ? window.location.origin
       : 'http://localhost:3000';
 
-    const shareMsg = `Compañero(a) de Sistemas ITCM, te invito a responder la Encuesta de Experiencia y Formación ISC 2026–2027 del Capítulo Estudiantil ACM. ¡Tu opinión cuenta para talleres, labs y mejoras!: ${currentOrigin}`;
+    const shareMsg = `Compañero(a) de Sistemas ITCM, te invito a responder la Encuesta de Formación ISC 2026–2027 del Capítulo ACM. ¡Toma solo 5 minutos y tu opinión cuenta para talleres y proyectos!: ${currentOrigin}`;
     const waUrl = `https://wa.me/?text=${encodeURIComponent(shareMsg)}`;
 
     if (btnShareIntroWhatsApp) btnShareIntroWhatsApp.href = waUrl;
@@ -71,11 +72,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnCopyIntroLink) btnCopyIntroLink.addEventListener('click', copyUrlToClipboard);
     if (btnCopySuccessLink) btnCopySuccessLink.addEventListener('click', copyUrlToClipboard);
 
-    // ------------------------------------------------------------------------
-    // GESTIÓN DEL MODAL DE CÓDIGO QR
-    // ------------------------------------------------------------------------
+    // Modal QR
     const btnShowQrIntro = document.getElementById('btnShowQrIntro');
-    const btnShowQrSuccess = document.getElementById('btnShowQrSuccess');
     const qrModal = document.getElementById('qrModal');
     const btnCloseQrModal = document.getElementById('btnCloseQrModal');
     const qrImageDisplay = document.getElementById('qrImageDisplay');
@@ -88,15 +86,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function openQrModal() {
       if (!qrModal) return;
-      if (qrImageDisplay) {
-        qrImageDisplay.src = qrApiUrl;
-      }
-      if (qrUrlDisplay) {
-        qrUrlDisplay.textContent = currentOrigin;
-      }
-      if (btnShareQrWhatsApp) {
-        btnShareQrWhatsApp.href = waUrl;
-      }
+      if (qrImageDisplay) qrImageDisplay.src = qrApiUrl;
+      if (qrUrlDisplay) qrUrlDisplay.textContent = currentOrigin;
+      if (btnShareQrWhatsApp) btnShareQrWhatsApp.href = waUrl;
       qrModal.style.display = 'flex';
       document.body.style.overflow = 'hidden';
     }
@@ -108,9 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (btnShowQrIntro) btnShowQrIntro.addEventListener('click', openQrModal);
-    if (btnShowQrSuccess) btnShowQrSuccess.addEventListener('click', openQrModal);
     if (btnCloseQrModal) btnCloseQrModal.addEventListener('click', closeQrModal);
-
     if (qrModal) {
       qrModal.addEventListener('click', (e) => {
         if (e.target === qrModal) closeQrModal();
@@ -127,18 +117,18 @@ document.addEventListener('DOMContentLoaded', () => {
       btnDownloadQr.addEventListener('click', async (e) => {
         e.preventDefault();
         try {
-          showToast('Descargando imagen QR en alta resolución...', 'info');
+          showToast('Descargando imagen QR...', 'info');
           const response = await fetch(qrApiUrl);
           const blob = await response.blob();
           const blobUrl = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = blobUrl;
-          a.download = 'QR_Censo_ISC_ACM_ITCM.png';
+          a.download = 'QR_Encuesta_ISC_ACM_ITCM.png';
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
           URL.revokeObjectURL(blobUrl);
-          showToast('¡Imagen QR descargada con éxito!', 'success');
+          showToast('¡Imagen QR descargada!', 'success');
         } catch (err) {
           window.open(qrApiUrl, '_blank');
         }
@@ -159,11 +149,9 @@ document.addEventListener('DOMContentLoaded', () => {
       step.style.display = (stepNum === currentStep) ? 'block' : 'none';
     });
 
-    // Barra de progreso (Paso 1 inicia en 0%, finaliza en 100%)
-    const progressPercent = Math.round(((currentStep - 1) / (TOTAL_STEPS - 1)) * 100);
+    const progressPercent = Math.round((currentStep / TOTAL_STEPS) * 100);
     if (progressBar) progressBar.style.width = `${progressPercent}%`;
 
-    // Textos y botones
     if (stepIndicatorText) {
       stepIndicatorText.textContent = `Paso ${currentStep} de ${TOTAL_STEPS} (${progressPercent}% completado)`;
     }
@@ -187,127 +175,226 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --------------------------------------------------------------------------
-  // 3. VALIDACIÓN CONTEXTUAL POR PASO Y ROBUSTEZ DE CAMPOS
+  // 3. VALIDACIÓN POR PASO
   // --------------------------------------------------------------------------
+  function highlightError(element, message) {
+    showToast(message, 'error');
+    if (element) {
+      const block = element.closest('.question-block') || element.closest('tr') || element.closest('.matrix-mobile-row-card') || element;
+      block.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      block.style.transition = 'background-color 0.3s ease';
+      block.style.backgroundColor = 'rgba(239, 68, 68, 0.12)';
+      setTimeout(() => { block.style.backgroundColor = ''; }, 2500);
+      if (element.focus) element.focus();
+    }
+  }
+
   function validateCurrentStep() {
-    const activeStepEl = document.querySelector(`.wizard-step[data-step="${currentStep}"], .form-step[data-step="${currentStep}"]`);
+    const activeStepEl = document.querySelector(`.wizard-step[data-step="${currentStep}"]`);
     if (!activeStepEl) return true;
 
-    // Validación Módulo 1: Registro y Contexto Personal
+    // --- PASO 1: Sobre ti e Información General ---
     if (currentStep === 1) {
       const control = document.getElementById('numeroControl');
       const valControl = control ? control.value.trim().toUpperCase() : '';
       if (!control || !/^[C]?\d{8}$/i.test(valControl)) {
-        showToast('El Número de Control debe tener 8 dígitos (o la letra "C" + 8 dígitos si es cambio de carrera).', 'error');
-        if (control) {
-          control.focus();
-          control.classList.add('input-error');
-        }
+        highlightError(control, 'El Número de Control es obligatorio: 8 dígitos numéricos (o C + 8 dígitos si es cambio de carrera).');
         return false;
       }
-      if (control) {
-        control.value = valControl;
-        control.classList.remove('input-error');
-      }
+      control.value = valControl;
 
       const correo = document.getElementById('correo');
       const valCorreo = correo ? correo.value.trim().toLowerCase() : '';
       if (!correo || !valCorreo || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(valCorreo)) {
-        showToast('Por favor introduce un Correo Electrónico válido (institucional o personal).', 'error');
-        if (correo) {
-          correo.focus();
-          correo.classList.add('input-error');
-        }
-        return false;
-      }
-      if (correo) correo.classList.remove('input-error');
-
-      const tel = document.getElementById('telefono');
-      if (tel && tel.value.trim()) {
-        const cleanTel = tel.value.trim().replace(/\D/g, '');
-        const finalTel = (cleanTel.length === 12 && cleanTel.startsWith('52')) ? cleanTel.slice(2) : cleanTel;
-        if (finalTel.length !== 10) {
-          showToast('El teléfono debe tener 10 dígitos numéricos para contacto vía WhatsApp.', 'error');
-          tel.focus();
-          tel.classList.add('input-error');
-          return false;
-        }
-        tel.classList.remove('input-error');
-      }
-
-      const edad = document.getElementById('edad');
-      if (edad && !edad.value) {
-        showToast('Por favor selecciona tu Edad.', 'error');
-        edad.focus();
+        highlightError(correo, 'El Correo Electrónico es obligatorio y debe tener un formato válido.');
         return false;
       }
 
-      const genero = document.querySelector('input[name="genero"]:checked');
-      if (!genero) {
-        showToast('Por favor selecciona tu Género.', 'error');
+      const semestre = form.querySelector('input[name="semestre"]:checked');
+      if (!semestre) {
+        highlightError(document.getElementById('qblock_semestre'), 'Por favor indica tu semestre o situación académica actual.');
         return false;
       }
 
-      const semestre = document.getElementById('semestre');
-      if (semestre && !semestre.value) {
-        showToast('Por favor selecciona tu Semestre actual.', 'error');
-        semestre.focus();
-        return false;
-      }
-
-      const turno = document.querySelector('input[name="turno"]:checked');
+      const turno = form.querySelector('input[name="turno"]:checked');
       if (!turno) {
-        showToast('Por favor selecciona tu Turno principal.', 'error');
+        highlightError(document.getElementById('qblock_turno'), 'Por favor selecciona tu turno predominante.');
         return false;
       }
 
-      const situacion = document.querySelector('input[name="situacion_laboral"]:checked');
+      const situacion = form.querySelector('input[name="situacion_laboral"]:checked');
       if (!situacion) {
-        showToast('Por favor selecciona tu Situación laboral.', 'error');
+        highlightError(document.getElementById('qblock_situacion_laboral'), 'Por favor selecciona tu situación laboral o actividades principales.');
         return false;
       }
-    } else {
-      // Robustez para Pasos 2 a 11: Validar preguntas obligatorias dentro del paso activo
-      const requiredRadios = activeStepEl.querySelectorAll('input[type="radio"][required]');
-      const checkedGroups = new Set();
-      
-      for (const radio of requiredRadios) {
-        const groupName = radio.name;
-        if (checkedGroups.has(groupName)) continue;
-        checkedGroups.add(groupName);
+    }
 
-        // Verificar si está respondido en escritorio o móvil
-        const selected = form.querySelector(`input[name="${groupName}"]:checked`) ||
-                         form.querySelector(`input[name="${groupName}_mob"]:checked`);
-        if (!selected) {
-          const qBlock = radio.closest('.question-block') || radio.closest('tr') || radio.closest('.matrix-mobile-row');
-          const titleEl = qBlock ? qBlock.querySelector('.question-title, .matrix-row-title, .matrix-mobile-row-label') : null;
-          const qTitle = titleEl ? titleEl.textContent.trim().replace(/\*$/, '').trim() : 'una pregunta obligatoria';
-          showToast(`Por favor responde: "${qTitle}"`, 'error');
-          if (qBlock) {
-            qBlock.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            qBlock.style.transition = 'background-color 0.3s ease';
-            qBlock.style.backgroundColor = 'rgba(239, 68, 68, 0.08)';
-            setTimeout(() => { qBlock.style.backgroundColor = ''; }, 2000);
-          }
-          return false;
-        }
+    // --- PASO 2: Condiciones de Estudio y Experiencia ---
+    else if (currentStep === 2) {
+      const recPc = form.querySelector('input[name="rec_pc"]:checked');
+      if (!recPc) {
+        highlightError(document.getElementById('qblock_rec_pc'), 'Por favor responde sobre tu acceso a equipo de cómputo para programar.');
+        return false;
       }
 
-      const requiredSelects = activeStepEl.querySelectorAll('select[required]');
-      for (const select of requiredSelects) {
-        if (!select.value) {
-          const qBlock = select.closest('.question-block');
-          const titleEl = qBlock ? qBlock.querySelector('.question-title') : null;
-          const qTitle = titleEl ? titleEl.textContent.trim().replace(/\*$/, '').trim() : 'un campo requerido';
-          showToast(`Por favor selecciona: "${qTitle}"`, 'error');
-          select.focus();
+      const satisfaccion = form.querySelector('input[name="satisfaccion_practica"]:checked');
+      if (!satisfaccion) {
+        highlightError(document.getElementById('qblock_satisfaccion_practica'), 'Por favor evalúa las oportunidades de práctica real en las materias.');
+        return false;
+      }
+
+      const materias = form.querySelectorAll('input[name="materias_dificultad"]:checked');
+      if (materias.length === 0) {
+        highlightError(document.getElementById('qblock_materias_dificultad'), 'Por favor selecciona al menos una opción sobre materias con mayor reto.');
+        return false;
+      }
+
+      const proyectos = form.querySelectorAll('input[name="experiencias_proyectos"]:checked');
+      if (proyectos.length === 0) {
+        highlightError(document.getElementById('qblock_experiencias_proyectos'), 'Por favor selecciona los tipos de proyectos en los que has participado.');
+        return false;
+      }
+
+      // Matriz dinámicas de equipo (5 filas)
+      const rowsEquipo = ['eq_coordinacion', 'eq_codigo_ajeno', 'eq_git_compartido', 'eq_revision_pares', 'eq_conflictos'];
+      for (const rowId of rowsEquipo) {
+        const checked = form.querySelector(`input[name="${rowId}"]:checked`) || form.querySelector(`input[name="${rowId}_mob"]:checked`);
+        if (!checked) {
+          highlightError(document.getElementById('qblock_dinamicas_equipo'), 'Por favor completa todas las filas de la tabla de dinámicas de equipo.');
           return false;
         }
       }
     }
 
+    // --- PASO 3: Habilidades Técnicas y Aprendizaje Fuera del Aula ---
+    else if (currentStep === 3) {
+      // Matriz dominio herramientas (8 filas)
+      const rowsDominio = ['dom_programacion', 'dom_git', 'dom_debugging', 'dom_testing', 'dom_linux', 'dom_db_apis', 'dom_docs', 'dom_aprender_tech'];
+      for (const rowId of rowsDominio) {
+        const checked = form.querySelector(`input[name="${rowId}"]:checked`) || form.querySelector(`input[name="${rowId}_mob"]:checked`);
+        if (!checked) {
+          highlightError(document.getElementById('qblock_dominio_herramientas'), 'Por favor evalúa tu nivel en todas las herramientas técnicas de la lista.');
+          return false;
+        }
+      }
+
+      const fuente = form.querySelector('input[name="fuente_aprendizaje"]:checked');
+      if (!fuente) {
+        highlightError(document.getElementById('qblock_fuente_aprendizaje'), 'Por favor selecciona tu principal fuente de aprendizaje técnico.');
+        return false;
+      }
+
+      const habilidades = form.querySelectorAll('input[name="habilidades_fuera_aula"]:checked');
+      if (habilidades.length === 0) {
+        highlightError(document.getElementById('qblock_habilidades_fuera_aula'), 'Por favor selecciona al menos una habilidad que sentiste necesario aprender fuera del aula.');
+        return false;
+      }
+      if (habilidades.length > 3) {
+        highlightError(document.getElementById('qblock_habilidades_fuera_aula'), 'Por favor selecciona un máximo de 3 habilidades clave.');
+        return false;
+      }
+
+      const ingles = form.querySelector('input[name="ing_tecnico"]:checked');
+      if (!ingles) {
+        highlightError(document.getElementById('qblock_ing_tecnico'), 'Por favor selecciona tu nivel de dominio en inglés técnico.');
+        return false;
+      }
+
+      // Matriz confianza situaciones (5 filas)
+      const rowsConfianza = ['conf_explicar_proyecto', 'conf_codigo_existente', 'conf_aprender_tech', 'conf_trabajo_equipo', 'conf_entrevista_tecnica'];
+      for (const rowId of rowsConfianza) {
+        const checked = form.querySelector(`input[name="${rowId}"]:checked`) || form.querySelector(`input[name="${rowId}_mob"]:checked`);
+        if (!checked) {
+          highlightError(document.getElementById('qblock_confianza_situaciones'), 'Por favor completa todas las filas de confianza ante situaciones profesionales.');
+          return false;
+        }
+      }
+    }
+
+    // --- PASO 4: Preparación Profesional, IA y Proyección ---
+    else if (currentStep === 4) {
+      const prep = form.querySelector('input[name="preparacion_laboral_general"]:checked');
+      if (!prep) {
+        highlightError(document.getElementById('qblock_preparacion_laboral_general'), 'Por favor indica qué tan preparado/a te sientes para el mercado laboral.');
+        return false;
+      }
+
+      const entrevistas = form.querySelector('input[name="experiencia_entrevistas"]:checked');
+      if (!entrevistas) {
+        highlightError(document.getElementById('qblock_experiencia_entrevistas'), 'Por favor selecciona tu experiencia con entrevistas técnicas o procesos de selección.');
+        return false;
+      }
+
+      const github = form.querySelector('input[name="portafolio_github"]:checked');
+      if (!github) {
+        highlightError(document.getElementById('qblock_portafolio_github'), 'Por favor indica la situación actual de tu GitHub o portafolio.');
+        return false;
+      }
+
+      const ia = form.querySelector('input[name="uso_ia"]:checked');
+      if (!ia) {
+        highlightError(document.getElementById('qblock_uso_ia'), 'Por favor indica cómo utilizas herramientas de Inteligencia Artificial para programar.');
+        return false;
+      }
+
+      const softwareComunitario = form.querySelector('input[name="desarrollo_software_comunitario"]:checked');
+      if (!softwareComunitario) {
+        highlightError(document.getElementById('qblock_desarrollo_software_comunitario'), 'Por favor comparte tu opinión sobre el software desarrollado por estudiantes para el ITCM.');
+        return false;
+      }
+    }
+
+    // --- PASO 5: Talleres, Eventos y Participación ACM ---
+    else if (currentStep === 5) {
+      const talleres = form.querySelectorAll('input[name="interes_talleres"]:checked');
+      if (talleres.length === 0) {
+        highlightError(document.getElementById('qblock_interes_talleres'), 'Por favor selecciona al menos un tema de interés para talleres prácticos.');
+        return false;
+      }
+      if (talleres.length > 3) {
+        highlightError(document.getElementById('qblock_interes_talleres'), 'Por favor selecciona un máximo de 3 temas de talleres.');
+        return false;
+      }
+
+      const eventos = form.querySelector('input[name="formato_eventos_masivos"]:checked');
+      if (!eventos) {
+        highlightError(document.getElementById('qblock_formato_eventos_masivos'), 'Por favor selecciona tu formato preferido para eventos tecnológicos masivos.');
+        return false;
+      }
+
+      const disp = form.querySelector('input[name="disponibilidad_actividades"]:checked');
+      if (!disp) {
+        highlightError(document.getElementById('qblock_disponibilidad_actividades'), 'Por favor indica tu probabilidad de asistir a actividades extracurriculares.');
+        return false;
+      }
+
+      const comites = form.querySelectorAll('input[name="voluntariado_comites"]:checked');
+      if (comites.length === 0) {
+        highlightError(document.getElementById('qblock_voluntariado_comites'), 'Por favor selecciona las áreas en las que te gustaría participar o si prefieres asistir.');
+        return false;
+      }
+    }
+
     return true;
+  }
+
+  // Limitar checkboxes de máximo 3
+  function setupCheckboxLimits() {
+    function applyLimit(name, maxCount) {
+      const checkboxes = form.querySelectorAll(`input[name="${name}"]`);
+      checkboxes.forEach(cb => {
+        cb.addEventListener('change', () => {
+          const checked = form.querySelectorAll(`input[name="${name}"]:checked`);
+          if (checked.length > maxCount) {
+            cb.checked = false;
+            showToast(`Solo puedes seleccionar hasta ${maxCount} opciones en esta pregunta.`, 'info');
+          }
+        });
+      });
+    }
+
+    applyLimit('habilidades_fuera_aula', 3);
+    applyLimit('interes_talleres', 3);
   }
 
   // --------------------------------------------------------------------------
@@ -318,11 +405,9 @@ document.addEventListener('DOMContentLoaded', () => {
     data._savedStep = currentStep;
     try {
       localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
-      if (draftStatusBadge) {
-        draftStatusBadge.style.display = 'inline-block';
-      }
+      if (draftStatusBadge) draftStatusBadge.style.display = 'inline-block';
     } catch (e) {
-      console.warn('Error guardando en localStorage:', e);
+      console.warn('Error guardando borrador:', e);
     }
   }
 
@@ -345,24 +430,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
           });
         } else {
-          const textEl = form.querySelector(`input[name="${key}"][type="text"], input[name="${key}"][type="email"], input[name="${key}"][type="tel"], textarea[name="${key}"]`);
+          const textEl = form.querySelector(`input[name="${key}"][type="text"], input[name="${key}"][type="email"], textarea[name="${key}"]`);
           if (textEl) {
             textEl.value = value;
             if (value) restoredCount++;
           } else {
-            const selectEl = form.querySelector(`select[name="${key}"]`);
-            if (selectEl) {
-              selectEl.value = value;
-              if (value) restoredCount++;
-            } else {
-              const radioEl = form.querySelector(`input[name="${key}"][value="${CSS.escape(value)}"]`);
-              if (radioEl) {
-                radioEl.checked = true;
-                restoredCount++;
-                // Sincronizar pill móvil correspondiente si existe
-                const mobRadio = form.querySelector(`input[name="${key}_mob"][value="${CSS.escape(value)}"]`);
-                if (mobRadio) mobRadio.checked = true;
-              }
+            const radioEl = form.querySelector(`input[name="${key}"][value="${CSS.escape(value)}"]`);
+            if (radioEl) {
+              radioEl.checked = true;
+              restoredCount++;
+              const mobRadio = form.querySelector(`input[name="${key}_mob"][value="${CSS.escape(value)}"]`);
+              if (mobRadio) mobRadio.checked = true;
             }
           }
         }
@@ -384,7 +462,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const data = {};
 
     formData.forEach((value, key) => {
-      // Omitir duplicados móviles generados para responsividad táctil
       if (key.endsWith('_mob')) return;
 
       const elements = form.querySelectorAll(`input[name="${key}"]`);
@@ -414,31 +491,25 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --------------------------------------------------------------------------
-  // 6. SINCRONIZACIÓN BIDIRECCIONAL MATRIZ ESCRITORIO <-> MÓVIL
+  // 6. SINCRONIZACIÓN MATRIZ ESCRITORIO <-> MÓVIL
   // --------------------------------------------------------------------------
   function setupMatrixSync() {
-    // Cuando el usuario toca una píldora en móvil, activar el radio de la tabla
     document.querySelectorAll('input[data-sync]').forEach(mobRadio => {
       mobRadio.addEventListener('change', () => {
         const targetName = mobRadio.getAttribute('data-sync');
         const val = mobRadio.value;
         const deskRadio = form.querySelector(`input[name="${targetName}"][value="${CSS.escape(val)}"]`);
-        if (deskRadio) {
-          deskRadio.checked = true;
-        }
+        if (deskRadio) deskRadio.checked = true;
         saveDraft();
       });
     });
 
-    // Cuando cambia en la tabla de escritorio, activar la píldora móvil
     document.querySelectorAll('.matrix-table input[type="radio"]').forEach(deskRadio => {
       deskRadio.addEventListener('change', () => {
         const name = deskRadio.name;
         const val = deskRadio.value;
         const mobRadio = form.querySelector(`input[name="${name}_mob"][value="${CSS.escape(val)}"]`);
-        if (mobRadio) {
-          mobRadio.checked = true;
-        }
+        if (mobRadio) mobRadio.checked = true;
         saveDraft();
       });
     });
@@ -447,7 +518,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // --------------------------------------------------------------------------
   // 7. EVENT LISTENERS Y TRANSICIONES
   // --------------------------------------------------------------------------
-
   const numControlInput = document.getElementById('numeroControl');
   if (numControlInput) {
     numControlInput.addEventListener('input', () => {
@@ -455,7 +525,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Iniciar encuesta desde la pantalla de bienvenida
   if (btnStartSurvey) {
     btnStartSurvey.addEventListener('click', () => {
       if (welcomeScreen) welcomeScreen.style.display = 'none';
@@ -484,7 +553,6 @@ document.addEventListener('DOMContentLoaded', () => {
         currentStep--;
         updateStepUI();
       } else if (currentStep === 1) {
-        // Regresar a la pantalla de bienvenida/portada
         if (form) form.style.display = 'none';
         if (welcomeScreen) welcomeScreen.style.display = 'block';
         if (stepperContainer) stepperContainer.style.display = 'none';
@@ -493,12 +561,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Guardar borrador ante cualquier cambio
   if (form) {
     form.addEventListener('input', saveDraft);
     form.addEventListener('change', saveDraft);
 
-    // Envío final del formulario
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!validateCurrentStep()) return;
@@ -524,10 +590,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const result = await res.json();
 
         if (res.ok && result.success) {
-          // Limpiar borrador local
           localStorage.removeItem(DRAFT_KEY);
 
-          // Transición a pantalla de éxito
           if (form) form.style.display = 'none';
           if (stepperContainer) stepperContainer.style.display = 'none';
           if (successScreen) successScreen.style.display = 'block';
@@ -552,13 +616,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --------------------------------------------------------------------------
-  // 8. INICIALIZACIÓN DE LA APLICACIÓN
-  // --------------------------------------------------------------------------
+  // Inicialización
   setupSharing();
   setupMatrixSync();
+  setupCheckboxLimits();
 
-  // Comprobar si existe un borrador previo en este navegador
   const hasDraft = restoreDraft();
   if (hasDraft) {
     if (draftStatusBadge) draftStatusBadge.style.display = 'inline-block';

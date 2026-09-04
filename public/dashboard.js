@@ -1,26 +1,19 @@
 /**
  * ============================================================================
- * COCKPIT DE INTELIGENCIA Y ANÁLISIS DE DATOS ACM ITCM 2026-2027
+ * COCKPIT DE INTELIGENCIA Y ANÁLISIS DE DATOS: ENCUESTA ISC ACM ITCM 2026–2027
  * ============================================================================
  * Autor: Jesús Javier Hernández Olvera
- * Capacidades:
- *  - Auditoría Estadística Formal sin datos simulados
- *  - Explorador Exhaustivo de los 53 Reactivos en 11 Módulos
- *  - Fórmulas de Frecuencias Absolutas y Porcentajes de Distribución
- *  - Cruces Multivariables y Banco de Voluntarios
- *  - Sin emojis: Interfaz ejecutiva e institucional sobria
+ * Dashboard Ejecutivo Oficial para las 25 Preguntas Sintetizadas
  * ============================================================================
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Configuración de Seguridad
   const VALID_KEYS = ['acm2026', 'olvera2026', 'itcm2026'];
   const AUTH_KEY_STORAGE = 'acm_admin_authenticated_session';
   const API_BASE = (window.location.protocol === 'http:' || window.location.protocol === 'https:')
     ? ''
     : 'http://localhost:3000';
 
-  // Paleta de Colores Institucional TecNM para Chart.js
   const COLORS = {
     blue: '#1B396A',
     gold: '#B38E5D',
@@ -38,1192 +31,601 @@ document.addEventListener('DOMContentLoaded', () => {
     ]
   };
 
-  // Instancias activas de Chart.js
   const chartInstances = {};
-
-  // Estado en Memoria
   let rawResponses = [];
   let currentFilter = 'todos';
   let currentModuleStep = 'all';
   let refreshTimer = null;
 
-  // Catálogo Oficial Completo de los 53 Reactivos del Censo
+  // Catálogo Oficial de los reactivos del instrumento sintetizado (25 preguntas + subvariables)
   const CATALOGO_PREGUNTAS = [
   {
     "step": 1,
-    "module": "Módulo 1: Registro y Contexto Personal",
+    "module": "Módulo 1: Sobre ti e Información General",
     "key": "numeroControl",
-    "title": "1. Número de control (8 dígitos o C + 8 dígitos)",
+    "title": "1. 1. Número de Control (8 dígitos o C + 8 dígitos)",
     "type": "text",
     "options": []
   },
   {
     "step": 1,
-    "module": "Módulo 1: Registro y Contexto Personal",
+    "module": "Módulo 1: Sobre ti e Información General",
     "key": "correo",
-    "title": "2. Correo electrónico (institucional o personal)",
+    "title": "2. 2. Correo Electrónico (institucional o personal)",
     "type": "email",
     "options": []
   },
   {
     "step": 1,
-    "module": "Módulo 1: Registro y Contexto Personal",
-    "key": "telefono",
-    "title": "Teléfono de WhatsApp (Opcional)",
-    "type": "tel",
-    "options": []
-  },
-  {
-    "step": 1,
-    "module": "Módulo 1: Registro y Contexto Personal",
-    "key": "edad",
-    "title": "3. Edad",
-    "type": "select",
-    "options": [
-      "17 años o menos",
-      "18 años",
-      "19 años",
-      "20 años",
-      "21 años",
-      "22 años",
-      "23 años",
-      "24 años",
-      "25 años o más",
-      "Prefiero no responder"
-    ]
-  },
-  {
-    "step": 1,
-    "module": "Módulo 1: Registro y Contexto Personal",
-    "key": "genero",
-    "title": "4. Género",
+    "module": "Módulo 1: Sobre ti e Información General",
+    "key": "semestre",
+    "title": "3. 3. Semestre o situación académica actual",
     "type": "radio",
     "options": [
-      "Femenino",
-      "Masculino",
-      "No binario",
-      "Prefiero no responder",
-      "Otro"
+      "1.º a 3.º semestre",
+      "4.º a 6.º semestre",
+      "7.º a 9.º semestre",
+      "Residencia profesional",
+      "Egresado(a) en proceso de titulación"
     ]
   },
   {
     "step": 1,
-    "module": "Módulo 1: Registro y Contexto Personal",
-    "key": "semestre",
-    "title": "5. Semestre actual",
-    "type": "select",
-    "options": [
-      "1° semestre",
-      "2° semestre",
-      "3° semestre",
-      "4° semestre",
-      "5° semestre",
-      "6° semestre",
-      "7° semestre",
-      "8° semestre",
-      "9° semestre",
-      "10° semestre o superior",
-      "Egresado reciente"
-    ]
-  },
-  {
-    "step": 1,
-    "module": "Módulo 1: Registro y Contexto Personal",
+    "module": "Módulo 1: Sobre ti e Información General",
     "key": "turno",
-    "title": "6. Turno principal en el que cursas tus materias",
+    "title": "4. 4. Turno predominante en el que estudias",
     "type": "radio",
     "options": [
       "Matutino",
       "Vespertino",
-      "Mixto (materias en ambos turnos)"
+      "Mixto o variable",
+      "Sin turno fijo / En línea"
     ]
   },
   {
     "step": 1,
-    "module": "Módulo 1: Registro y Contexto Personal",
+    "module": "Módulo 1: Sobre ti e Información General",
     "key": "situacion_laboral",
-    "title": "7. ¿Actualmente trabajas?",
+    "title": "5. 5. Situación laboral o actividades fuera de clases",
     "type": "radio",
     "options": [
-      "No trabajo actualmente",
-      "Trabajo en algo no relacionado con tecnología a tiempo parcial",
-      "Trabajo en algo no relacionado con tecnología a tiempo completo",
-      "Trabajo en tecnología / software a tiempo parcial",
-      "Trabajo en tecnología / software a tiempo completo o freelance formal",
-      "Realizo prácticas profesionales / Estadía laboral"
-    ]
-  },
-  {
-    "step": 1,
-    "module": "Módulo 1: Registro y Contexto Personal",
-    "key": "horas_trabajo",
-    "title": "8. Si trabajas, ¿cuántas horas aproximadas dedicas al trabajo por semana?",
-    "type": "select",
-    "options": [
-      "No aplica / No trabajo",
-      "Menos de 10 horas semanales",
-      "10 a 20 horas semanales",
-      "21 a 30 horas semanales",
-      "31 a 40 horas semanales",
-      "Más de 40 horas semanales"
+      "Trabajo o realizo prácticas en el área de tecnología / desarrollo",
+      "He tenido trabajos o proyectos previos en tecnología, pero actualmente no",
+      "Realizo proyectos personales o independientes de programación",
+      "Me dedico exclusivamente a la carrera por ahora",
+      "Prefiero no responder"
     ]
   },
   {
     "step": 2,
-    "module": "Módulo 2: Trayectoria Académica y Condiciones de Estudio",
+    "module": "Módulo 2: Condiciones de Estudio y Experiencia en la Carrera",
     "key": "rec_pc",
-    "title": "9. Disponibilidad y calidad de tus recursos de estudio y desarrollo - Computadora propia con capacidad para programar y compilar",
+    "title": "6. 6. Acceso y condiciones de equipo de cómputo para programar",
     "type": "radio",
     "options": [
-      "Siempre / Excelente",
-      "Casi siempre / Buena",
-      "A veces / Regular",
-      "Rara vez / Deficiente",
-      "Nunca / No dispongo"
+      "Cuento con laptop o computadora propia con buen rendimiento para programar",
+      "Cuento con computadora propia pero con limitaciones de rendimiento o almacenamiento",
+      "Dependo de equipos prestados o compartidos",
+      "Enfrento frecuentes problemas de equipo o conectividad para realizar mis prácticas"
     ]
   },
   {
     "step": 2,
-    "module": "Módulo 2: Trayectoria Académica y Condiciones de Estudio",
-    "key": "rec_internet",
-    "title": "9. Disponibilidad y calidad de tus recursos de estudio y desarrollo - Conexión a internet estable en tu domicilio de estudio",
+    "module": "Módulo 2: Condiciones de Estudio y Experiencia en la Carrera",
+    "key": "satisfaccion_practica",
+    "title": "7. 7. Oportunidades de práctica real en las materias de la carrera",
     "type": "radio",
     "options": [
-      "Siempre / Excelente",
-      "Casi siempre / Buena",
-      "A veces / Regular",
-      "Rara vez / Deficiente",
-      "Nunca / No dispongo"
+      "1 - Casi ninguna oportunidad práctica (predominio teórico)",
+      "2 - Pocas oportunidades de práctica aplicada",
+      "3 - Oportunidades moderadas o intermedias",
+      "4 - Buenas oportunidades prácticas en la mayoría de materias",
+      "5 - Amplias oportunidades de desarrollo y proyectos prácticos",
+      "No he tenido oportunidad suficiente de evaluarlo"
     ]
   },
   {
     "step": 2,
-    "module": "Módulo 2: Trayectoria Académica y Condiciones de Estudio",
-    "key": "rec_espacio",
-    "title": "9. Disponibilidad y calidad de tus recursos de estudio y desarrollo - Espacio físico adecuado, iluminado y libre de distracciones para estudiar",
-    "type": "radio",
-    "options": [
-      "Siempre / Excelente",
-      "Casi siempre / Buena",
-      "A veces / Regular",
-      "Rara vez / Deficiente",
-      "Nunca / No dispongo"
-    ]
-  },
-  {
-    "step": 2,
-    "module": "Módulo 2: Trayectoria Académica y Condiciones de Estudio",
-    "key": "tiempo_traslado",
-    "title": "10. Tiempo aproximado de traslado diario de ida y vuelta al ITCM",
-    "type": "radio",
-    "options": [
-      "Menos de 30 minutos",
-      "Entre 30 y 60 minutos",
-      "Entre 1 y 2 horas",
-      "Más de 2 horas al día"
-    ]
-  },
-  {
-    "step": 2,
-    "module": "Módulo 2: Trayectoria Académica y Condiciones de Estudio",
-    "key": "cuidado_familia",
-    "title": "11. ¿Tienes responsabilidades familiares o de cuidado que limiten tu tiempo extracurricular?",
-    "type": "radio",
-    "options": [
-      "Sí, de manera significativa (afecta ampliamente mi disponibilidad)",
-      "Sí, de manera moderada",
-      "No / Mínimo impacto en mi tiempo libre"
-    ]
-  },
-  {
-    "step": 2,
-    "module": "Módulo 2: Trayectoria Académica y Condiciones de Estudio",
-    "key": "sistema_operativo",
-    "title": "12. Sistema operativo principal que utilizas para desarrollar y estudiar",
-    "type": "radio",
-    "options": [
-      "Windows",
-      "GNU/Linux (Ubuntu, Fedora, Arch, etc.)",
-      "macOS",
-      "Entorno dual (Windows + Linux)",
-      "No cuento con equipo propio / Dependo de equipos de la institución",
-      "Otro"
-    ]
-  },
-  {
-    "step": 2,
-    "module": "Módulo 2: Trayectoria Académica y Condiciones de Estudio",
-    "key": "horas_autonomas",
-    "title": "13. Horas aproximadas a la semana que dedicas al estudio autónomo y programación fuera de clases",
-    "type": "radio",
-    "options": [
-      "Menos de 3 horas semanales",
-      "Entre 3 y 6 horas semanales",
-      "Entre 7 y 12 horas semanales",
-      "Más de 12 horas semanales"
-    ]
-  },
-  {
-    "step": 3,
-    "module": "Módulo 3: Experiencia en la Carrera y Aprendizaje",
+    "module": "Módulo 2: Condiciones de Estudio y Experiencia en la Carrera",
     "key": "materias_dificultad",
-    "title": "14. ¿Cuáles áreas curriculares han presentado mayor dificultad o rezago en tu avance?",
+    "title": "8. 8. Áreas o asignaturas con mayor reto o dificultad en tu aprendizaje",
     "type": "checkbox",
     "options": [
-      "Programación básica y Fundamentos de POO",
-      "Estructuras de Datos y Algoritmos avanzados",
-      "Matemáticas discretas, Cálculo y Física",
-      "Arquitectura de computadoras y Sistemas Operativos",
-      "Bases de Datos (modelado, consultas complejas, administración)",
-      "Redes y Conectividad (enrutamiento, configuración física/lógica)",
-      "Ingeniería de Software y Gestión de Proyectos",
-      "Ninguna en particular / Mi avance ha sido regular"
+      "Programación básica y Orientada a Objetos (Fundamentos, POO)",
+      "Estructuras de Datos y Algoritmos",
+      "Matemáticas y Lógica (Discretas, Cálculo, Álgebra)",
+      "Redes, Conectividad y Telecomunicaciones",
+      "Sistemas Operativos y Arquitectura de Computadoras",
+      "Bases de Datos (Modelado, SQL, NoSQL)",
+      "Ninguna en particular / Buen desempeño general"
     ]
   },
   {
-    "step": 3,
-    "module": "Módulo 3: Experiencia en la Carrera y Aprendizaje",
-    "key": "factores_dificultad",
-    "title": "15. Factores principales que consideras dificultan tu aprendizaje en la carrera",
+    "step": 2,
+    "module": "Módulo 2: Condiciones de Estudio y Experiencia en la Carrera",
+    "key": "experiencias_proyectos",
+    "title": "9. 9. Tipos de proyectos de software en los que has participado en la carrera",
     "type": "checkbox",
     "options": [
-      "Desfase o desactualización en temarios respecto a la industria moderna",
-      "Metodologías de enseñanza excesivamente teóricas o poco prácticas",
-      "Falta de laboratorios funcionales o equipo suficiente en clases",
-      "Falta de tiempo personal por trabajo, familia o traslados largos",
-      "Deficiencias o falta de bases previas en lógica matemática y razonamiento",
-      "Falta de acompañamiento o asesorías extracurriculares oportunas",
-      "Ninguno / Considero que el proceso de aprendizaje es fluido",
-      "Otro"
+      "Proyectos individuales de fin de materia",
+      "Proyectos en equipo con división de roles",
+      "Proyectos con usuarios o clientes reales fuera del aula",
+      "Proyectos donde tuve que leer o modificar código escrito por otra persona",
+      "Proyectos con entregas continuas, control de versiones o revisiones formales",
+      "Ninguna de las anteriores / Aún no he realizado proyectos de este tipo"
     ]
   },
   {
-    "step": 3,
-    "module": "Módulo 3: Experiencia en la Carrera y Aprendizaje",
-    "key": "oportunidades_proyectos",
-    "title": "16. ¿Consideras que la carrera te brinda suficientes oportunidades de desarrollo de proyectos reales?",
-    "type": "radio",
-    "options": [
-      "Totalmente suficientes",
-      "Suficientes",
-      "Apenas suficientes / Muy limitadas",
-      "Insuficientes",
-      "Totalmente insuficientes / Nulas"
-    ]
-  },
-  {
-    "step": 3,
-    "module": "Módulo 3: Experiencia en la Carrera y Aprendizaje",
+    "step": 2,
+    "module": "Módulo 2: Condiciones de Estudio y Experiencia en la Carrera",
     "key": "eq_coordinacion",
-    "title": "17. Experiencia y dinámica de trabajo colaborativo en equipo - Coordinación y comunicación entre integrantes del equipo",
+    "title": "10. Coordinación efectiva y distribución equitativa de tareas",
     "type": "radio",
     "options": [
-      "Excelente",
-      "Buena",
-      "Regular",
-      "Deficiente",
-      "Muy deficiente"
+      "Nunca",
+      "Rara vez / Una vez",
+      "Algunas veces",
+      "Frecuentemente",
+      "No aplica"
+    ]
+  },
+  {
+    "step": 2,
+    "module": "Módulo 2: Condiciones de Estudio y Experiencia en la Carrera",
+    "key": "eq_codigo_ajeno",
+    "title": "10. Integrar o entender módulos de código hechos por compañeros",
+    "type": "radio",
+    "options": [
+      "Nunca",
+      "Rara vez / Una vez",
+      "Algunas veces",
+      "Frecuentemente",
+      "No aplica"
+    ]
+  },
+  {
+    "step": 2,
+    "module": "Módulo 2: Condiciones de Estudio y Experiencia en la Carrera",
+    "key": "eq_git_compartido",
+    "title": "10. Uso de Git o GitHub compartido para fusionar trabajo en equipo",
+    "type": "radio",
+    "options": [
+      "Nunca",
+      "Rara vez / Una vez",
+      "Algunas veces",
+      "Frecuentemente",
+      "No aplica"
+    ]
+  },
+  {
+    "step": 2,
+    "module": "Módulo 2: Condiciones de Estudio y Experiencia en la Carrera",
+    "key": "eq_revision_pares",
+    "title": "10. Revisión entre compañeros (code review) antes de entregar",
+    "type": "radio",
+    "options": [
+      "Nunca",
+      "Rara vez / Una vez",
+      "Algunas veces",
+      "Frecuentemente",
+      "No aplica"
+    ]
+  },
+  {
+    "step": 2,
+    "module": "Módulo 2: Condiciones de Estudio y Experiencia en la Carrera",
+    "key": "eq_conflictos",
+    "title": "10. Resolución adecuada de desacuerdos técnicos o retrasos",
+    "type": "radio",
+    "options": [
+      "Nunca",
+      "Rara vez / Una vez",
+      "Algunas veces",
+      "Frecuentemente",
+      "No aplica"
     ]
   },
   {
     "step": 3,
-    "module": "Módulo 3: Experiencia en la Carrera y Aprendizaje",
-    "key": "eq_distribucion",
-    "title": "17. Experiencia y dinámica de trabajo colaborativo en equipo - Distribución equitativa de carga y esfuerzo técnico",
+    "module": "Módulo 3: Habilidades Técnicas y Aprendizaje Fuera del Aula",
+    "key": "dom_programacion",
+    "title": "11. Lenguajes de programación (Java, Python, C++, C#, JS, etc.)",
     "type": "radio",
     "options": [
-      "Excelente",
-      "Buena",
-      "Regular",
-      "Deficiente",
-      "Muy deficiente"
+      "No la conozco",
+      "Casi no la he usado",
+      "Tareas básicas guiadas",
+      "Uso autónomo en proyectos",
+      "Sin oportunidad"
     ]
   },
   {
     "step": 3,
-    "module": "Módulo 3: Experiencia en la Carrera y Aprendizaje",
-    "key": "eq_herramientas",
-    "title": "17. Experiencia y dinámica de trabajo colaborativo en equipo - Uso de herramientas formales de colaboración (Git, GitHub, Trello, Jira)",
-    "type": "radio",
-    "options": [
-      "Excelente",
-      "Buena",
-      "Regular",
-      "Deficiente",
-      "Muy deficiente"
-    ]
-  },
-  {
-    "step": 3,
-    "module": "Módulo 3: Experiencia en la Carrera y Aprendizaje",
-    "key": "fortalezas_itcm",
-    "title": "18. Principales fortalezas que reconoces en la formación que ofrece el ITCM",
-    "type": "textarea",
-    "options": []
-  },
-  {
-    "step": 4,
-    "module": "Módulo 4: Competencias Técnicas y Preparación Laboral",
+    "module": "Módulo 3: Habilidades Técnicas y Aprendizaje Fuera del Aula",
     "key": "dom_git",
-    "title": "19. Nivel percibido de dominio en tecnologías clave - Control de versiones (Git / GitHub / GitLab)",
+    "title": "11. Control de versiones con Git y GitHub (commits, ramas, PRs)",
     "type": "radio",
     "options": [
-      "Ninguno / Desconocido",
-      "Básico / Académico elemental",
-      "Intermedio / Proyectos funcionales",
-      "Avanzado / Nivel producción laboral"
+      "No la conozco",
+      "Casi no la he usado",
+      "Tareas básicas guiadas",
+      "Uso autónomo en proyectos",
+      "Sin oportunidad"
+    ]
+  },
+  {
+    "step": 3,
+    "module": "Módulo 3: Habilidades Técnicas y Aprendizaje Fuera del Aula",
+    "key": "dom_debugging",
+    "title": "11. Depuración de errores (debugging) y lectura de logs",
+    "type": "radio",
+    "options": [
+      "No la conozco",
+      "Casi no la he usado",
+      "Tareas básicas guiadas",
+      "Uso autónomo en proyectos",
+      "Sin oportunidad"
+    ]
+  },
+  {
+    "step": 3,
+    "module": "Módulo 3: Habilidades Técnicas y Aprendizaje Fuera del Aula",
+    "key": "dom_testing",
+    "title": "11. Pruebas unitarias o aseguramiento de calidad (Testing/QA)",
+    "type": "radio",
+    "options": [
+      "No la conozco",
+      "Casi no la he usado",
+      "Tareas básicas guiadas",
+      "Uso autónomo en proyectos",
+      "Sin oportunidad"
+    ]
+  },
+  {
+    "step": 3,
+    "module": "Módulo 3: Habilidades Técnicas y Aprendizaje Fuera del Aula",
+    "key": "dom_linux",
+    "title": "11. Uso de terminal, línea de comandos y entornos Linux",
+    "type": "radio",
+    "options": [
+      "No la conozco",
+      "Casi no la he usado",
+      "Tareas básicas guiadas",
+      "Uso autónomo en proyectos",
+      "Sin oportunidad"
+    ]
+  },
+  {
+    "step": 3,
+    "module": "Módulo 3: Habilidades Técnicas y Aprendizaje Fuera del Aula",
+    "key": "dom_db_apis",
+    "title": "11. Conexión de bases de datos y consumo de APIs REST",
+    "type": "radio",
+    "options": [
+      "No la conozco",
+      "Casi no la he usado",
+      "Tareas básicas guiadas",
+      "Uso autónomo en proyectos",
+      "Sin oportunidad"
+    ]
+  },
+  {
+    "step": 3,
+    "module": "Módulo 3: Habilidades Técnicas y Aprendizaje Fuera del Aula",
+    "key": "dom_docs",
+    "title": "11. Documentación técnica y lectura de especificaciones oficiales",
+    "type": "radio",
+    "options": [
+      "No la conozco",
+      "Casi no la he usado",
+      "Tareas básicas guiadas",
+      "Uso autónomo en proyectos",
+      "Sin oportunidad"
+    ]
+  },
+  {
+    "step": 3,
+    "module": "Módulo 3: Habilidades Técnicas y Aprendizaje Fuera del Aula",
+    "key": "dom_aprender_tech",
+    "title": "11. Aprender de forma autónoma una nueva librería o tecnología",
+    "type": "radio",
+    "options": [
+      "No la conozco",
+      "Casi no la he usado",
+      "Tareas básicas guiadas",
+      "Uso autónomo en proyectos",
+      "Sin oportunidad"
+    ]
+  },
+  {
+    "step": 3,
+    "module": "Módulo 3: Habilidades Técnicas y Aprendizaje Fuera del Aula",
+    "key": "fuente_aprendizaje",
+    "title": "12. 12. ¿De dónde proviene principalmente lo que sabes sobre herramientas técnicas?",
+    "type": "radio",
+    "options": [
+      "Principalmente de las materias y clases de la carrera",
+      "Talleres, asesorías o actividades organizadas en el campus / capítulos estudiantiles",
+      "Aprendizaje autónomo por cuenta propia (documentación, videos, tutoriales)",
+      "Intercambio de conocimientos con compañeros y amigos",
+      "Cursos externos o plataformas de aprendizaje en línea",
+      "Experiencia en trabajos, prácticas profesionales o proyectos freelance",
+      "Aún no domino suficientes herramientas prácticas"
+    ]
+  },
+  {
+    "step": 3,
+    "module": "Módulo 3: Habilidades Técnicas y Aprendizaje Fuera del Aula",
+    "key": "habilidades_fuera_aula",
+    "title": "13. 13. Habilidades técnicas que sentiste mayor necesidad de aprender fuera del aula",
+    "type": "checkbox",
+    "options": [
+      "Lenguajes y frameworks demandados en la industria",
+      "Control de versiones con Git y flujos colaborativos en GitHub",
+      "Depuración de errores (debugging) y solución autónoma de fallos",
+      "Pruebas automatizadas (testing) y calidad de código",
+      "Terminal, entornos Linux y despliegue básico",
+      "Conexión a bases de datos y desarrollo de APIs",
+      "Lectura de documentación técnica e investigación en inglés",
+      "Metodologías de trabajo profesional y arquitectura de software",
+      "Ninguna en particular"
+    ]
+  },
+  {
+    "step": 3,
+    "module": "Módulo 3: Habilidades Técnicas y Aprendizaje Fuera del Aula",
+    "key": "ing_tecnico",
+    "title": "14. 14. Nivel de dominio del inglés técnico aplicado a la computación",
+    "type": "radio",
+    "options": [
+      "Leo y comprendo documentación técnica y errores sin dificultad",
+      "Nivel básico / intermedio (me apoyo frecuentemente con traductor)",
+      "Comprendo lectura y puedo redactar o comunicarme técnicamente en inglés",
+      "Mi nivel de inglés técnico es muy limitado o nulo"
+    ]
+  },
+  {
+    "step": 3,
+    "module": "Módulo 3: Habilidades Técnicas y Aprendizaje Fuera del Aula",
+    "key": "conf_explicar_proyecto",
+    "title": "15. Explicar técnicamente la arquitectura de un proyecto propio",
+    "type": "radio",
+    "options": [
+      "Nada preparado",
+      "Poco preparado",
+      "Algo preparado",
+      "Bien preparado",
+      "Muy preparado"
+    ]
+  },
+  {
+    "step": 3,
+    "module": "Módulo 3: Habilidades Técnicas y Aprendizaje Fuera del Aula",
+    "key": "conf_codigo_existente",
+    "title": "15. Integrarte a un proyecto existente y entender código ajeno",
+    "type": "radio",
+    "options": [
+      "Nada preparado",
+      "Poco preparado",
+      "Algo preparado",
+      "Bien preparado",
+      "Muy preparado"
+    ]
+  },
+  {
+    "step": 3,
+    "module": "Módulo 3: Habilidades Técnicas y Aprendizaje Fuera del Aula",
+    "key": "conf_aprender_tech",
+    "title": "15. Aprender una nueva tecnología requerida en 2 a 3 semanas",
+    "type": "radio",
+    "options": [
+      "Nada preparado",
+      "Poco preparado",
+      "Algo preparado",
+      "Bien preparado",
+      "Muy preparado"
+    ]
+  },
+  {
+    "step": 3,
+    "module": "Módulo 3: Habilidades Técnicas y Aprendizaje Fuera del Aula",
+    "key": "conf_trabajo_equipo",
+    "title": "15. Colaborar técnicamente en un equipo multidisciplinario",
+    "type": "radio",
+    "options": [
+      "Nada preparado",
+      "Poco preparado",
+      "Algo preparado",
+      "Bien preparado",
+      "Muy preparado"
+    ]
+  },
+  {
+    "step": 3,
+    "module": "Módulo 3: Habilidades Técnicas y Aprendizaje Fuera del Aula",
+    "key": "conf_entrevista_tecnica",
+    "title": "15. Resolver problemas o preguntas en una entrevista técnica",
+    "type": "radio",
+    "options": [
+      "Nada preparado",
+      "Poco preparado",
+      "Algo preparado",
+      "Bien preparado",
+      "Muy preparado"
     ]
   },
   {
     "step": 4,
-    "module": "Módulo 4: Competencias Técnicas y Preparación Laboral",
-    "key": "dom_db",
-    "title": "19. Nivel percibido de dominio en tecnologías clave - Bases de Datos SQL (PostgreSQL, MySQL) y NoSQL",
+    "module": "Módulo 4: Preparación Profesional, IA y Proyección Tecnológica",
+    "key": "preparacion_laboral_general",
+    "title": "16. 16. ¿Qué tan preparado/a te sientes para integrarte al campo laboral en TI?",
     "type": "radio",
     "options": [
-      "Ninguno / Desconocido",
-      "Básico / Académico elemental",
-      "Intermedio / Proyectos funcionales",
-      "Avanzado / Nivel producción laboral"
+      "1 - Muy poco preparado/a",
+      "2 - Con preparación básica pero muchas dudas prácticas",
+      "3 - Nivel intermedio (con bases pero requiero mentoría)",
+      "4 - Bien preparado/a para iniciar con éxito",
+      "5 - Totalmente preparado/a y competitivo/a",
+      "Aún es muy temprano en mi carrera para evaluarlo"
     ]
   },
   {
     "step": 4,
-    "module": "Módulo 4: Competencias Técnicas y Preparación Laboral",
-    "key": "dom_web",
-    "title": "19. Nivel percibido de dominio en tecnologías clave - Desarrollo Web (Frontend: React/Vue/HTML/CSS, Backend: Node/Python/Java)",
+    "module": "Módulo 4: Preparación Profesional, IA y Proyección Tecnológica",
+    "key": "experiencia_entrevistas",
+    "title": "17. 17. Experiencia previa en procesos de selección o entrevistas técnicas",
     "type": "radio",
     "options": [
-      "Ninguno / Desconocido",
-      "Básico / Académico elemental",
-      "Intermedio / Proyectos funcionales",
-      "Avanzado / Nivel producción laboral"
+      "Sí, en procesos reales de trabajo, prácticas o becas",
+      "Sí, en simulaciones académicas, torneos o hackathones",
+      "Sí, tanto en procesos reales como en simulaciones",
+      "Todavía no he tenido la experiencia",
+      "No estoy familiarizado/a con cómo son ese tipo de evaluaciones"
     ]
   },
   {
     "step": 4,
-    "module": "Módulo 4: Competencias Técnicas y Preparación Laboral",
-    "key": "dom_movil",
-    "title": "19. Nivel percibido de dominio en tecnologías clave - Desarrollo Móvil (Flutter, React Native, Android nativo)",
-    "type": "radio",
-    "options": [
-      "Ninguno / Desconocido",
-      "Básico / Académico elemental",
-      "Intermedio / Proyectos funcionales",
-      "Avanzado / Nivel producción laboral"
-    ]
-  },
-  {
-    "step": 4,
-    "module": "Módulo 4: Competencias Técnicas y Preparación Laboral",
-    "key": "dom_cloud",
-    "title": "19. Nivel percibido de dominio en tecnologías clave - Computación en la Nube (AWS, GCP, Azure)",
-    "type": "radio",
-    "options": [
-      "Ninguno / Desconocido",
-      "Básico / Académico elemental",
-      "Intermedio / Proyectos funcionales",
-      "Avanzado / Nivel producción laboral"
-    ]
-  },
-  {
-    "step": 4,
-    "module": "Módulo 4: Competencias Técnicas y Preparación Laboral",
-    "key": "dom_devops",
-    "title": "19. Nivel percibido de dominio en tecnologías clave - DevOps, Contenedores y CI/CD (Docker, Linux Server)",
-    "type": "radio",
-    "options": [
-      "Ninguno / Desconocido",
-      "Básico / Académico elemental",
-      "Intermedio / Proyectos funcionales",
-      "Avanzado / Nivel producción laboral"
-    ]
-  },
-  {
-    "step": 4,
-    "module": "Módulo 4: Competencias Técnicas y Preparación Laboral",
-    "key": "dom_sec",
-    "title": "19. Nivel percibido de dominio en tecnologías clave - Ciberseguridad y Principios de Desarrollo Seguro",
-    "type": "radio",
-    "options": [
-      "Ninguno / Desconocido",
-      "Básico / Académico elemental",
-      "Intermedio / Proyectos funcionales",
-      "Avanzado / Nivel producción laboral"
-    ]
-  },
-  {
-    "step": 4,
-    "module": "Módulo 4: Competencias Técnicas y Preparación Laboral",
-    "key": "dom_ia",
-    "title": "19. Nivel percibido de dominio en tecnologías clave - Inteligencia Artificial y Machine Learning Aplicado",
-    "type": "radio",
-    "options": [
-      "Ninguno / Desconocido",
-      "Básico / Académico elemental",
-      "Intermedio / Proyectos funcionales",
-      "Avanzado / Nivel producción laboral"
-    ]
-  },
-  {
-    "step": 4,
-    "module": "Módulo 4: Competencias Técnicas y Preparación Laboral",
-    "key": "fnt_lenguajes",
-    "title": "20. Principal fuente donde has adquirido tus conocimientos técnicos prácticos - Lenguajes y frameworks de programación modernos",
-    "type": "radio",
-    "options": [
-      "Clases escolares obligatorias",
-      "Cursos externos / Bootcamps / Certificaciones",
-      "Autoaprendizaje autodidacta (YouTube, documentación, libros)",
-      "Experiencia laboral formal o proyectos freelance personales"
-    ]
-  },
-  {
-    "step": 4,
-    "module": "Módulo 4: Competencias Técnicas y Preparación Laboral",
-    "key": "fnt_arquitectura",
-    "title": "20. Principal fuente donde has adquirido tus conocimientos técnicos prácticos - Buenas prácticas de arquitectura, patrones y código limpio",
-    "type": "radio",
-    "options": [
-      "Clases escolares obligatorias",
-      "Cursos externos / Bootcamps / Certificaciones",
-      "Autoaprendizaje autodidacta (YouTube, documentación, libros)",
-      "Experiencia laboral formal o proyectos freelance personales"
-    ]
-  },
-  {
-    "step": 4,
-    "module": "Módulo 4: Competencias Técnicas y Preparación Laboral",
-    "key": "fnt_despliegue",
-    "title": "20. Principal fuente donde has adquirido tus conocimientos técnicos prácticos - Herramientas de despliegue, servidores y nube",
-    "type": "radio",
-    "options": [
-      "Clases escolares obligatorias",
-      "Cursos externos / Bootcamps / Certificaciones",
-      "Autoaprendizaje autodidacta (YouTube, documentación, libros)",
-      "Experiencia laboral formal o proyectos freelance personales"
-    ]
-  },
-  {
-    "step": 4,
-    "module": "Módulo 4: Competencias Técnicas y Preparación Laboral",
-    "key": "experiencia_laboral_ti",
-    "title": "21. ¿Has tenido experiencia laboral o profesional en el área de TI?",
-    "type": "radio",
-    "options": [
-      "Sí, cuento con empleo formal activo o previo en TI",
-      "Sí, mediante proyectos freelance o desarrollo por encargo",
-      "Sí, a través de servicio social o prácticas en áreas de TI",
-      "No, aún no cuento con experiencia en el sector"
-    ]
-  },
-  {
-    "step": 4,
-    "module": "Módulo 4: Competencias Técnicas y Preparación Laboral",
+    "module": "Módulo 4: Preparación Profesional, IA y Proyección Tecnológica",
     "key": "portafolio_github",
-    "title": "22. ¿Tienes actualmente un portafolio técnico activo o repositorio público con proyectos?",
+    "title": "18. 18. Estado actual de tu perfil de GitHub o portafolio de proyectos",
     "type": "radio",
     "options": [
-      "Sí, estructurado y actualizado con proyectos personales o de equipo",
-      "Sí, pero tiene pocos proyectos o requiere orden y documentación",
-      "No, pero tengo interés prioritario en construirlo",
-      "No tengo y requiero orientación para empezar desde cero"
+      "Cuento con un perfil activo con proyectos documentados y actualizados",
+      "Tengo cuenta de GitHub pero con pocos proyectos, desorganizados o desactualizados",
+      "No tengo portafolio ni GitHub activo, pero me gustaría crearlo y aprender a mantenerlo",
+      "No sé cómo empezar a construir un portafolio profesional de software"
     ]
   },
   {
     "step": 4,
-    "module": "Módulo 4: Competencias Técnicas y Preparación Laboral",
-    "key": "ing_lectura",
-    "title": "23. Dominio del idioma inglés para el ámbito profesional de TI - Lectura y comprensión fluida de documentación técnica oficial",
+    "module": "Módulo 4: Preparación Profesional, IA y Proyección Tecnológica",
+    "key": "uso_ia",
+    "title": "19. 19. Uso de herramientas de Inteligencia Artificial para programar",
     "type": "radio",
     "options": [
-      "Avanzado / Fluido",
-      "Intermedio / Funcional",
-      "Básico / Con apoyo de traductor",
-      "Nulo / Muy limitado"
+      "No las utilizo para programar o estudiar",
+      "Principalmente para aclarar dudas teóricas o buscar ideas iniciales",
+      "Genero código y siempre lo reviso, entiendo y pruebo antes de usarlo",
+      "Las utilizo con mucha frecuencia apoyándome también en la documentación oficial",
+      "A veces copio sugerencias directamente sin terminar de comprender todo su funcionamiento"
     ]
   },
   {
     "step": 4,
-    "module": "Módulo 4: Competencias Técnicas y Preparación Laboral",
-    "key": "ing_comunicacion",
-    "title": "23. Dominio del idioma inglés para el ámbito profesional de TI - Comunicación verbal / Capacidad de sostener entrevistas de trabajo",
-    "type": "radio",
-    "options": [
-      "Avanzado / Fluido",
-      "Intermedio / Funcional",
-      "Básico / Con apoyo de traductor",
-      "Nulo / Muy limitado"
-    ]
-  },
-  {
-    "step": 4,
-    "module": "Módulo 4: Competencias Técnicas y Preparación Laboral",
-    "key": "rec_algoritmos",
-    "title": "24. Preparación para procesos de selección y reclutamiento técnico - Resolución de retos de código y algoritmos en vivo (LeetCode, HackerRank)",
-    "type": "radio",
-    "options": [
-      "Muy preparado / Con práctica",
-      "Moderadamente preparado",
-      "Poco preparado / Inseguro",
-      "Nada preparado / Desconozco la dinámica"
-    ]
-  },
-  {
-    "step": 4,
-    "module": "Módulo 4: Competencias Técnicas y Preparación Laboral",
-    "key": "rec_cv",
-    "title": "24. Preparación para procesos de selección y reclutamiento técnico - Elaboración de CV de alto impacto con métricas y estándares de la industria",
-    "type": "radio",
-    "options": [
-      "Muy preparado / Con práctica",
-      "Moderadamente preparado",
-      "Poco preparado / Inseguro",
-      "Nada preparado / Desconozco la dinámica"
-    ]
-  },
-  {
-    "step": 4,
-    "module": "Módulo 4: Competencias Técnicas y Preparación Laboral",
-    "key": "rec_entrevistas",
-    "title": "24. Preparación para procesos de selección y reclutamiento técnico - Entrevistas técnicas de arquitectura y conductuales (STAR method)",
-    "type": "radio",
-    "options": [
-      "Muy preparado / Con práctica",
-      "Moderadamente preparado",
-      "Poco preparado / Inseguro",
-      "Nada preparado / Desconozco la dinámica"
-    ]
-  },
-  {
-    "step": 4,
-    "module": "Módulo 4: Competencias Técnicas y Preparación Laboral",
-    "key": "necesidad_laboral_urgente",
-    "title": "25. ¿Cuál consideras que es la necesidad más urgente en tu preparación para ingresar al mercado laboral?",
-    "type": "textarea",
-    "options": []
-  },
-  {
-    "step": 5,
-    "module": "Módulo 5: Inteligencia Artificial en la Formación Académica",
-    "key": "frecuencia_ia",
-    "title": "26. ¿Con qué frecuencia utilizas herramientas de Inteligencia Artificial en tus estudios y código?",
-    "type": "radio",
-    "options": [
-      "A diario / Prácticamente en cada sesión de trabajo",
-      "Varias veces por semana",
-      "Ocasionalmente / Pocas veces al mes",
-      "Rara vez o nunca"
-    ]
-  },
-  {
-    "step": 5,
-    "module": "Módulo 5: Inteligencia Artificial en la Formación Académica",
-    "key": "usos_ia",
-    "title": "27. Principales propósitos con los que utilizas asistentes de Inteligencia Artificial",
-    "type": "checkbox",
-    "options": [
-      "Explicación didáctica y comprensión de conceptos teóricos o matemáticos",
-      "Detección y solución de errores de sintaxis o bugs (debugging)",
-      "Generación directa de fragmentos o funciones completas de código",
-      "Optimización, limpieza y refactorización de código propio",
-      "Redacción de reportes, documentación técnica y síntesis",
-      "No utilizo herramientas de IA"
-    ]
-  },
-  {
-    "step": 5,
-    "module": "Módulo 5: Inteligencia Artificial en la Formación Académica",
-    "key": "ia_inspeccion",
-    "title": "28. Prácticas de verificación y pensamiento crítico al emplear IA - Leo y analizo minuciosamente cada línea antes de integrarla a mi proyecto",
-    "type": "radio",
-    "options": [
-      "Siempre",
-      "Casi siempre",
-      "A veces",
-      "Rara vez",
-      "Nunca"
-    ]
-  },
-  {
-    "step": 5,
-    "module": "Módulo 5: Inteligencia Artificial en la Formación Académica",
-    "key": "ia_pruebas",
-    "title": "28. Prácticas de verificación y pensamiento crítico al emplear IA - Escribo pruebas locales o verifico casos borde para confirmar que funciona",
-    "type": "radio",
-    "options": [
-      "Siempre",
-      "Casi siempre",
-      "A veces",
-      "Rara vez",
-      "Nunca"
-    ]
-  },
-  {
-    "step": 5,
-    "module": "Módulo 5: Inteligencia Artificial en la Formación Académica",
-    "key": "ia_copia_directa",
-    "title": "28. Prácticas de verificación y pensamiento crítico al emplear IA - Copio y pego la respuesta directamente sin verificar si compila a la primera",
-    "type": "radio",
-    "options": [
-      "Siempre",
-      "Casi siempre",
-      "A veces",
-      "Rara vez",
-      "Nunca"
-    ]
-  },
-  {
-    "step": 6,
-    "module": "Módulo 6: Especialidades, Residencia Profesional e Innovación",
-    "key": "opinion_especialidad",
-    "title": "29. ¿Qué opinas sobre la oferta actual de materias de especialidad en Sistemas del ITCM?",
-    "type": "radio",
-    "options": [
-      "Muy actualizada y estrechamente alineada con la demanda del mercado",
-      "Moderadamente actualizada, pero requiere renovar contenidos clave",
-      "Desactualizada frente a los estándares tecnológicos contemporáneos",
-      "Aún no conozco a profundidad la oferta de especialidades"
-    ]
-  },
-  {
-    "step": 6,
-    "module": "Módulo 6: Especialidades, Residencia Profesional e Innovación",
-    "key": "reto_residencia",
-    "title": "30. ¿Cuál consideras que es el mayor reto al buscar residencia profesional?",
-    "type": "radio",
-    "options": [
-      "Escasez de empresas locales de desarrollo de software en la zona conurbada",
-      "Requisitos técnicos elevados que exceden lo enseñado en las aulas",
-      "Nivel de inglés técnico requerido para vacantes remotas o trasnacionales",
-      "Falta de convenios institucionales activos con empresas tecnológicas",
-      "Procesos de selección largos y complejos",
-      "Aún no curso los semestres de residencia / No lo he contemplado"
-    ]
-  },
-  {
-    "step": 6,
-    "module": "Módulo 6: Especialidades, Residencia Profesional e Innovación",
-    "key": "participacion_innovatecnm",
-    "title": "31. ¿Conoces o has participado en eventos como InnovaTecNM o Hackathones?",
-    "type": "radio",
-    "options": [
-      "He participado activamente en uno o más eventos",
-      "Los conozco, pero no he participado por falta de equipo o tiempo",
-      "Los conozco, pero no me siento con la preparación técnica suficiente para competir",
-      "No los conozco / No se difunden con claridad en la comunidad"
-    ]
-  },
-  {
-    "step": 6,
-    "module": "Módulo 6: Especialidades, Residencia Profesional e Innovación",
-    "key": "rol_aspirado",
-    "title": "32. ¿Qué rol profesional aspiras desempeñar prioritariamente al graduarte?",
-    "type": "radio",
-    "options": [
-      "Desarrollador de Software / Full Stack / Frontend / Backend",
-      "Ingeniero de Datos / Analista de Datos / Data Scientist",
-      "Especialista en Cloud Computing & DevOps",
-      "Especialista en Ciberseguridad / Seguridad Ofensiva o Defensiva",
-      "Administrador de Infraestructura de Redes y Telecomunicaciones",
-      "Project Manager TI / Product Owner / Scrum Master",
-      "Emprendedor / Fundador de startup tecnológica propia",
-      "Investigador / Posgrado académico",
-      "Otro / Aún explorando opciones"
-    ]
-  },
-  {
-    "step": 7,
-    "module": "Módulo 7: Infraestructura, Condiciones Físicas y Bienestar",
-    "key": "lab_rendimiento",
-    "title": "33. Evaluación de la infraestructura de los laboratorios del Departamento de Sistemas - Capacidad y velocidad de cómputo en equipos de laboratorios",
-    "type": "radio",
-    "options": [
-      "Excelente",
-      "Bueno",
-      "Regular",
-      "Deficiente",
-      "No utilizo los laboratorios"
-    ]
-  },
-  {
-    "step": 7,
-    "module": "Módulo 7: Infraestructura, Condiciones Físicas y Bienestar",
-    "key": "lab_red",
-    "title": "33. Evaluación de la infraestructura de los laboratorios del Departamento de Sistemas - Estabilidad y velocidad de red cableada y Wi-Fi en laboratorios",
-    "type": "radio",
-    "options": [
-      "Excelente",
-      "Bueno",
-      "Regular",
-      "Deficiente",
-      "No utilizo los laboratorios"
-    ]
-  },
-  {
-    "step": 7,
-    "module": "Módulo 7: Infraestructura, Condiciones Físicas y Bienestar",
-    "key": "lab_software",
-    "title": "33. Evaluación de la infraestructura de los laboratorios del Departamento de Sistemas - Disponibilidad de entornos de desarrollo, IDEs y licencias actualizadas",
-    "type": "radio",
-    "options": [
-      "Excelente",
-      "Bueno",
-      "Regular",
-      "Deficiente",
-      "No utilizo los laboratorios"
-    ]
-  },
-  {
-    "step": 7,
-    "module": "Módulo 7: Infraestructura, Condiciones Físicas y Bienestar",
-    "key": "lab_ambiente",
-    "title": "33. Evaluación de la infraestructura de los laboratorios del Departamento de Sistemas - Climatización (AC), ergonomía de sillas, iluminación y limpieza",
-    "type": "radio",
-    "options": [
-      "Excelente",
-      "Bueno",
-      "Regular",
-      "Deficiente",
-      "No utilizo los laboratorios"
-    ]
-  },
-  {
-    "step": 7,
-    "module": "Módulo 7: Infraestructura, Condiciones Físicas y Bienestar",
-    "key": "deficiencias_urgentes",
-    "title": "34. Deficiencias físicas o materiales que consideras prioritario atender en el departamento",
-    "type": "checkbox",
-    "options": [
-      "Instalación de contactos eléctricos accesibles para laptops en aulas comunes",
-      "Ampliación de ancho de banda y cobertura de Wi-Fi institucional",
-      "Mantenimiento correctivo urgente a sistemas de aire acondicionado",
-      "Actualización de hardware en computadoras de laboratorios especializados",
-      "Habilitación de cubículos o áreas tranquilas para trabajo colaborativo y estudio",
-      "Ninguna / Las condiciones actuales me parecen adecuadas"
-    ]
-  },
-  {
-    "step": 7,
-    "module": "Módulo 7: Infraestructura, Condiciones Físicas y Bienestar",
-    "key": "salud_visual",
-    "title": "35. Molestias de salud asociadas a las jornadas intensivas de estudio y programación - Fatiga visual, ardor ocular o dolor de cabeza por pantallas",
-    "type": "radio",
-    "options": [
-      "Frecuentemente",
-      "Ocasionalmente",
-      "Rara vez",
-      "Nunca"
-    ]
-  },
-  {
-    "step": 7,
-    "module": "Módulo 7: Infraestructura, Condiciones Físicas y Bienestar",
-    "key": "salud_postural",
-    "title": "35. Molestias de salud asociadas a las jornadas intensivas de estudio y programación - Dolores musculares en cuello, espalda o muñecas (túnel carpiano)",
-    "type": "radio",
-    "options": [
-      "Frecuentemente",
-      "Ocasionalmente",
-      "Rara vez",
-      "Nunca"
-    ]
-  },
-  {
-    "step": 7,
-    "module": "Módulo 7: Infraestructura, Condiciones Físicas y Bienestar",
-    "key": "salud_estres",
-    "title": "35. Molestias de salud asociadas a las jornadas intensivas de estudio y programación - Estrés agudo, sobrecarga mental o trastornos del sueño por entregas",
-    "type": "radio",
-    "options": [
-      "Frecuentemente",
-      "Ocasionalmente",
-      "Rara vez",
-      "Nunca"
-    ]
-  },
-  {
-    "step": 7,
-    "module": "Módulo 7: Infraestructura, Condiciones Físicas y Bienestar",
-    "key": "actividades_integracion",
-    "title": "36. ¿Consideras oportuno organizar actividades de convivencia, recreación y pausas activas?",
-    "type": "radio",
-    "options": [
-      "Totalmente de acuerdo",
-      "De acuerdo",
-      "Indiferente / Neutral",
-      "En desacuerdo",
-      "Totalmente en desacuerdo"
-    ]
-  },
-  {
-    "step": 8,
-    "module": "Módulo 8: Talleres, Eventos y Actividades Técnicas ACM",
-    "key": "interes_talleres",
-    "title": "37. Temas en los que tendrías mayor interés para talleres prácticos extracurriculares (Elige hasta 3)",
-    "type": "checkbox",
-    "options": [
-      "Git & GitHub: Flujos profesionales en equipo y Open Source",
-      "Desarrollo Web Moderno (React, Next.js, Node.js, TypeScript)",
-      "Arquitecturas Cloud y DevOps (AWS, Docker, CI/CD pipelines)",
-      "Ciberseguridad Práctica, Pentesting defensivo y Hardening",
-      "Inteligencia Artificial y Machine Learning aplicado con Python",
-      "Estructuras de Datos y resolución de algoritmos para LeetCode",
-      "Bases de Datos Avanzadas y optimización de consultas SQL/NoSQL",
-      "Desarrollo Móvil Multiplataforma (Flutter / React Native)",
-      "Preparación de CV Tech, LinkedIn y simulación de entrevistas"
-    ]
-  },
-  {
-    "step": 8,
-    "module": "Módulo 8: Talleres, Eventos y Actividades Técnicas ACM",
-    "key": "formato_eventos_masivos",
-    "title": "38. Formato de eventos académicos y tecnológicos masivos que prefieres ver organizados",
-    "type": "radio",
-    "options": [
-      "Hackathón presencial de 24 a 36 horas continuas con retos empresariales y premios",
-      "Congreso o Simposio con conferencistas de la industria tech nacional e internacional",
-      "Torneos de Programación Competitiva y retos algorítmicos por equipos",
-      "Feria de Software y Emprendimiento Estudiantil abierta al sector productivo",
-      "Charlas técnicas breves y periódicas (Tech Talks quincenales / mensuales)"
-    ]
-  },
-  {
-    "step": 8,
-    "module": "Módulo 8: Talleres, Eventos y Actividades Técnicas ACM",
-    "key": "factores_asistencia",
-    "title": "39. Factores determinantes que condicionan tu asistencia a talleres extracurriculares",
-    "type": "checkbox",
-    "options": [
-      "Horario compatible que no se traslape con mis materias curriculares",
-      "Enfoque 100% práctico con construcción de un proyecto funcional para portafolio",
-      "Entrega de constancia de acreditación o valor curricular formal",
-      "Costo gratuito o cuota mínima de recuperación totalmente accesible",
-      "Instructores con experiencia comprobable en la industria o proyectos reales",
-      "Modalidad flexible (presencial con opción a grabación para repaso asíncrono)"
-    ]
-  },
-  {
-    "step": 8,
-    "module": "Módulo 8: Talleres, Eventos y Actividades Técnicas ACM",
-    "key": "iniciativa_acm_w",
-    "title": "40. Interés en apoyar o participar en iniciativas de talento femenino en tecnología (ACM-W)",
-    "type": "radio",
-    "options": [
-      "Muy alto interés / Deseo participar activamente",
-      "Moderado interés / Asistiría a las conferencias y eventos",
-      "Neutral / Me es indistinto",
-      "No considero que sea prioritario"
-    ]
-  },
-  {
-    "step": 9,
-    "module": "Módulo 9: Mentorías, Desarrollo de Software Comunitario y Voluntariado",
-    "key": "interes_mentoria",
-    "title": "41. ¿Estarías interesado en un programa formal de mentorías entre estudiantes y egresados?",
-    "type": "radio",
-    "options": [
-      "Sí, me gustaría recibir mentoría de estudiantes avanzados o egresados en la industria",
-      "Sí, me gustaría ser mentor de estudiantes de semestres iniciales en temas que domino",
-      "Me interesaría en ambas modalidades (recibir orientación y también orientar a otros)",
-      "No por el momento debido a limitaciones de tiempo",
-      "No me interesa"
-    ]
-  },
-  {
-    "step": 9,
-    "module": "Módulo 9: Mentorías, Desarrollo de Software Comunitario y Voluntariado",
+    "module": "Módulo 4: Preparación Profesional, IA y Proyección Tecnológica",
     "key": "desarrollo_software_comunitario",
-    "title": "42. ¿Te interesaría colaborar en el desarrollo de software real de código abierto para el campus?",
+    "title": "20. 20. Proyectos de software de ACM desarrollados para el ITCM",
     "type": "radio",
     "options": [
-      "Sí, con alto entusiasmo / Quiero programar en proyectos colectivos reales",
-      "Sí, siempre que los horarios y entregas sean razonables y coordinadas",
-      "Tal vez más adelante cuando adquiera mayor dominio en programación",
-      "No es de mi interés participar en desarrollo extracurricular"
+      "Es excelente y me encantaría participar como desarrollador/a o colaborador/a",
+      "Me parece una gran iniciativa y la apoyaría aunque no participe directamente como programador/a",
+      "Me resulta indiferente",
+      "Preferiría que ACM se concentre únicamente en conferencias o cursos teóricos"
     ]
   },
   {
-    "step": 9,
-    "module": "Módulo 9: Mentorías, Desarrollo de Software Comunitario y Voluntariado",
+    "step": 5,
+    "module": "Módulo 5: Talleres, Eventos y Participación en ACM ITCM",
+    "key": "interes_talleres",
+    "title": "21. 21. Temas prioritarios para talleres prácticos intensivos (Bootcamps)",
+    "type": "checkbox",
+    "options": [
+      "Git y flujos de trabajo colaborativos en GitHub a nivel profesional",
+      "Desarrollo Web Fullstack moderno (Frontend y Backend con Node/React/Python)",
+      "Entornos Linux, terminal avanzada y Docker / DevOps básico",
+      "Creación y consumo de APIs REST y bases de datos relacionales/NoSQL",
+      "Pruebas automatizadas (Testing), Clean Code y Arquitectura de Software",
+      "Fundamentos de Ciberseguridad y hacking ético",
+      "Inteligencia Artificial aplicada y Machine Learning",
+      "Preparación de CV técnico, portafolio y entrevistas laborales de programación"
+    ]
+  },
+  {
+    "step": 5,
+    "module": "Módulo 5: Talleres, Eventos y Participación en ACM ITCM",
+    "key": "formato_eventos_masivos",
+    "title": "22. 22. Formato preferido para eventos tecnológicos masivos de Sistemas",
+    "type": "radio",
+    "options": [
+      "Hackathón tecnológico de 24 a 36 horas con retos y premios",
+      "Torneo o concurso de programación competitiva y algorítmica",
+      "Congreso o simposio con conferencistas de la industria tech",
+      "Ciclos continuos de charlas técnicas cortas (Tech Talks) y networking estudiantil"
+    ]
+  },
+  {
+    "step": 5,
+    "module": "Módulo 5: Talleres, Eventos y Participación en ACM ITCM",
+    "key": "disponibilidad_actividades",
+    "title": "23. 23. Probabilidad de asistir a actividades extracurriculares de ACM",
+    "type": "radio",
+    "options": [
+      "1 - Nada probable (complicaciones de horario, transporte o trabajo)",
+      "2 - Poco probable",
+      "3 - Probable si los horarios se adaptan a mi turno",
+      "4 - Muy probable (tengo alto interés en participar)",
+      "5 - Definitivamente asistiré y me involucraré"
+    ]
+  },
+  {
+    "step": 5,
+    "module": "Módulo 5: Talleres, Eventos y Participación en ACM ITCM",
     "key": "voluntariado_comites",
-    "title": "43. ¿Te gustaría sumarte como colaborador voluntario al Capítulo Estudiantil ACM (2026–2027)?",
+    "title": "24. 24. Comités de trabajo de ACM ITCM en los que te gustaría colaborar",
     "type": "checkbox",
     "options": [
-      "Comité Técnico y Académico (impartición de talleres, preparación de retos)",
-      "Comité de Logística y Operaciones (organización de hackathones y eventos)",
-      "Comité de Medios, Diseño y Comunicación (redes sociales, fotografía, diseño gráfico)",
-      "Equipo de Desarrollo de Software (construcción de plataformas web y sistemas)",
-      "Comité de Vinculación y Patrocinios (contacto con empresas y egresados)",
-      "Prefiero participar únicamente como asistente a los eventos",
-      "No deseo integrarme a comités de voluntariado"
+      "Comité de Desarrollo de Software (plataformas y sistemas web del capítulo)",
+      "Comité de Logística y Organización de Eventos / Hackathones",
+      "Comité Académico y de Talleres (asesorías técnicas e impartición de bootcamps)",
+      "Comité de Difusión, Medios y Diseño Multimedia",
+      "Prefiero participar únicamente como asistente a los eventos y actividades"
     ]
   },
   {
-    "step": 10,
-    "module": "Módulo 10: Logística, Afiliación y Sustentabilidad Financiera",
-    "key": "horario_conveniente",
-    "title": "44. ¿Cuál es el horario más conveniente para tus actividades extracurriculares presenciales?",
-    "type": "radio",
-    "options": [
-      "Viernes por la tarde (a partir de las 14:00 o 15:00 hrs)",
-      "Sábados por la mañana (ej. 9:00 a 13:00 hrs)",
-      "Entre semana en horario intermedio (12:00 a 14:00 hrs)",
-      "Formato asíncrono o virtual con sesiones en vivo por la noche",
-      "No tengo posibilidad de asistir a actividades extracurriculares"
-    ]
-  },
-  {
-    "step": 10,
-    "module": "Módulo 10: Logística, Afiliación y Sustentabilidad Financiera",
-    "key": "duracion_talleres",
-    "title": "45. Duración que consideras más efectiva y sostenible para un taller práctico",
-    "type": "radio",
-    "options": [
-      "Sesión única intensiva de 2 a 3 horas en un solo día",
-      "Taller de fin de semana (sábado intensivo de 4 a 5 horas con pausas)",
-      "Serie modular semanal (1 a 2 horas por semana a lo largo de 3 o 4 semanas)",
-      "Bootcamp express intensivo durante periodos intersemestrales o vacacionales"
-    ]
-  },
-  {
-    "step": 10,
-    "module": "Módulo 10: Logística, Afiliación y Sustentabilidad Financiera",
-    "key": "canales_comunicacion",
-    "title": "46. Medios mediante los cuales prefieres enterarte de avisos, talleres y convocatorias",
-    "type": "checkbox",
-    "options": [
-      "Comunidad o grupos oficiales en WhatsApp",
-      "Servidor o comunidad en Discord",
-      "Canal de difusión en Telegram",
-      "Página y publicaciones en Instagram",
-      "Difusión directa presencial salón por salón y carteles en mamparas",
-      "Correo institucional oficial"
-    ]
-  },
-  {
-    "step": 10,
-    "module": "Módulo 10: Logística, Afiliación y Sustentabilidad Financiera",
-    "key": "af_biblioteca",
-    "title": "47. Percepción sobre los beneficios de la afiliación institucional al ecosistema internacional ACM - Acceso a la ACM Digital Library (revistas, libros, papers y conferencias de investigación)",
-    "type": "radio",
-    "options": [
-      "Altamente valioso",
-      "Moderadamente valioso",
-      "Poco valioso",
-      "Desconocido / Sin información suficiente"
-    ]
-  },
-  {
-    "step": 10,
-    "module": "Módulo 10: Logística, Afiliación y Sustentabilidad Financiera",
-    "key": "af_credencial",
-    "title": "47. Percepción sobre los beneficios de la afiliación institucional al ecosistema internacional ACM - Membresía formal, correo institucional @acm.org y distinción en el CV profesional",
-    "type": "radio",
-    "options": [
-      "Altamente valioso",
-      "Moderadamente valioso",
-      "Poco valioso",
-      "Desconocido / Sin información suficiente"
-    ]
-  },
-  {
-    "step": 10,
-    "module": "Módulo 10: Logística, Afiliación y Sustentabilidad Financiera",
-    "key": "af_networking",
-    "title": "47. Percepción sobre los beneficios de la afiliación institucional al ecosistema internacional ACM - Pertenencia a la red científica de computación más prestigiada a nivel global",
-    "type": "radio",
-    "options": [
-      "Altamente valioso",
-      "Moderadamente valioso",
-      "Poco valioso",
-      "Desconocido / Sin información suficiente"
-    ]
-  },
-  {
-    "step": 10,
-    "module": "Módulo 10: Logística, Afiliación y Sustentabilidad Financiera",
-    "key": "af_descuentos",
-    "title": "47. Percepción sobre los beneficios de la afiliación institucional al ecosistema internacional ACM - Becas para congresos internacionales, competencias globales y certificaciones",
-    "type": "radio",
-    "options": [
-      "Altamente valioso",
-      "Moderadamente valioso",
-      "Poco valioso",
-      "Desconocido / Sin información suficiente"
-    ]
-  },
-  {
-    "step": 10,
-    "module": "Módulo 10: Logística, Afiliación y Sustentabilidad Financiera",
-    "key": "disposicion_sustentabilidad",
-    "title": "48. Respecto a la sustentabilidad de eventos (kits, refrigerios, licencias), ¿cuál es tu postura?",
-    "type": "radio",
-    "options": [
-      "Todas las actividades deben financiarse exclusivamente con patrocinios externos o apoyos institucionales",
-      "Aportación simbólica anual ($50 a $100 MXN) si incluye beneficios tangibles y descuentos en talleres",
-      "Aportación anual intermedia ($101 a $200 MXN) con acceso prioritario a eventos masivos y kits",
-      "Interés en adquirir la membresía estudiantil oficial internacional ACM con descuento institucional"
-    ]
-  },
-  {
-    "step": 11,
-    "module": "Módulo 11: Prioridades de Gestión, Buzón y Propuestas",
-    "key": "prioridad_mesa_directiva",
-    "title": "49. ¿Cuál debe ser la máxima prioridad de la próxima Mesa Directiva del Capítulo ACM 2026–2027?",
-    "type": "radio",
-    "options": [
-      "Capacitación técnica de alto nivel y preparación para el empleo en la industria de software",
-      "Organización de hackathones presenciales y competencias de programación de gran impacto",
-      "Gestión y colaboración para resolver necesidades de laboratorios e infraestructura del departamento",
-      "Construcción de comunidad, programa de mentorías y bienvenida integral a nuevos estudiantes",
-      "Vinculación con empresas tecnológicas líderes y egresados destacados en la industria nacional e internacional"
-    ]
-  },
-  {
-    "step": 11,
-    "module": "Módulo 11: Prioridades de Gestión, Buzón y Propuestas",
+    "step": 5,
+    "module": "Módulo 5: Talleres, Eventos y Participación en ACM ITCM",
     "key": "propuesta_cambio_unico",
-    "title": "50. Si pudieras cambiar o implementar una sola cosa en la carrera de Ingeniería en Sistemas del ITCM, ¿cuál sería?",
-    "type": "textarea",
-    "options": []
-  },
-  {
-    "step": 11,
-    "module": "Módulo 11: Prioridades de Gestión, Buzón y Propuestas",
-    "key": "comentarios_finales",
-    "title": "51. Buzón abierto: Comentarios adicionales, observaciones o propuestas libres",
-    "type": "textarea",
-    "options": []
-  },
-  {
-    "step": 11,
-    "module": "Módulo 11: Prioridades de Gestión, Buzón y Propuestas",
-    "key": "nombre",
-    "title": "52. Nombre Completo (Opcional)",
+    "title": "25. 25. Si pudieras cambiar o proponer una sola cosa en la carrera, ¿cuál sería? (Opcional)",
     "type": "textarea",
     "options": []
   }
 ];
 
-  // Elementos de UI
-  const authGate = document.getElementById('authGate');
-  const authForm = document.getElementById('authForm');
-  const adminPasswordInput = document.getElementById('adminPasswordInput');
-  const authError = document.getElementById('authError');
-  const btnLogout = document.getElementById('btnLogout');
-  const btnRefresh = document.getElementById('btnRefresh');
-  const btnPrintReport = document.getElementById('btnPrintReport');
+  // Elementos DOM Principales
+  const tabButtons = document.querySelectorAll('.tab-btn');
+  const tabContents = document.querySelectorAll('.tab-content');
+  const filterChips = document.querySelectorAll('#filterGroupSemestre .filter-chip');
+  const explorerChips = document.querySelectorAll('#explorerModuleChips .filter-chip');
+  const lastUpdateBadge = document.getElementById('lastUpdateBadge');
+  const totalCountEl = document.getElementById('totalCount');
+  const emptyStateGeneral = document.getElementById('emptyStateGeneral');
+  const dashboardDataGrid = document.getElementById('dashboardDataGrid');
   const btnExportCsv = document.getElementById('btnExportCsv');
-
-  // Elementos de Rigor
-  const statDbRecords = document.getElementById('statDbRecords');
-  const statSampleN = document.getElementById('statSampleN');
-  const statCensoStatus = document.getElementById('statCensoStatus');
-  const statMarginError = document.getElementById('statMarginError');
-  const statConfidenceLevel = document.getElementById('statConfidenceLevel');
 
   // KPIs
   const kpiTotal = document.getElementById('kpiTotal');
-  const kpiTotalMeta = document.getElementById('kpiTotalMeta');
   const kpiTutorias = document.getElementById('kpiTutorias');
   const kpiTutoriasPct = document.getElementById('kpiTutoriasPct');
   const kpiGithub = document.getElementById('kpiGithub');
   const kpiVoluntarios = document.getElementById('kpiVoluntarios');
   const kpiVoluntariosSub = document.getElementById('kpiVoluntariosSub');
+  const tabCountVoluntarios = document.getElementById('tabCountVoluntarios');
+  const tabCountBuzon = document.getElementById('tabCountBuzon');
 
-  // Estados de Vista
-  const emptyStateGeneral = document.getElementById('emptyStateGeneral');
-  const dashboardDataGrid = document.getElementById('dashboardDataGrid');
-
-  // Explorador Reactivo por Reactivo
+  // Explorador
   const preguntaSelector = document.getElementById('preguntaSelector');
   const explorerSearchInput = document.getElementById('explorerSearchInput');
   const quickReactivosNav = document.getElementById('quickReactivosNav');
-  const explorerModuleChips = document.getElementById('explorerModuleChips');
+  const itemExplorerTitle = document.getElementById('itemExplorerTitle');
   const itemExplorerBadge = document.getElementById('itemExplorerBadge');
   const itemExplorerType = document.getElementById('itemExplorerType');
-  const itemExplorerTitle = document.getElementById('itemExplorerTitle');
   const itemExplorerCount = document.getElementById('itemExplorerCount');
   const itemExplorerModa = document.getElementById('itemExplorerModa');
-  const itemExplorerSecondaryStat = document.getElementById('itemExplorerSecondaryStat');
-  const itemExplorerTableBody = document.getElementById('itemExplorerTableBody');
-  const itemExplorerCanvasContainer = document.getElementById('itemExplorerCanvasContainer');
-  const itemExplorerTextNotice = document.getElementById('itemExplorerTextNotice');
-  const chartTypeBadge = document.getElementById('chartTypeBadge');
+  const itemFreqTableBody = document.getElementById('itemFreqTableBody');
 
-  // Voluntarios y Buzón
-  const searchVoluntariosInput = document.getElementById('searchVoluntariosInput');
-  const filterComiteSelect = document.getElementById('filterComiteSelect');
-  const voluntariosTableBody = document.getElementById('voluntariosTableBody');
-  const tabCountVoluntarios = document.getElementById('tabCountVoluntarios');
-
-  const searchBuzonInput = document.getElementById('searchBuzonInput');
-  const buzonGrid = document.getElementById('buzonGrid');
-  const tabCountBuzon = document.getElementById('tabCountBuzon');
-
-  // --------------------------------------------------------------------------
-  // 1. CONTROL DE ACCESO
-  // --------------------------------------------------------------------------
-  function checkAuth() {
-    const storedKey = sessionStorage.getItem(AUTH_KEY_STORAGE);
-    const isAuth = VALID_KEYS.includes(storedKey);
-    if (isAuth) {
-      if (authGate) authGate.style.display = 'none';
-      if (btnExportCsv) {
-        btnExportCsv.href = `${API_BASE}/api/export-csv?key=${encodeURIComponent(storedKey)}`;
-      }
-      initCockpit();
-    } else {
-      if (authGate) authGate.style.display = 'flex';
-      if (adminPasswordInput) adminPasswordInput.focus();
-    }
-  }
-
-  if (authForm) {
-    authForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const entered = adminPasswordInput.value.trim().toLowerCase();
-      if (VALID_KEYS.includes(entered)) {
-        sessionStorage.setItem(AUTH_KEY_STORAGE, entered);
-        if (btnExportCsv) {
-          btnExportCsv.href = `${API_BASE}/api/export-csv?key=${encodeURIComponent(entered)}`;
-        }
-        authError.style.display = 'none';
-        authGate.style.display = 'none';
-        initCockpit();
-      } else {
-        authError.style.display = 'block';
-        adminPasswordInput.value = '';
-        adminPasswordInput.focus();
-      }
-    });
-  }
-
-  if (btnLogout) {
-    btnLogout.addEventListener('click', () => {
-      sessionStorage.removeItem(AUTH_KEY_STORAGE);
-      window.location.reload();
-    });
-  }
-
-  if (btnRefresh) {
-    btnRefresh.addEventListener('click', () => {
-      fetchDataset();
-    });
-  }
-
-  if (btnPrintReport) {
-    btnPrintReport.addEventListener('click', () => {
-      window.print();
-    });
-  }
-
-  // --------------------------------------------------------------------------
-  // MODAL DE CÓDIGO QR PARA PROYECCIÓN / DIFUSIÓN
-  // --------------------------------------------------------------------------
-  const btnShowQrDashboard = document.getElementById('btnShowQrDashboard');
+  // Modal QR
   const btnShowQrEmpty = document.getElementById('btnShowQrEmpty');
+  const btnShowQrNav = document.getElementById('btnShowQrNav');
   const qrModal = document.getElementById('qrModal');
   const btnCloseQrModal = document.getElementById('btnCloseQrModal');
   const qrImageDisplay = document.getElementById('qrImageDisplay');
@@ -1232,160 +634,333 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnShareQrWhatsApp = document.getElementById('btnShareQrWhatsApp');
   const btnCopyQrUrl = document.getElementById('btnCopyQrUrl');
 
-  const surveyUrl = (window.location.protocol === 'http:' || window.location.protocol === 'https:')
-    ? window.location.origin
-    : 'http://localhost:3000';
-  const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=12&data=${encodeURIComponent(surveyUrl)}`;
-  const shareMsg = `Compañero(a) de Sistemas ITCM, te invito a responder la Encuesta de Experiencia y Formación ISC 2026–2027 del Capítulo Estudiantil ACM. ¡Tu opinión cuenta!: ${surveyUrl}`;
-  const waUrl = `https://wa.me/?text=${encodeURIComponent(shareMsg)}`;
+  function setupQrModal() {
+    const origin = (window.location.protocol === 'http:' || window.location.protocol === 'https:')
+      ? window.location.origin
+      : 'http://localhost:3000';
 
-  function openQrModal() {
-    if (!qrModal) return;
-    if (qrImageDisplay) qrImageDisplay.src = qrApiUrl;
-    if (qrUrlDisplay) qrUrlDisplay.textContent = surveyUrl;
-    if (btnShareQrWhatsApp) btnShareQrWhatsApp.href = waUrl;
-    qrModal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-  }
+    const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=12&data=${encodeURIComponent(origin)}`;
+    const waUrl = `https://wa.me/?text=${encodeURIComponent(`Compañero(a) de Sistemas ITCM, te invito a contestar la Encuesta Oficial ACM 2026–2027: ${origin}`)}`;
 
-  function closeQrModal() {
-    if (!qrModal) return;
-    qrModal.style.display = 'none';
-    document.body.style.overflow = '';
-  }
-
-  if (btnShowQrDashboard) btnShowQrDashboard.addEventListener('click', openQrModal);
-  if (btnShowQrEmpty) btnShowQrEmpty.addEventListener('click', openQrModal);
-  if (btnCloseQrModal) btnCloseQrModal.addEventListener('click', closeQrModal);
-  if (qrModal) {
-    qrModal.addEventListener('click', (e) => {
-      if (e.target === qrModal) closeQrModal();
-    });
-  }
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && qrModal && qrModal.style.display === 'flex') {
-      closeQrModal();
+    function openQr() {
+      if (!qrModal) return;
+      if (qrImageDisplay) qrImageDisplay.src = qrApiUrl;
+      if (qrUrlDisplay) qrUrlDisplay.textContent = origin;
+      if (btnShareQrWhatsApp) btnShareQrWhatsApp.href = waUrl;
+      qrModal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
     }
-  });
 
-  if (btnDownloadQr) {
-    btnDownloadQr.addEventListener('click', async (e) => {
-      e.preventDefault();
-      try {
-        const response = await fetch(qrApiUrl);
-        const blob = await response.blob();
-        const blobUrl = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = blobUrl;
-        a.download = 'QR_Censo_ISC_ACM_ITCM.png';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(blobUrl);
-      } catch (err) {
-        window.open(qrApiUrl, '_blank');
-      }
-    });
-  }
+    function closeQr() {
+      if (!qrModal) return;
+      qrModal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
 
-  if (btnCopyQrUrl) {
-    btnCopyQrUrl.addEventListener('click', async () => {
-      try {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          await navigator.clipboard.writeText(surveyUrl);
-        } else {
-          const temp = document.createElement('input');
-          temp.value = surveyUrl;
-          document.body.appendChild(temp);
-          temp.select();
-          document.execCommand('copy');
-          document.body.removeChild(temp);
+    if (btnShowQrEmpty) btnShowQrEmpty.addEventListener('click', openQr);
+    if (btnShowQrNav) btnShowQrNav.addEventListener('click', openQr);
+    if (btnCloseQrModal) btnCloseQrModal.addEventListener('click', closeQr);
+    if (qrModal) {
+      qrModal.addEventListener('click', (e) => {
+        if (e.target === qrModal) closeQr();
+      });
+    }
+
+    if (btnDownloadQr) {
+      btnDownloadQr.addEventListener('click', async (e) => {
+        e.preventDefault();
+        try {
+          const response = await fetch(qrApiUrl);
+          const blob = await response.blob();
+          const blobUrl = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = blobUrl;
+          a.download = 'QR_Encuesta_ISC_ITCM.png';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(blobUrl);
+        } catch (err) {
+          window.open(qrApiUrl, '_blank');
         }
-        alert('¡Enlace del Censo copiado al portapapeles!');
-      } catch (err) {
-        prompt('Copia el enlace del Censo:', surveyUrl);
-      }
-    });
+      });
+    }
+
+    if (btnCopyQrUrl) {
+      btnCopyQrUrl.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(origin);
+          alert('¡Enlace copiado al portapapeles!');
+        } catch (err) {
+          prompt('Copia el enlace:', origin);
+        }
+      });
+    }
   }
 
   // --------------------------------------------------------------------------
-  // 2. SISTEMA DE PESTAÑAS
+  // NAVEGACIÓN POR PESTAÑAS
   // --------------------------------------------------------------------------
-  const tabButtons = document.querySelectorAll('.tab-btn');
-  const tabContents = document.querySelectorAll('.tab-content');
-
   tabButtons.forEach(btn => {
     btn.addEventListener('click', () => {
-      const targetId = btn.getAttribute('data-tab');
+      const targetId = btn.dataset.tab;
       tabButtons.forEach(b => b.classList.remove('active'));
       tabContents.forEach(c => c.classList.remove('active'));
-
       btn.classList.add('active');
-      const targetContent = document.getElementById(targetId);
-      if (targetContent) targetContent.classList.add('active');
+      const target = document.getElementById(targetId);
+      if (target) target.classList.add('active');
     });
   });
 
   // --------------------------------------------------------------------------
-  // 3. BARRA DE FILTROS CRUZADOS DEL DASHBOARD
+  // FILTRO GENERAL POR SEMESTRE
   // --------------------------------------------------------------------------
-  const filterChips = document.querySelectorAll('.filter-bar .filter-chip');
   filterChips.forEach(chip => {
     chip.addEventListener('click', () => {
       filterChips.forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
-      currentFilter = chip.getAttribute('data-filter');
-      applyFilteringAndRender();
+      currentFilter = chip.dataset.filter;
+      applyFiltersAndRender();
     });
   });
 
   // --------------------------------------------------------------------------
-  // 4. INICIALIZACIÓN DEL EXPLORADOR MULTI-MÓDULO
+  // FILTRO DE MÓDULOS EN EXPLORADOR
   // --------------------------------------------------------------------------
-  function initCockpit() {
-    initExplorerControls();
-    fetchDataset();
-    clearInterval(refreshTimer);
-    refreshTimer = setInterval(fetchDataset, 15000); // Sincronización cada 15 seg
+  explorerChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      explorerChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      currentModuleStep = chip.dataset.moduleStep;
+      populateQuestionSelector();
+    });
+  });
+
+  if (explorerSearchInput) {
+    explorerSearchInput.addEventListener('input', () => {
+      populateQuestionSelector();
+    });
   }
 
-  function initExplorerControls() {
-    // Chips de filtrado por módulo
-    if (explorerModuleChips) {
-      const chips = explorerModuleChips.querySelectorAll('.filter-chip');
-      chips.forEach(chip => {
-        chip.addEventListener('click', () => {
-          chips.forEach(c => c.classList.remove('active'));
-          chip.classList.add('active');
-          currentModuleStep = chip.getAttribute('data-module-step');
-          populateQuestionSelector();
+  if (preguntaSelector) {
+    preguntaSelector.addEventListener('change', () => {
+      renderSingleQuestionExplorer(preguntaSelector.value);
+      updateQuickNavActive(preguntaSelector.value);
+    });
+  }
+
+  // --------------------------------------------------------------------------
+  // CARGA DE DATOS DESDE LA API
+  // --------------------------------------------------------------------------
+  async function loadData() {
+    try {
+      const storedKey = sessionStorage.getItem(AUTH_KEY_STORAGE) || '';
+      const headers = storedKey ? { 'x-admin-key': storedKey } : {};
+
+      const res = await fetch(`${API_BASE}/api/respuestas`, { headers });
+      if (res.ok) {
+        rawResponses = await res.json();
+      } else {
+        const statsRes = await fetch(`${API_BASE}/api/stats`);
+        if (statsRes.ok) {
+          const stats = await statsRes.json();
+          rawResponses = stats.ultimosRegistros || [];
+        }
+      }
+    } catch (err) {
+      console.warn('Error al cargar datos:', err);
+    }
+
+    updateLastSyncTime();
+    applyFiltersAndRender();
+  }
+
+  function updateLastSyncTime() {
+    if (lastUpdateBadge) {
+      const now = new Date();
+      lastUpdateBadge.textContent = `Actualizado: ${now.toLocaleTimeString()}`;
+    }
+  }
+
+  // --------------------------------------------------------------------------
+  // FILTRADO Y ACTUALIZACIÓN GENERAL
+  // --------------------------------------------------------------------------
+  function filterResponses(responses, filter) {
+    if (filter === 'todos') return responses;
+    return responses.filter(r => {
+      const sem = String(r.semestre || '').toLowerCase();
+      if (filter === '1-3') return sem.includes('1.') || sem.includes('2.') || sem.includes('3.');
+      if (filter === '4-6') return sem.includes('4.') || sem.includes('5.') || sem.includes('6.');
+      if (filter === '7-9') return sem.includes('7.') || sem.includes('8.') || sem.includes('9.');
+      if (filter === 'residencia') return sem.includes('residencia') || sem.includes('egresado') || sem.includes('titulación');
+      return true;
+    });
+  }
+
+  function applyFiltersAndRender() {
+    const filtered = filterResponses(rawResponses, currentFilter);
+    const total = filtered.length;
+
+    if (totalCountEl) totalCountEl.textContent = total;
+    if (kpiTotal) kpiTotal.textContent = total;
+
+    if (rawResponses.length === 0) {
+      if (emptyStateGeneral) emptyStateGeneral.style.display = 'block';
+      if (dashboardDataGrid) dashboardDataGrid.style.display = 'none';
+    } else {
+      if (emptyStateGeneral) emptyStateGeneral.style.display = 'none';
+      if (dashboardDataGrid) dashboardDataGrid.style.display = 'block';
+    }
+
+    let sinGithub = 0;
+    let interesSoftware = 0;
+    const voluntariosList = [];
+    const buzonList = [];
+
+    filtered.forEach(r => {
+      const git = String(r.portafolio_github || '').toLowerCase();
+      if (git.includes('no tengo') || git.includes('pocos') || git.includes('no sé')) {
+        sinGithub++;
+      }
+
+      const soft = String(r.desarrollo_software_comunitario || '').toLowerCase();
+      if (soft.includes('excelente') || soft.includes('gran iniciativa')) {
+        interesSoftware++;
+      }
+
+      const comites = r.voluntariado_comites;
+      if (comites) {
+        const arr = Array.isArray(comites) ? comites : [comites];
+        const esVoluntario = arr.some(c => {
+          const str = String(c).toLowerCase();
+          return str.includes('comité') || (str.length > 5 && !str.includes('asistente') && !str.includes('no deseo'));
         });
-      });
+        if (esVoluntario) {
+          voluntariosList.push({
+            numeroControl: r.numeroControl || '-',
+            correo: r.correo || '-',
+            semestre: r.semestre || '-',
+            comites: arr,
+            timestamp: r.timestamp
+          });
+        }
+      }
+
+      const prop = (r.propuesta_cambio_unico || '').trim();
+      if (prop && prop.length > 3) {
+        buzonList.push({
+          texto: prop,
+          semestre: r.semestre || 'No especificado',
+          timestamp: r.timestamp
+        });
+      }
+    });
+
+    if (kpiTutorias) kpiTutorias.textContent = total > 0 ? `${Math.round((interesSoftware / total) * 100)}%` : '0%';
+    if (kpiTutoriasPct) kpiTutoriasPct.textContent = total > 0 ? `${interesSoftware} de ${total} apoyan software local` : '0% apoyo a software';
+    if (kpiGithub) kpiGithub.textContent = total > 0 ? `${Math.round((sinGithub / total) * 100)}%` : '0%';
+    if (kpiVoluntarios) kpiVoluntarios.textContent = voluntariosList.length;
+    if (kpiVoluntariosSub) kpiVoluntariosSub.textContent = `${voluntariosList.length} registrados`;
+    if (tabCountVoluntarios) tabCountVoluntarios.textContent = voluntariosList.length;
+    if (tabCountBuzon) tabCountBuzon.textContent = buzonList.length;
+
+    // 6 Gráficas Ejecutivas
+    renderCountsBar('chartMateriasCanvas', countField(filtered, 'materias_dificultad'), total, 6, COLORS.red);
+    renderCountsDonut('chartPresenciaCanvas', countField(filtered, 'portafolio_github'));
+    renderCountsBar('chartTalleresCanvas', countField(filtered, 'interes_talleres'), total, 6, COLORS.blue);
+    renderCountsDonut('chartSoberaniaCanvas', countField(filtered, 'desarrollo_software_comunitario'));
+    renderCountsBar('chartEventosCanvas', countField(filtered, 'formato_eventos_masivos'), total, 5, COLORS.green);
+    renderCountsBar('chartRolesCanvas', countField(filtered, 'fuente_aprendizaje'), total, 6, COLORS.blueLight);
+
+    // Cruces Multivariables
+    renderCrossTab('chartCruceIACanvas', filtered, 'semestre', 'uso_ia');
+    renderCrossTab('chartCruceTutoriasCanvas', filtered, 'semestre', 'materias_dificultad');
+    renderCrossTab('chartCruceGithubCanvas', filtered, 'portafolio_github', 'preparacion_laboral_general');
+    renderCrossTab('chartCruceClimaCanvas', filtered, 'fuente_aprendizaje', 'interes_talleres');
+
+    // Explorador de Reactivos
+    renderSingleQuestionExplorer(preguntaSelector ? preguntaSelector.value : 'semestre');
+
+    // Voluntarios y Buzón
+    renderVoluntariosTable(voluntariosList);
+    renderBuzonGrid(buzonList);
+  }
+
+  // --------------------------------------------------------------------------
+  // EXPLORADOR EXHAUSTIVO DE REACTIVOS
+  // --------------------------------------------------------------------------
+  function renderSingleQuestionExplorer(key) {
+    if (!key) return;
+    const qConfig = CATALOGO_PREGUNTAS.find(q => q.key === key) || {
+      step: 1,
+      module: 'General',
+      key: key,
+      title: key,
+      type: 'text',
+      options: []
+    };
+
+    if (itemExplorerTitle) itemExplorerTitle.textContent = qConfig.title;
+    if (itemExplorerBadge) itemExplorerBadge.textContent = qConfig.module;
+    if (itemExplorerType) {
+      const typeMap = {
+        'text': 'Campo de Texto',
+        'textarea': 'Texto Abierto (Propuesta)',
+        'radio': 'Opción Única',
+        'checkbox': 'Selección Múltiple',
+        'matrix': 'Matriz Evaluativa'
+      };
+      itemExplorerType.textContent = typeMap[qConfig.type] || 'Reactivo';
     }
 
-    // Buscador de reactivos por texto
-    if (explorerSearchInput) {
-      explorerSearchInput.addEventListener('input', () => {
-        populateQuestionSelector();
-      });
+    const filtered = filterResponses(rawResponses, currentFilter);
+    const counts = countField(filtered, key);
+    const totalResp = Object.values(counts).reduce((a, b) => a + b, 0);
+
+    if (itemExplorerCount) itemExplorerCount.textContent = `Respuestas: ${totalResp}`;
+
+    let moda = '-';
+    let maxCount = 0;
+    for (const [opt, count] of Object.entries(counts)) {
+      if (count > maxCount) {
+        maxCount = count;
+        moda = opt;
+      }
+    }
+    if (itemExplorerModa) {
+      itemExplorerModa.textContent = maxCount > 0 ? `Moda: ${moda.substring(0, 25)} (${maxCount})` : 'Moda: -';
     }
 
-    if (preguntaSelector) {
-      preguntaSelector.addEventListener('change', () => {
-        renderSingleQuestionExplorer(preguntaSelector.value);
-        updateQuickNavActive(preguntaSelector.value);
-      });
+    if (itemFreqTableBody) {
+      if (totalResp === 0) {
+        itemFreqTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Sin respuestas registradas para este reactivo.</td></tr>';
+      } else {
+        const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+        itemFreqTableBody.innerHTML = sorted.map(([opt, count]) => {
+          const pct = ((count / totalResp) * 100).toFixed(1);
+          return `
+            <tr>
+              <td style="font-weight: 500;">${escapeHtml(opt)}</td>
+              <td style="text-align: right; font-weight: 700;">${count}</td>
+              <td style="text-align: right; color: var(--tecnm-blue); font-weight: 700;">${pct}%</td>
+              <td>
+                <div class="table-progress-bar">
+                  <div class="table-progress-fill" style="width: ${pct}%;"></div>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
     }
 
-    populateQuestionSelector();
+    renderExplorerChart('chartReactivoCanvas', counts, totalResp);
   }
 
   function populateQuestionSelector() {
     if (!preguntaSelector) return;
     const searchTerm = explorerSearchInput ? explorerSearchInput.value.trim().toLowerCase() : '';
 
-    // Filtrar catálogo según módulo activo y término de búsqueda
     const filteredQuestions = CATALOGO_PREGUNTAS.filter(q => {
       const matchesModule = (currentModuleStep === 'all') || (String(q.step) === String(currentModuleStep));
       const matchesSearch = !searchTerm || 
@@ -1395,7 +970,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return matchesModule && matchesSearch;
     });
 
-    // Agrupar preguntas por módulo para los <optgroup>
     const grouped = {};
     filteredQuestions.forEach(q => {
       if (!grouped[q.module]) grouped[q.module] = [];
@@ -1403,7 +977,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (Object.keys(grouped).length === 0) {
-      preguntaSelector.innerHTML = '<option value="">No se encontraron reactivos con ese criterio</option>';
+      preguntaSelector.innerHTML = '<option value="">No se encontraron reactivos</option>';
       if (quickReactivosNav) quickReactivosNav.innerHTML = '';
       return;
     }
@@ -1413,11 +987,10 @@ document.addEventListener('DOMContentLoaded', () => {
       return `<optgroup label="${escapeHtml(modLabel)}">${opts}</optgroup>`;
     }).join('');
 
-    // Renderizar botones rápidos de acceso a reactivos
     if (quickReactivosNav) {
       quickReactivosNav.innerHTML = filteredQuestions.map(q => {
-        const matchNum = q.title.match(/^(\d+\.\d+)/);
-        const shortNum = matchNum ? matchNum[1] : q.key.substring(0, 5);
+        const matchNum = q.title.match(/^(\d+)/);
+        const shortNum = matchNum ? `P${matchNum[1]}` : q.key.substring(0, 5);
         return `<button type="button" class="btn-quick-reactivo" data-key="${q.key}" title="${escapeHtml(q.title)}">${shortNum}</button>`;
       }).join('');
 
@@ -1451,366 +1024,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --------------------------------------------------------------------------
-  // 5. CARGA DEL DATASET COMPLETO DESDE EL BACKEND
+  // FUNCIONES DE CONTEO Y CHART.JS
   // --------------------------------------------------------------------------
-  async function fetchDataset() {
-    let datasetLoaded = null;
-
-    try {
-      if (btnRefresh) btnRefresh.textContent = 'Sincronizando...';
-      
-      const storedKey = sessionStorage.getItem(AUTH_KEY_STORAGE) || '';
-      const headers = storedKey ? { 'x-admin-key': storedKey } : {};
-
-      const res = await fetch(`${API_BASE}/api/respuestas`, { headers });
-      if (res.ok) {
-        datasetLoaded = await res.json();
-      }
-    } catch (netErr) {
-      console.warn('No se pudo obtener /api/respuestas vía red:', netErr);
-    }
-
-    if (Array.isArray(datasetLoaded)) {
-      rawResponses = datasetLoaded;
-    } else if (!rawResponses || rawResponses.length === 0) {
-      rawResponses = [];
-    }
-
-    try {
-      applyFilteringAndRender();
-    } catch (renderErr) {
-      console.error('Error procesando métricas en dashboard:', renderErr);
-    }
-
-    if (btnRefresh) {
-      btnRefresh.textContent = 'Sincronizar';
-    }
-  }
-
-  // --------------------------------------------------------------------------
-  // 6. CÁLCULO ESTADÍSTICO EN MEMORIA CON FILTROS CRUZADOS
-  // --------------------------------------------------------------------------
-  function applyFilteringAndRender() {
-    let filtered = rawResponses;
-
-    if (currentFilter === 'iniciales') {
-      filtered = rawResponses.filter(r => ['1.º Semestre', '2.º Semestre', '3.º Semestre'].includes(r.semestre));
-    } else if (currentFilter === 'intermedios') {
-      filtered = rawResponses.filter(r => ['4.º Semestre', '5.º Semestre', '6.º Semestre'].includes(r.semestre));
-    } else if (currentFilter === 'avanzados') {
-      filtered = rawResponses.filter(r => ['7.º Semestre', '8.º Semestre', '9.º Semestre o superior'].includes(r.semestre));
-    } else if (currentFilter === 'matutino') {
-      filtered = rawResponses.filter(r => String(r.turno).toLowerCase().includes('matutino'));
-    } else if (currentFilter === 'vespertino') {
-      filtered = rawResponses.filter(r => String(r.turno).toLowerCase().includes('vespertino'));
-    }
-
-    const total = filtered.length;
-    const totalGlobal = rawResponses.length;
-
-    // 1. Barra de Rigor Estadístico
-    if (statDbRecords) statDbRecords.textContent = `${totalGlobal}`;
-    if (statSampleN) statSampleN.textContent = `${total}`;
-    
-    if (total === 0) {
-      if (statCensoStatus) statCensoStatus.textContent = 'En espera de respuestas';
-      if (statMarginError) statMarginError.textContent = 'Sin datos';
-      if (statConfidenceLevel) statConfidenceLevel.textContent = 'Sin datos';
-    } else {
-      if (statCensoStatus) statCensoStatus.textContent = 'Levantamiento activo';
-      if (statMarginError) statMarginError.textContent = 'Calculando sobre muestra real';
-      if (statConfidenceLevel) statConfidenceLevel.textContent = 'Datos en recolección';
-    }
-
-    // 2. Manejo de Estado Vacío
-    if (total === 0) {
-      if (emptyStateGeneral) emptyStateGeneral.style.display = 'block';
-      if (dashboardDataGrid) dashboardDataGrid.style.display = 'none';
-      if (kpiTotal) kpiTotal.textContent = '0';
-      if (kpiTotalMeta) kpiTotalMeta.textContent = '0 respuestas';
-      if (kpiTutorias) kpiTutorias.textContent = '0.0';
-      if (kpiTutoriasPct) kpiTutoriasPct.textContent = '0% alta prioridad';
-      if (kpiGithub) kpiGithub.textContent = '0%';
-      if (kpiVoluntarios) kpiVoluntarios.textContent = '0';
-      if (kpiVoluntariosSub) kpiVoluntariosSub.textContent = '0 alumnos registrados';
-      if (tabCountVoluntarios) tabCountVoluntarios.textContent = '0';
-      if (tabCountBuzon) tabCountBuzon.textContent = '0';
-
-      renderVoluntariosTable([]);
-      renderBuzonGrid([]);
-      renderSingleQuestionExplorer(preguntaSelector ? preguntaSelector.value : 'semestre');
-      return;
-    }
-
-    // Si hay datos:
-    if (emptyStateGeneral) emptyStateGeneral.style.display = 'none';
-    if (dashboardDataGrid) dashboardDataGrid.style.display = 'block';
-
-    // 3. KPIs
-    if (kpiTotal) kpiTotal.textContent = total;
-    if (kpiTotalMeta) kpiTotalMeta.textContent = `${total} ${total === 1 ? 'respuesta registrada' : 'respuestas registradas'}`;
-
-    let altaTut = 0;
-    let sinGithub = 0;
-    const voluntariosList = [];
-    const buzonList = [];
-
-    filtered.forEach(r => {
-      // 1. Demanda de Mentoría / Tutorías
-      const mentoria = getFieldValue(r, ['interes_mentoria', 'urgenciaTutorias']);
-      if (mentoria) {
-        const s = String(mentoria).toLowerCase();
-        if (s.includes('recibir mentoría') || s.includes('ambas modalidades') || s === '4' || s === '5') {
-          altaTut++;
-        }
-      }
-
-      // 2. Brecha GitHub
-      const gh = getFieldValue(r, ['portafolio_github', 'githubEstado']);
-      if (gh) {
-        const s = String(gh).toLowerCase();
-        if (s.startsWith('no') || s.includes('no tengo') || s.includes('pocos proyectos') || s.includes('vacía')) {
-          sinGithub++;
-        }
-      }
-
-      // 3. Voluntarios
-      const comites = getFieldValue(r, ['voluntariado_comites', 'comitesVoluntariado']);
-      if (comites) {
-        const arr = Array.isArray(comites) ? comites : [comites];
-        const esVol = arr.some(c => {
-          const s = String(c).toLowerCase();
-          return s.includes('comité') || s.includes('equipo') || (s.length > 5 && !s.includes('no deseo') && !s.includes('no me interesa') && !s.includes('únicamente como asistente') && !s.includes('solo asistente'));
-        });
-        if (esVol) {
-          voluntariosList.push(r);
-        }
-      }
-
-      // 4. Buzón Estudiantil
-      const comentarios = (r.comentarios_finales || '').trim();
-      const propuesta = (r.propuesta_cambio_unico || '').trim();
-      const legacyBuzon = (r.buzonAbierto || '').trim();
-
-      const textos = [];
-      if (comentarios && comentarios.length > 3) textos.push(comentarios);
-      if (propuesta && propuesta.length > 3 && propuesta !== comentarios) textos.push(`Propuesta: ${propuesta}`);
-      if (!textos.length && legacyBuzon && legacyBuzon.length > 3) textos.push(legacyBuzon);
-
-      textos.forEach(t => {
-        buzonList.push({
-          texto: t,
-          semestre: r.semestre || 'No especificado',
-          timestamp: r.timestamp
-        });
-      });
-    });
-
-    if (kpiTutorias) kpiTutorias.textContent = total > 0 ? `${Math.round((altaTut / total) * 100)}%` : '0%';
-    if (kpiTutoriasPct) kpiTutoriasPct.textContent = total > 0 ? `${altaTut} de ${total} solicitan mentoría` : '0% alta prioridad';
-    if (kpiGithub) kpiGithub.textContent = total > 0 ? `${Math.round((sinGithub / total) * 100)}%` : '0%';
-    if (kpiVoluntarios) kpiVoluntarios.textContent = voluntariosList.length;
-    if (kpiVoluntariosSub) kpiVoluntariosSub.textContent = `${voluntariosList.length} en este segmento`;
-    if (tabCountVoluntarios) tabCountVoluntarios.textContent = voluntariosList.length;
-    if (tabCountBuzon) tabCountBuzon.textContent = buzonList.length;
-
-    // 4. Gráficas del Cuadro de Mando Ejecutivo (Con campos oficiales del censo y fallbacks)
-    renderCountsBar('chartMateriasCanvas', countField(filtered, ['materias_dificultad', 'materiasDificiles']), total, 6, COLORS.red);
-    renderCountsDonut('chartPresenciaCanvas', countField(filtered, ['portafolio_github', 'githubEstado']));
-    renderCountsBar('chartTalleresCanvas', countField(filtered, ['interes_talleres', 'talleresMastery']), total, 6, COLORS.blue);
-    renderCountsDonut('chartSoberaniaCanvas', countField(filtered, ['desarrollo_software_comunitario', 'soberaniaTecnologica']));
-    renderCountsBar('chartEventosCanvas', countField(filtered, ['formato_eventos_masivos', 'eventosMasivos']), total, 5, COLORS.green);
-    renderCountsBar('chartRolesCanvas', countField(filtered, ['rol_aspirado', 'rolesAspirados']), total, 6, COLORS.blueLight);
-
-    // 5. Cruces Multivariables
-    renderCrossTab('chartCruceIACanvas', filtered, ['frecuencia_ia', 'frecuenciaIA'], ['ia_copia_directa', 'impactoIA', 'ia_inspeccion']);
-    renderCrossTab('chartCruceTutoriasCanvas', filtered, 'semestre', ['interes_mentoria', 'urgenciaTutorias', 'materias_dificultad']);
-    renderCrossTab('chartCruceGithubCanvas', filtered, ['portafolio_github', 'githubEstado'], ['rec_entrevistas', 'confianzaEntrevista']);
-    renderCrossTab('chartCruceClimaCanvas', filtered, ['salud_estres', 'climaEstudiantil'], ['salud_postural', 'sindromeImpostor']);
-
-    // 6. Explorador de Reactivos
-    renderSingleQuestionExplorer(preguntaSelector ? preguntaSelector.value : 'semestre');
-
-    // 7. Voluntarios y Buzón
-    renderVoluntariosTable(voluntariosList);
-    renderBuzonGrid(buzonList);
-  }
-
-  // --------------------------------------------------------------------------
-  // 7. EXPLORADOR EXHAUSTIVO DE REACTIVOS (TABLA FORMAL DE FRECUENCIAS)
-  // --------------------------------------------------------------------------
-  function renderSingleQuestionExplorer(key) {
-    if (!key) return;
-    const qConfig = CATALOGO_PREGUNTAS.find(q => q.key === key) || {
-      step: 1,
-      module: 'General',
-      key: key,
-      title: key,
-      type: 'text',
-      options: []
-    };
-
-    // Textos de Cabecera
-    if (itemExplorerTitle) itemExplorerTitle.textContent = qConfig.title;
-    if (itemExplorerBadge) itemExplorerBadge.textContent = qConfig.module;
-    if (itemExplorerType) {
-      const typeMap = {
-        'text': 'Campo de Texto',
-        'textarea': 'Texto Abierto (Buzón)',
-        'radio': 'Opción Única',
-        'select': 'Menú Desplegable',
-        'checkbox': 'Casillas Múltiples',
-        'scale': 'Escala Likert (1 al 5)'
-      };
-      itemExplorerType.textContent = typeMap[qConfig.type] || qConfig.type;
-    }
-
-    // Si es campo puramente de texto libre (Nombre, Correo, No. Control, Buzón)
-    const isFreeText = (qConfig.type === 'text' || qConfig.type === 'textarea');
-
-    if (isFreeText) {
-      if (itemExplorerCanvasContainer) itemExplorerCanvasContainer.style.display = 'none';
-      if (itemExplorerTextNotice) itemExplorerTextNotice.style.display = 'block';
-      if (chartTypeBadge) chartTypeBadge.textContent = 'Auditoría Cualitativa';
-
-      const textValues = rawResponses.map(r => r[key]).filter(v => v && String(v).trim().length > 0);
-      if (itemExplorerCount) itemExplorerCount.textContent = `Respuestas: ${textValues.length}`;
-      if (itemExplorerModa) itemExplorerModa.textContent = textValues.length > 0 ? `Entradas: ${textValues.length}` : 'Sin datos';
-      if (itemExplorerSecondaryStat) itemExplorerSecondaryStat.style.display = 'none';
-
-      if (itemExplorerTableBody) {
-        if (textValues.length === 0) {
-          itemExplorerTableBody.innerHTML = `
-            <tr>
-              <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 30px;">
-                Reactivo cualitativo en blanco. Se listarán las entradas de los alumnos conforme se envíe el censo.
-              </td>
-            </tr>
-          `;
-        } else {
-          itemExplorerTableBody.innerHTML = textValues.slice(0, 15).map((val, idx) => `
-            <tr>
-              <td colspan="4" style="font-size: 0.88rem; color: #1E293B; font-family: monospace;">
-                <strong>#${idx + 1}:</strong> ${escapeHtml(String(val))}
-              </td>
-            </tr>
-          `).join('');
-        }
-      }
-
-      if (chartInstances['chartItemExplorerCanvas']) {
-        chartInstances['chartItemExplorerCanvas'].destroy();
-      }
-      return;
-    }
-
-    // Si es campo cuantitativo o de opciones:
-    if (itemExplorerCanvasContainer) itemExplorerCanvasContainer.style.display = 'flex';
-    if (itemExplorerTextNotice) itemExplorerTextNotice.style.display = 'none';
-    if (chartTypeBadge) chartTypeBadge.textContent = qConfig.type === 'scale' ? 'Escala 1 al 5' : 'Distribución Frecuencias';
-
-    const counts = countField(rawResponses, key);
-    const totalResponsesInQuestion = Object.values(counts).reduce((a, b) => a + b, 0);
-
-    // Si no hay respuestas aún pero la pregunta tiene opciones predefinidas:
-    if (totalResponsesInQuestion === 0) {
-      if (itemExplorerCount) itemExplorerCount.textContent = 'Respuestas: 0';
-      if (itemExplorerModa) itemExplorerModa.textContent = 'Moda: Sin respuestas';
-      if (itemExplorerSecondaryStat) itemExplorerSecondaryStat.style.display = 'none';
-
-      // Mostrar las opciones predefinidas con fi=0 y hi=0.0% para que el director pueda auditar el reactivo
-      const displayOpts = (qConfig.options && qConfig.options.length > 0) ? qConfig.options : ['Sin opciones predefinidas'];
-      if (itemExplorerTableBody) {
-        itemExplorerTableBody.innerHTML = displayOpts.map(opt => `
-          <tr>
-            <td style="font-weight: 500; color: #334155;">${escapeHtml(opt)}</td>
-            <td style="text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--tecnm-blue);">0</td>
-            <td style="text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text-secondary);">0.0%</td>
-            <td>
-              <div class="freq-bar-mini-wrapper">
-                <div class="freq-bar-mini-fill" style="width: 0%;"></div>
-              </div>
-            </td>
-          </tr>
-        `).join('');
-      }
-
-      // Gráfica vacía
-      renderCountsBar('chartItemExplorerCanvas', {}, 0, 8, COLORS.blue);
-      return;
-    }
-
-    // Si hay respuestas registradas:
-    const sortedEntries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-    const moda = sortedEntries.length > 0 ? sortedEntries[0][0] : '-';
-
-    if (itemExplorerCount) itemExplorerCount.textContent = `Respuestas: ${totalResponsesInQuestion}`;
-    if (itemExplorerModa) itemExplorerModa.textContent = `Moda: ${moda.substring(0, 26)}`;
-
-    // Si es escala numérica 1-5, calcular promedio
-    if (qConfig.type === 'scale') {
-      let suma = 0;
-      let totalScales = 0;
-      Object.entries(counts).forEach(([val, freq]) => {
-        const num = parseFloat(val);
-        if (!isNaN(num)) {
-          suma += (num * freq);
-          totalScales += freq;
-        }
-      });
-      if (totalScales > 0 && itemExplorerSecondaryStat) {
-        const avg = (suma / totalScales).toFixed(2);
-        itemExplorerSecondaryStat.textContent = `Promedio: ${avg} / 5.0`;
-        itemExplorerSecondaryStat.style.display = 'inline-block';
-      }
-    } else {
-      if (itemExplorerSecondaryStat) itemExplorerSecondaryStat.style.display = 'none';
-    }
-
-    // Tabla Formal con Proporciones
-    if (itemExplorerTableBody) {
-      itemExplorerTableBody.innerHTML = sortedEntries.map(([opcion, freq]) => {
-        const pct = ((freq / totalResponsesInQuestion) * 100).toFixed(1);
-        return `
-          <tr>
-            <td style="font-weight: 600; color: #1E293B;">${escapeHtml(opcion)}</td>
-            <td style="text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--tecnm-blue);">${freq}</td>
-            <td style="text-align: right; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text-secondary);">${pct}%</td>
-            <td>
-              <div class="freq-bar-mini-wrapper">
-                <div class="freq-bar-mini-fill" style="width: ${pct}%;"></div>
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    // Gráfica
-    if (qConfig.type === 'radio' && sortedEntries.length <= 4) {
-      renderCountsDonut('chartItemExplorerCanvas', counts);
-    } else {
-      renderCountsBar('chartItemExplorerCanvas', counts, totalResponsesInQuestion, 10, COLORS.blue);
-    }
-  }
-
-  // --------------------------------------------------------------------------
-  // 8. HELPERS DE CONTEO Y MATRIZ DE CRUCES
-  // --------------------------------------------------------------------------
-  function getFieldValue(r, keyOrKeys) {
-    if (!r) return null;
-    const keys = Array.isArray(keyOrKeys) ? keyOrKeys : [keyOrKeys];
-    for (const k of keys) {
-      if (r[k] !== undefined && r[k] !== null && r[k] !== '') return r[k];
-    }
-    return null;
-  }
-
-  function countField(dataset, keyOrKeys) {
+  function countField(responses, key) {
     const counts = {};
-    dataset.forEach(r => {
-      const val = getFieldValue(r, keyOrKeys);
-      if (!val) return;
+    responses.forEach(r => {
+      const val = r[key];
+      if (val === undefined || val === null || val === '') return;
       if (Array.isArray(val)) {
         val.forEach(v => {
           const item = String(v).trim();
@@ -1824,351 +1044,196 @@ document.addEventListener('DOMContentLoaded', () => {
     return counts;
   }
 
-  function renderCrossTab(canvasId, dataset, keyX, keyY) {
-    if (typeof Chart === 'undefined') return;
+  function getOrCreateChart(canvasId, type, data, options) {
     const canvas = document.getElementById(canvasId);
-    if (!canvas) return;
-
+    if (!canvas) return null;
     if (chartInstances[canvasId]) {
       chartInstances[canvasId].destroy();
     }
+    chartInstances[canvasId] = new Chart(canvas, { type, data, options });
+    return chartInstances[canvasId];
+  }
 
-    if (dataset.length === 0) return;
+  function renderCountsBar(canvasId, counts, total, limit = 6, barColor = COLORS.blue) {
+    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, limit);
+    const labels = sorted.map(s => s[0].length > 32 ? s[0].substring(0, 30) + '...' : s[0]);
+    const values = sorted.map(s => s[1]);
 
-    const countX = countField(dataset, keyX);
-    const topX = Object.entries(countX).sort((a, b) => b[1] - a[1]).slice(0, 4).map(e => e[0]);
-
-    const countY = countField(dataset, keyY);
-    const topY = Object.entries(countY).sort((a, b) => b[1] - a[1]).slice(0, 3).map(e => e[0]);
-
-    if (topX.length === 0 || topY.length === 0) {
-      const ctx = canvas.getContext('2d');
-      chartInstances[canvasId] = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['En espera de más respuestas para cruce'],
-          datasets: [{ data: [0], backgroundColor: '#E2E8F0' }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false }, tooltip: { enabled: false } },
-          scales: {
-            x: { grid: { display: false } },
-            y: { beginAtZero: true, grid: { color: '#F1F5F9' } }
+    getOrCreateChart(canvasId, 'bar', {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: barColor,
+        borderRadius: 6,
+        maxBarThickness: 32
+      }]
+    }, {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => `${ctx.raw} estudiantes (${total > 0 ? Math.round((ctx.raw / total) * 100) : 0}%)`
           }
         }
-      });
-      return;
-    }
-
-    const datasets = topY.map((labelY, idx) => {
-      const data = topX.map(labelX => {
-        return dataset.filter(r => {
-          const rawX = getFieldValue(r, keyX);
-          const rawY = getFieldValue(r, keyY);
-          const vx = Array.isArray(rawX) ? rawX.includes(labelX) : rawX === labelX;
-          const vy = Array.isArray(rawY) ? rawY.includes(labelY) : rawY === labelY;
-          return vx && vy;
-        }).length;
-      });
-
-      return {
-        label: labelY.length > 25 ? labelY.substring(0, 22) + '...' : labelY,
-        data: data,
-        backgroundColor: COLORS.paletteList[idx % COLORS.paletteList.length],
-        borderRadius: 4
-      };
-    });
-
-    const ctx = canvas.getContext('2d');
-    chartInstances[canvasId] = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: topX.map(l => l.length > 18 ? l.substring(0, 16) + '...' : l),
-        datasets: datasets
       },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } }
-        },
-        scales: {
-          x: { grid: { display: false }, ticks: { font: { size: 10 } } },
-          y: { beginAtZero: true, grid: { color: '#F1F5F9' }, ticks: { font: { size: 10 } } }
-        }
+      scales: {
+        x: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.06)' } },
+        y: { grid: { display: false } }
       }
     });
   }
 
-  function renderCountsBar(canvasId, countsObj, total, limit = 6, barColor = COLORS.blue) {
-    if (typeof Chart === 'undefined') return;
-    const canvas = document.getElementById(canvasId);
-    if (!canvas) return;
-
-    if (chartInstances[canvasId]) {
-      chartInstances[canvasId].destroy();
-    }
-
-    if (!countsObj || Object.keys(countsObj).length === 0 || total === 0) {
-      const ctx = canvas.getContext('2d');
-      chartInstances[canvasId] = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['En espera de respuestas'],
-          datasets: [{ data: [0], backgroundColor: '#CBD5E1', borderRadius: 4 }]
-        },
-        options: {
-          indexAxis: 'y',
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false }, tooltip: { enabled: false } },
-          scales: {
-            x: { beginAtZero: true, max: 5, grid: { color: '#F1F5F9' }, ticks: { stepSize: 1, font: { size: 10 } } },
-            y: { grid: { display: false }, ticks: { font: { size: 11, weight: '600' }, color: '#64748B' } }
-          }
-        }
-      });
-      return;
-    }
-
-    const sorted = Object.entries(countsObj).sort((a, b) => b[1] - a[1]).slice(0, limit);
-    const labels = sorted.map(e => e[0].length > 32 ? e[0].substring(0, 30) + '...' : e[0]);
-    const values = sorted.map(e => e[1]);
-
-    const ctx = canvas.getContext('2d');
-    chartInstances[canvasId] = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: labels,
-        datasets: [{
-          data: values,
-          backgroundColor: barColor,
-          borderRadius: 6
-        }]
-      },
-      options: {
-        indexAxis: 'y',
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: (context) => ` ${context.raw} alumnos (${Math.round((context.raw / total) * 100)}%)`
-            }
-          }
-        },
-        scales: {
-          x: { beginAtZero: true, grid: { color: '#F1F5F9' }, ticks: { stepSize: 1, font: { size: 10 } } },
-          y: { grid: { display: false }, ticks: { font: { size: 11, weight: '600' }, color: '#0F2137' } }
-        }
-      }
-    });
-  }
-
-  function renderCountsDonut(canvasId, countsObj) {
-    if (typeof Chart === 'undefined') return;
-    const canvas = document.getElementById(canvasId);
-    if (!canvas) return;
-
-    if (chartInstances[canvasId]) {
-      chartInstances[canvasId].destroy();
-    }
-
-    const entries = countsObj ? Object.entries(countsObj) : [];
-    const total = entries.reduce((a, b) => a + b[1], 0);
-
-    if (entries.length === 0 || total === 0) {
-      const ctx = canvas.getContext('2d');
-      chartInstances[canvasId] = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-          labels: ['En espera de respuestas'],
-          datasets: [{
-            data: [1],
-            backgroundColor: ['#E2E8F0'],
-            borderWidth: 0
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } },
-            tooltip: { enabled: false }
-          },
-          cutout: '65%'
-        }
-      });
-      return;
-    }
-
-    const labels = entries.map(e => e[0].length > 25 ? e[0].substring(0, 22) + '...' : e[0]);
+  function renderCountsDonut(canvasId, counts) {
+    const entries = Object.entries(counts).slice(0, 5);
+    const labels = entries.map(e => e[0].length > 25 ? e[0].substring(0, 23) + '...' : e[0]);
     const values = entries.map(e => e[1]);
 
-    const ctx = canvas.getContext('2d');
-    chartInstances[canvasId] = new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: labels,
-        datasets: [{
-          data: values,
-          backgroundColor: COLORS.paletteList.slice(0, entries.length),
-          borderWidth: 2,
-          borderColor: '#FFFFFF'
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } },
-          tooltip: {
-            callbacks: {
-              label: (context) => ` ${context.raw} (${Math.round((context.raw / total) * 100)}%)`
-            }
+    getOrCreateChart(canvasId, 'doughnut', {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: COLORS.paletteList.slice(0, entries.length),
+        borderWidth: 2,
+        borderColor: '#FFFFFF'
+      }]
+    }, {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
+      }
+    });
+  }
+
+  function renderExplorerChart(canvasId, counts, total) {
+    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 8);
+    const labels = sorted.map(s => s[0].length > 28 ? s[0].substring(0, 26) + '...' : s[0]);
+    const values = sorted.map(s => s[1]);
+
+    getOrCreateChart(canvasId, 'bar', {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: COLORS.blue,
+        borderRadius: 6
+      }]
+    }, {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => `${ctx.raw} respuestas (${total > 0 ? ((ctx.raw / total) * 100).toFixed(1) : 0}%)`
           }
-        },
-        cutout: '65%'
+        }
+      },
+      scales: {
+        x: { beginAtZero: true },
+        y: { grid: { display: false } }
+      }
+    });
+  }
+
+  function renderCrossTab(canvasId, responses, keyX, keyY) {
+    const matrix = {};
+    const yLabelsSet = new Set();
+
+    responses.forEach(r => {
+      const valX = String(r[keyX] || 'Sin especificar').trim();
+      const rawY = r[keyY];
+      if (!rawY) return;
+      const yArr = Array.isArray(rawY) ? rawY : [rawY];
+
+      if (!matrix[valX]) matrix[valX] = {};
+      yArr.forEach(y => {
+        const strY = String(y).trim();
+        if (strY) {
+          yLabelsSet.add(strY);
+          matrix[valX][strY] = (matrix[valX][strY] || 0) + 1;
+        }
+      });
+    });
+
+    const xLabels = Object.keys(matrix).slice(0, 5);
+    const yLabels = Array.from(yLabelsSet).slice(0, 4);
+
+    const datasets = yLabels.map((yLab, idx) => ({
+      label: yLab.length > 25 ? yLab.substring(0, 23) + '...' : yLab,
+      data: xLabels.map(xLab => matrix[xLab][yLab] || 0),
+      backgroundColor: COLORS.paletteList[idx % COLORS.paletteList.length],
+      borderRadius: 4
+    }));
+
+    getOrCreateChart(canvasId, 'bar', {
+      labels: xLabels.map(x => x.length > 18 ? x.substring(0, 16) + '...' : x),
+      datasets
+    }, {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } }
+      },
+      scales: {
+        x: { stacked: false },
+        y: { beginAtZero: true, stacked: false }
       }
     });
   }
 
   // --------------------------------------------------------------------------
-  // 9. BANCO DE VOLUNTARIOS
+  // VOLUNTARIOS Y BUZÓN
   // --------------------------------------------------------------------------
-  function renderVoluntariosTable(list) {
-    if (!voluntariosTableBody) return;
+  function renderVoluntariosTable(voluntarios) {
+    const tbody = document.getElementById('voluntariosTableBody');
+    if (!tbody) return;
 
-    if (list.length === 0) {
-      voluntariosTableBody.innerHTML = `
-        <tr>
-          <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 30px;">
-            No hay voluntarios registrados en este filtro.
-          </td>
-        </tr>
-      `;
+    if (voluntarios.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 24px;">No hay registros de voluntarios en este segmento.</td></tr>';
       return;
     }
 
-    voluntariosTableBody.innerHTML = list.map(v => {
-      const nombre = v.nombre || 'Anónimo';
-      const nc = v.numeroControl || '-';
-      const sem = v.semestre || '-';
-      const tel = v.telefono ? String(v.telefono).trim() : '';
-      const telClean = tel.replace(/\D/g, '');
-      
-      const rawComites = getFieldValue(v, ['voluntariado_comites', 'comitesVoluntariado']);
-      const comites = Array.isArray(rawComites) 
-        ? rawComites.filter(c => !c.toLowerCase().includes('solo asistente') && !c.toLowerCase().includes('no deseo')).join(', ')
-        : (rawComites || 'General');
-
-      const waBtn = telClean.length >= 10
-        ? `<a href="https://wa.me/52${telClean}?text=Hola%20${encodeURIComponent(nombre)}%2C%20te%20escribimos%20del%20Cap%C3%ADtulo%20Estudiantil%20ACM%20ITCM%20sobre%20tu%20registro%20como%20voluntario" target="_blank" class="btn-action-whatsapp">WhatsApp (${escapeHtml(telClean.slice(-4))})</a>`
-        : `<span style="color: var(--text-muted); font-size: 0.75rem;">Sin teléfono</span>`;
-
+    tbody.innerHTML = voluntarios.map(v => {
+      const comitesStr = Array.isArray(v.comites) ? v.comites.join(', ') : v.comites;
       return `
         <tr>
-          <td style="font-weight: 700; color: #0F2137;">${escapeHtml(nombre)}</td>
-          <td style="font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--tecnm-blue);">${escapeHtml(nc)}</td>
-          <td>${escapeHtml(sem)}</td>
-          <td style="font-size: 0.8rem; max-width: 320px;">${escapeHtml(comites)}</td>
-          <td>${waBtn}</td>
+          <td style="font-weight: 700; color: var(--tecnm-blue);">${escapeHtml(v.numeroControl)}</td>
+          <td>${escapeHtml(v.correo)}</td>
+          <td>${escapeHtml(v.semestre)}</td>
+          <td><span class="badge-tag" style="background: rgba(27,57,106,0.1); color: var(--tecnm-blue); font-size: 0.75rem;">${escapeHtml(comitesStr)}</span></td>
+          <td style="font-size: 0.8rem; color: var(--text-muted);">${new Date(v.timestamp || Date.now()).toLocaleDateString()}</td>
         </tr>
       `;
     }).join('');
   }
 
-  if (searchVoluntariosInput || filterComiteSelect) {
-    const filterHandler = () => {
-      const q = searchVoluntariosInput ? searchVoluntariosInput.value.toLowerCase() : '';
-      const comite = filterComiteSelect ? filterComiteSelect.value.toLowerCase() : '';
+  function renderBuzonGrid(buzon) {
+    const grid = document.getElementById('buzonCardsGrid');
+    if (!grid) return;
 
-      const filteredVoluntarios = rawResponses.filter(r => {
-        const rawComites = getFieldValue(r, ['voluntariado_comites', 'comitesVoluntariado']);
-        if (!rawComites) return false;
-        const arr = Array.isArray(rawComites) ? rawComites : [rawComites];
-        const esVol = arr.some(c => {
-          const s = String(c).toLowerCase();
-          return s.includes('comité') || s.includes('equipo') || (s.length > 5 && !s.includes('no deseo') && !s.includes('no me interesa') && !s.includes('únicamente como asistente') && !s.includes('solo asistente'));
-        });
-        if (!esVol) return false;
-
-        const matchText = (r.nombre && r.nombre.toLowerCase().includes(q)) || 
-                          (r.numeroControl && r.numeroControl.toLowerCase().includes(q));
-        const matchComite = !comite || arr.some(c => c.toLowerCase().includes(comite));
-        return matchText && matchComite;
-      });
-
-      renderVoluntariosTable(filteredVoluntarios);
-    };
-
-    if (searchVoluntariosInput) searchVoluntariosInput.addEventListener('input', filterHandler);
-    if (filterComiteSelect) filterComiteSelect.addEventListener('change', filterHandler);
-  }
-
-  // --------------------------------------------------------------------------
-  // 10. MURO DEL BUZÓN ABIERTO
-  // --------------------------------------------------------------------------
-  function renderBuzonGrid(list) {
-    if (!buzonGrid) return;
-
-    if (list.length === 0) {
-      buzonGrid.innerHTML = `
-        <p style="color: var(--text-muted); padding: 30px; text-align: center; width: 100%;">
-          No hay mensajes en el buzón abierto en este filtro.
-        </p>
-      `;
+    if (buzon.length === 0) {
+      grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 32px;">No hay propuestas registradas en este segmento.</div>';
       return;
     }
 
-    buzonGrid.innerHTML = list.map(item => `
-      <div class="quote-card">
-        <p class="quote-text">"${escapeHtml(item.texto)}"</p>
-        <div class="quote-author">
-          <span>Estudiante (${escapeHtml(item.semestre)})</span>
-          <span>${item.timestamp ? new Date(item.timestamp).toLocaleDateString('es-MX') : 'Censo Oficial'}</span>
+    grid.innerHTML = buzon.map(b => `
+      <div class="buzon-card">
+        <div class="buzon-header">
+          <span class="badge-tag" style="background: var(--tecnm-blue); color: #FFF; font-size: 0.75rem;">${escapeHtml(b.semestre)}</span>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">${new Date(b.timestamp || Date.now()).toLocaleDateString()}</span>
         </div>
+        <p class="buzon-text">"${escapeHtml(b.texto)}"</p>
       </div>
     `).join('');
   }
 
-  if (searchBuzonInput) {
-    searchBuzonInput.addEventListener('input', () => {
-      const q = searchBuzonInput.value.toLowerCase().trim();
-      const filteredBuzon = [];
-
-      rawResponses.forEach(r => {
-        const comentarios = (r.comentarios_finales || '').trim();
-        const propuesta = (r.propuesta_cambio_unico || '').trim();
-        const legacy = (r.buzonAbierto || '').trim();
-
-        const textos = [];
-        if (comentarios && comentarios.length > 3) textos.push(comentarios);
-        if (propuesta && propuesta.length > 3 && propuesta !== comentarios) textos.push(`Propuesta: ${propuesta}`);
-        if (!textos.length && legacy && legacy.length > 3) textos.push(legacy);
-
-        textos.forEach(t => {
-          if (!q || t.toLowerCase().includes(q)) {
-            filteredBuzon.push({
-              texto: t,
-              semestre: r.semestre || 'No especificado',
-              timestamp: r.timestamp
-            });
-          }
-        });
-      });
-
-      renderBuzonGrid(filteredBuzon);
-    });
-  }
-
-  // Helper Sanitizador XSS
-  function escapeHtml(str) {
-    if (!str) return '';
-    return String(str)
+  function escapeHtml(text) {
+    if (!text) return '';
+    return String(text)
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
@@ -2176,6 +1241,12 @@ document.addEventListener('DOMContentLoaded', () => {
       .replace(/'/g, '&#039;');
   }
 
-  // Arranque
-  checkAuth();
+  // --------------------------------------------------------------------------
+  // INICIALIZACIÓN
+  // --------------------------------------------------------------------------
+  setupQrModal();
+  populateQuestionSelector();
+  loadData();
+
+  refreshTimer = setInterval(loadData, 30000);
 });

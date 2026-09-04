@@ -1,626 +1,292 @@
 ================================================================================
-ENCUESTA SOBRE LA EXPERIENCIA Y FORMACIÓN EN INGENIERÍA EN SISTEMAS COMPUTACIONALES
-INSTITUTO TECNOLÓGICO DE CIUDAD MADERO (ITCM) • TECNM
-Capítulo Estudiantil ACM ITCM • Periodo de Gestión 2026–2027
+ENCUESTA OFICIAL DE DIAGNÓSTICO Y PLAN DE ACCIÓN ISC ACM ITCM 2026–2027
+Capítulo Estudiantil ACM - Instituto Tecnológico de Ciudad Madero
+Versión Sintetizada: 25 Preguntas (5 a 7 minutos)
 ================================================================================
 
-PRESENTACIÓN Y OBJETIVOS METODOLÓGICOS:
-Esta encuesta fue elaborada con rigor metodológico y psicométrico por estudiantes
-de la carrera para diagnosticar el estado actual de la formación en ISC, identificar
-retos en infraestructura y aprendizaje, y orientar la planeación estratégica y de talleres
-del Capítulo Estudiantil ACM para el ciclo 2026–2027.
-
-POLÍTICA DE PRIVACIDAD Y USO ÉTICO DE DATOS:
-El número de control y el correo electrónico se solicitan únicamente para control
-de participación, detección de respuestas duplicadas y contacto voluntario.
-Bajo ninguna circunstancia se utilizarán en gráficas, informes públicos ni cruces analíticos.
-Las respuestas sobre infraestructura, docencia y competencias son confidenciales.
-================================================================================
-
-
 --------------------------------------------------------------------------------
-📌 MÓDULO 1: REGISTRO Y CONTEXTO PERSONAL
-   Datos de control para verificación de padrón (no publicables) y características demográficas básicas.
+MÓDULO 1: SOBRE TI E INFORMACIÓN GENERAL
+Datos de identificación institucional para verificación de padrón y contexto general.
 --------------------------------------------------------------------------------
 
-REACTIVO 1: 1. Número de control (8 dígitos) [OBLIGATORIA]
-Tipo: Texto breve
-Instrucción: Se solicita exclusivamente para control de participación, validación de padrón estudiantil y eliminación de duplicados. No se incluye en gráficas, informes públicos ni cruces analíticos.
+PREGUNTA 1: 1. Número de Control (8 dígitos o C + 8 dígitos) [OBLIGATORIO]
+Descripción: Obligatorio para validación de padrón estudiantil activo y prevención de duplicados. No se asocia a tus respuestas en informes públicos.
+Tipo: text
 
-REACTIVO 2: 2. Correo electrónico (institucional o personal) [OBLIGATORIA]
-Tipo: Correo electrónico
-Instrucción: Para validar autenticidad de respuesta y canal de contacto en caso de voluntariado.
+PREGUNTA 2: 2. Correo Electrónico (institucional o personal) [OBLIGATORIO]
+Descripción: Obligatorio para validar autenticidad de respuesta y contactarte si te interesa participar en actividades de la comunidad.
+Tipo: email
 
-REACTIVO 2b: Teléfono de WhatsApp (Opcional) [OPCIONAL]
-Tipo: Teléfono / WhatsApp (Opcional)
-Instrucción: Si te interesa integrarte a comités de voluntariado, proyectos de software o recibir avisos directos.
+PREGUNTA 3: 3. Semestre o situación académica actual [OBLIGATORIO]
+Descripción: Selecciona el semestre en el que estás cursando la mayoría de tus materias.
+Tipo: radio
+Opciones:
+  [ ] 1.º a 3.º semestre
+  [ ] 4.º a 6.º semestre
+  [ ] 7.º a 9.º semestre
+  [ ] Residencia profesional
+  [ ] Egresado(a) en proceso de titulación
 
-REACTIVO 3: 3. Edad [OBLIGATORIA]
-Tipo: Selección única (Menú desplegable)
-Instrucción: Rango de edad del participante.
-Opciones de respuesta:
-   [ ] 17 años o menos
-   [ ] 18 años
-   [ ] 19 años
-   [ ] 20 años
-   [ ] 21 años
-   [ ] 22 años
-   [ ] 23 años
-   [ ] 24 años
-   [ ] 25 años o más
-   [ ] Prefiero no responder
+PREGUNTA 4: 4. Turno predominante en el que estudias [OBLIGATORIO]
+Descripción: Horario principal de tus clases presenciales.
+Tipo: radio
+Opciones:
+  [ ] Matutino
+  [ ] Vespertino
+  [ ] Mixto o variable
+  [ ] Sin turno fijo / En línea
 
-REACTIVO 4: 4. Género [OBLIGATORIA]
-Tipo: Selección única (Opción excluyente)
-Instrucción: Selecciona la opción con la que te identifiques.
-Opciones de respuesta:
-   [ ] Femenino
-   [ ] Masculino
-   [ ] No binario
-   [ ] Prefiero no responder
-   [ ] Otro
-
-REACTIVO 5: 5. Semestre actual [OBLIGATORIA]
-Tipo: Selección única (Menú desplegable)
-Instrucción: Semestre en el que estás inscrito formalmente.
-Opciones de respuesta:
-   [ ] 1° semestre
-   [ ] 2° semestre
-   [ ] 3° semestre
-   [ ] 4° semestre
-   [ ] 5° semestre
-   [ ] 6° semestre
-   [ ] 7° semestre
-   [ ] 8° semestre
-   [ ] 9° semestre
-   [ ] 10° semestre o superior
-   [ ] Egresado reciente
-
-REACTIVO 6: 6. Turno principal en el que cursas tus materias [OBLIGATORIA]
-Tipo: Selección única (Opción excluyente)
-Instrucción: Turno de asistencia habitual.
-Opciones de respuesta:
-   [ ] Matutino
-   [ ] Vespertino
-   [ ] Mixto (materias en ambos turnos)
-
-REACTIVO 7: 7. ¿Actualmente trabajas? [OBLIGATORIA]
-Tipo: Selección única (Opción excluyente)
-Instrucción: Situación de ocupación laboral complementaria a los estudios.
-Opciones de respuesta:
-   [ ] No trabajo actualmente
-   [ ] Trabajo en algo no relacionado con tecnología a tiempo parcial
-   [ ] Trabajo en algo no relacionado con tecnología a tiempo completo
-   [ ] Trabajo en tecnología / software a tiempo parcial
-   [ ] Trabajo en tecnología / software a tiempo completo o freelance formal
-   [ ] Realizo prácticas profesionales / Estadía laboral
-
-REACTIVO 8: 8. Si trabajas, ¿cuántas horas aproximadas dedicas al trabajo por semana? [OPCIONAL]
-Tipo: Selección única (Menú desplegable)
-Instrucción: Carga horaria laboral semanal.
-Opciones de respuesta:
-   [ ] No aplica / No trabajo
-   [ ] Menos de 10 horas semanales
-   [ ] 10 a 20 horas semanales
-   [ ] 21 a 30 horas semanales
-   [ ] 31 a 40 horas semanales
-   [ ] Más de 40 horas semanales
-
+PREGUNTA 5: 5. Situación laboral o actividades fuera de clases [OBLIGATORIO]
+Descripción: Indica si actualmente realizas actividades productivas en tecnología o de otro tipo.
+Tipo: radio
+Opciones:
+  [ ] Trabajo o realizo prácticas en el área de tecnología / desarrollo
+  [ ] He tenido trabajos o proyectos previos en tecnología, pero actualmente no
+  [ ] Realizo proyectos personales o independientes de programación
+  [ ] Me dedico exclusivamente a la carrera por ahora
+  [ ] Prefiero no responder
 
 --------------------------------------------------------------------------------
-📌 MÓDULO 2: TRAYECTORIA ACADÉMICA Y CONDICIONES DE ESTUDIO
-   Disponibilidad de equipo, conectividad, traslados y dedicación horaria al estudio autónomo.
+MÓDULO 2: CONDICIONES DE ESTUDIO Y EXPERIENCIA EN LA CARRERA
+Disponibilidad de equipo para programar, materias de mayor reto y proyectos realizados.
 --------------------------------------------------------------------------------
 
-REACTIVO 9: 9. Disponibilidad y calidad de tus recursos de estudio y desarrollo [OBLIGATORIA]
-Tipo: Matriz / Tabla de evaluación multidimensional
-Instrucción: Evalúa las condiciones con las que cuentas fuera del campus universitario.
-Escala de columnas (Opciones de evaluación):
-   • Siempre / Excelente
-   • Casi siempre / Buena
-   • A veces / Regular
-   • Rara vez / Deficiente
-   • Nunca / No dispongo
-Filas de evaluación (Aspectos a calificar):
-   - Computadora propia con capacidad para programar y compilar (rec_pc)
-   - Conexión a internet estable en tu domicilio de estudio (rec_internet)
-   - Espacio físico adecuado, iluminado y libre de distracciones para estudiar (rec_espacio)
+PREGUNTA 6: 6. Acceso y condiciones de equipo de cómputo para programar [OBLIGATORIO]
+Descripción: Disponibilidad de equipo adecuado para desarrollar prácticas y proyectos de la carrera.
+Tipo: radio
+Opciones:
+  [ ] Cuento con laptop o computadora propia con buen rendimiento para programar
+  [ ] Cuento con computadora propia pero con limitaciones de rendimiento o almacenamiento
+  [ ] Dependo de equipos prestados o compartidos
+  [ ] Enfrento frecuentes problemas de equipo o conectividad para realizar mis prácticas
 
-REACTIVO 10: 10. Tiempo aproximado de traslado diario de ida y vuelta al ITCM [OBLIGATORIA]
-Tipo: Selección única (Opción excluyente)
-Instrucción: Tiempo total invertido en transporte diariamente.
-Opciones de respuesta:
-   [ ] Menos de 30 minutos
-   [ ] Entre 30 y 60 minutos
-   [ ] Entre 1 y 2 horas
-   [ ] Más de 2 horas al día
+PREGUNTA 7: 7. Oportunidades de práctica real en las materias de la carrera [OBLIGATORIO]
+Descripción: Qué tanto se fomenta la aplicación práctica real en comparación con el contenido teórico.
+Tipo: radio
+Opciones:
+  [ ] 1 - Casi ninguna oportunidad práctica (predominio teórico)
+  [ ] 2 - Pocas oportunidades de práctica aplicada
+  [ ] 3 - Oportunidades moderadas o intermedias
+  [ ] 4 - Buenas oportunidades prácticas en la mayoría de materias
+  [ ] 5 - Amplias oportunidades de desarrollo y proyectos prácticos
+  [ ] No he tenido oportunidad suficiente de evaluarlo
 
-REACTIVO 11: 11. ¿Tienes responsabilidades familiares o de cuidado que limiten tu tiempo extracurricular? [OBLIGATORIA]
-Tipo: Selección única (Opción excluyente)
-Instrucción: Cuidado de familiares, dependientes económicos u obligaciones del hogar.
-Opciones de respuesta:
-   [ ] Sí, de manera significativa (afecta ampliamente mi disponibilidad)
-   [ ] Sí, de manera moderada
-   [ ] No / Mínimo impacto en mi tiempo libre
+PREGUNTA 8: 8. Áreas o asignaturas con mayor reto o dificultad en tu aprendizaje [OBLIGATORIO]
+Descripción: Selecciona las áreas donde has percibido mayor complejidad académica o falta de acompañamiento.
+Tipo: checkbox
+Opciones:
+  [ ] Programación básica y Orientada a Objetos (Fundamentos, POO)
+  [ ] Estructuras de Datos y Algoritmos
+  [ ] Matemáticas y Lógica (Discretas, Cálculo, Álgebra)
+  [ ] Redes, Conectividad y Telecomunicaciones
+  [ ] Sistemas Operativos y Arquitectura de Computadoras
+  [ ] Bases de Datos (Modelado, SQL, NoSQL)
+  [ ] Ninguna en particular / Buen desempeño general
 
-REACTIVO 12: 12. Sistema operativo principal que utilizas para desarrollar y estudiar [OBLIGATORIA]
-Tipo: Selección única (Opción excluyente)
-Instrucción: Plataforma principal en tu equipo de uso cotidiano.
-Opciones de respuesta:
-   [ ] Windows
-   [ ] GNU/Linux (Ubuntu, Fedora, Arch, etc.)
-   [ ] macOS
-   [ ] Entorno dual (Windows + Linux)
-   [ ] No cuento con equipo propio / Dependo de equipos de la institución
-   [ ] Otro
+PREGUNTA 9: 9. Tipos de proyectos de software en los que has participado en la carrera [OBLIGATORIO]
+Descripción: Selecciona todas las dinámicas de proyecto que hayas experimentado.
+Tipo: checkbox
+Opciones:
+  [ ] Proyectos individuales de fin de materia
+  [ ] Proyectos en equipo con división de roles
+  [ ] Proyectos con usuarios o clientes reales fuera del aula
+  [ ] Proyectos donde tuve que leer o modificar código escrito por otra persona
+  [ ] Proyectos con entregas continuas, control de versiones o revisiones formales
+  [ ] Ninguna de las anteriores / Aún no he realizado proyectos de este tipo
 
-REACTIVO 13: 13. Horas aproximadas a la semana que dedicas al estudio autónomo y programación fuera de clases [OBLIGATORIA]
-Tipo: Selección única (Opción excluyente)
-Instrucción: Tiempo invertido por cuenta propia en proyectos, tareas o aprendizaje autodidacta.
-Opciones de respuesta:
-   [ ] Menos de 3 horas semanales
-   [ ] Entre 3 y 6 horas semanales
-   [ ] Entre 7 y 12 horas semanales
-   [ ] Más de 12 horas semanales
-
-
---------------------------------------------------------------------------------
-📌 MÓDULO 3: EXPERIENCIA EN LA CARRERA Y APRENDIZAJE
-   Materias de mayor complejidad, factores de dificultad, trabajo colaborativo y fortalezas institucionales.
---------------------------------------------------------------------------------
-
-REACTIVO 14: 14. ¿Cuáles áreas curriculares han presentado mayor dificultad o rezago en tu avance? [OPCIONAL]
-Tipo: Selección múltiple (Casillas de verificación)
-Instrucción: Puedes seleccionar una o más opciones.
-Opciones de respuesta:
-   [ ] Programación básica y Fundamentos de POO
-   [ ] Estructuras de Datos y Algoritmos avanzados
-   [ ] Matemáticas discretas, Cálculo y Física
-   [ ] Arquitectura de computadoras y Sistemas Operativos
-   [ ] Bases de Datos (modelado, consultas complejas, administración)
-   [ ] Redes y Conectividad (enrutamiento, configuración física/lógica)
-   [ ] Ingeniería de Software y Gestión de Proyectos
-   [ ] Ninguna en particular / Mi avance ha sido regular
-
-REACTIVO 15: 15. Factores principales que consideras dificultan tu aprendizaje en la carrera [OPCIONAL]
-Tipo: Selección múltiple (Casillas de verificación)
-Instrucción: Selecciona las causas que más han influido negativamente en tu desempeño.
-Opciones de respuesta:
-   [ ] Desfase o desactualización en temarios respecto a la industria moderna
-   [ ] Metodologías de enseñanza excesivamente teóricas o poco prácticas
-   [ ] Falta de laboratorios funcionales o equipo suficiente en clases
-   [ ] Falta de tiempo personal por trabajo, familia o traslados largos
-   [ ] Deficiencias o falta de bases previas en lógica matemática y razonamiento
-   [ ] Falta de acompañamiento o asesorías extracurriculares oportunas
-   [ ] Ninguno / Considero que el proceso de aprendizaje es fluido
-   [ ] Otro
-
-REACTIVO 16: 16. ¿Consideras que la carrera te brinda suficientes oportunidades de desarrollo de proyectos reales? [OBLIGATORIA]
-Tipo: Selección única (Opción excluyente)
-Instrucción: Proyectos con usuarios reales, especificaciones formales o impacto práctico.
-Opciones de respuesta:
-   [ ] Totalmente suficientes
-   [ ] Suficientes
-   [ ] Apenas suficientes / Muy limitadas
-   [ ] Insuficientes
-   [ ] Totalmente insuficientes / Nulas
-
-REACTIVO 17: 17. Experiencia y dinámica de trabajo colaborativo en equipo [OBLIGATORIA]
-Tipo: Matriz / Tabla de evaluación multidimensional
-Instrucción: Evalúa cómo se desarrollan los proyectos en equipo dentro de las materias.
-Escala de columnas (Opciones de evaluación):
-   • Excelente
-   • Buena
-   • Regular
-   • Deficiente
-   • Muy deficiente
-Filas de evaluación (Aspectos a calificar):
-   - Coordinación y comunicación entre integrantes del equipo (eq_coordinacion)
-   - Distribución equitativa de carga y esfuerzo técnico (eq_distribucion)
-   - Uso de herramientas formales de colaboración (Git, GitHub, Trello, Jira) (eq_herramientas)
-
-REACTIVO 18: 18. Principales fortalezas que reconoces en la formación que ofrece el ITCM [OPCIONAL]
-Tipo: Pregunta abierta (Texto libre)
-Instrucción: Menciona aspectos positivos, docentes destacados, enfoques o fortalezas del departamento.
-Formato: Campo de respuesta abierta.
-
+PREGUNTA 10: 10. Frecuencia de dinámicas colaborativas en proyectos de la carrera [OBLIGATORIO]
+Descripción: Indica con qué frecuencia se presentan estas situaciones de trabajo en equipo.
+Tipo: matrix
+Columnas (Escala):
+  - Nunca
+  - Rara vez / Una vez
+  - Algunas veces
+  - Frecuentemente
+  - No aplica
+Filas (Reactivos a evaluar):
+  [ ] eq_coordinacion: Coordinación efectiva y distribución equitativa de tareas
+  [ ] eq_codigo_ajeno: Integrar o entender módulos de código hechos por compañeros
+  [ ] eq_git_compartido: Uso de Git o GitHub compartido para fusionar trabajo en equipo
+  [ ] eq_revision_pares: Revisión entre compañeros (code review) antes de entregar
+  [ ] eq_conflictos: Resolución adecuada de desacuerdos técnicos o retrasos
 
 --------------------------------------------------------------------------------
-📌 MÓDULO 4: COMPETENCIAS TÉCNICAS Y PREPARACIÓN LABORAL
-   Dominio de herramientas modernas, fuentes de aprendizaje, inglés técnico y preparación para entrevistas.
+MÓDULO 3: HABILIDADES TÉCNICAS Y APRENDIZAJE FUERA DEL AULA
+Dominio de herramientas, fuentes de aprendizaje, inglés técnico y nivel de confianza.
 --------------------------------------------------------------------------------
 
-REACTIVO 19: 19. Nivel percibido de dominio en tecnologías clave [OBLIGATORIA]
-Tipo: Matriz / Tabla de evaluación multidimensional
-Instrucción: Califica tu nivel de experiencia práctica en cada una de las siguientes áreas.
-Escala de columnas (Opciones de evaluación):
-   • Ninguno / Desconocido
-   • Básico / Académico elemental
-   • Intermedio / Proyectos funcionales
-   • Avanzado / Nivel producción laboral
-Filas de evaluación (Aspectos a calificar):
-   - Control de versiones (Git / GitHub / GitLab) (dom_git)
-   - Bases de Datos SQL (PostgreSQL, MySQL) y NoSQL (dom_db)
-   - Desarrollo Web (Frontend: React/Vue/HTML/CSS, Backend: Node/Python/Java) (dom_web)
-   - Desarrollo Móvil (Flutter, React Native, Android nativo) (dom_movil)
-   - Computación en la Nube (AWS, GCP, Azure) (dom_cloud)
-   - DevOps, Contenedores y CI/CD (Docker, Linux Server) (dom_devops)
-   - Ciberseguridad y Principios de Desarrollo Seguro (dom_sec)
-   - Inteligencia Artificial y Machine Learning Aplicado (dom_ia)
+PREGUNTA 11: 11. Nivel actual de dominio en herramientas y prácticas técnicas clave [OBLIGATORIO]
+Descripción: Evalúa con sinceridad tu nivel de independencia en cada una.
+Tipo: matrix
+Columnas (Escala):
+  - No la conozco
+  - Casi no la he usado
+  - Tareas básicas guiadas
+  - Uso autónomo en proyectos
+  - Sin oportunidad
+Filas (Reactivos a evaluar):
+  [ ] dom_programacion: Lenguajes de programación (Java, Python, C++, C#, JS, etc.)
+  [ ] dom_git: Control de versiones con Git y GitHub (commits, ramas, PRs)
+  [ ] dom_debugging: Depuración de errores (debugging) y lectura de logs
+  [ ] dom_testing: Pruebas unitarias o aseguramiento de calidad (Testing/QA)
+  [ ] dom_linux: Uso de terminal, línea de comandos y entornos Linux
+  [ ] dom_db_apis: Conexión de bases de datos y consumo de APIs REST
+  [ ] dom_docs: Documentación técnica y lectura de especificaciones oficiales
+  [ ] dom_aprender_tech: Aprender de forma autónoma una nueva librería o tecnología
 
-REACTIVO 20: 20. Principal fuente donde has adquirido tus conocimientos técnicos prácticos [OBLIGATORIA]
-Tipo: Matriz / Tabla de evaluación multidimensional
-Instrucción: Indica el origen predominante de tus habilidades para cada área.
-Escala de columnas (Opciones de evaluación):
-   • Clases escolares obligatorias
-   • Cursos externos / Bootcamps / Certificaciones
-   • Autoaprendizaje autodidacta (YouTube, documentación, libros)
-   • Experiencia laboral formal o proyectos freelance personales
-Filas de evaluación (Aspectos a calificar):
-   - Lenguajes y frameworks de programación modernos (fnt_lenguajes)
-   - Buenas prácticas de arquitectura, patrones y código limpio (fnt_arquitectura)
-   - Herramientas de despliegue, servidores y nube (fnt_despliegue)
+PREGUNTA 12: 12. ¿De dónde proviene principalmente lo que sabes sobre herramientas técnicas? [OBLIGATORIO]
+Descripción: Identifica tu principal fuente de preparación técnica práctica.
+Tipo: radio
+Opciones:
+  [ ] Principalmente de las materias y clases de la carrera
+  [ ] Talleres, asesorías o actividades organizadas en el campus / capítulos estudiantiles
+  [ ] Aprendizaje autónomo por cuenta propia (documentación, videos, tutoriales)
+  [ ] Intercambio de conocimientos con compañeros y amigos
+  [ ] Cursos externos o plataformas de aprendizaje en línea
+  [ ] Experiencia en trabajos, prácticas profesionales o proyectos freelance
+  [ ] Aún no domino suficientes herramientas prácticas
 
-REACTIVO 21: 21. ¿Has tenido experiencia laboral o profesional en el área de TI? [OBLIGATORIA]
-Tipo: Selección única (Opción excluyente)
-Instrucción: Trayectoria previa en el ecosistema informático.
-Opciones de respuesta:
-   [ ] Sí, cuento con empleo formal activo o previo en TI
-   [ ] Sí, mediante proyectos freelance o desarrollo por encargo
-   [ ] Sí, a través de servicio social o prácticas en áreas de TI
-   [ ] No, aún no cuento con experiencia en el sector
+PREGUNTA 13: 13. Habilidades técnicas que sentiste mayor necesidad de aprender fuera del aula [OBLIGATORIO]
+Descripción: Selecciona hasta 3 habilidades donde percibiste mayor necesidad de autoestudio.
+Tipo: checkbox
+Opciones:
+  [ ] Lenguajes y frameworks demandados en la industria
+  [ ] Control de versiones con Git y flujos colaborativos en GitHub
+  [ ] Depuración de errores (debugging) y solución autónoma de fallos
+  [ ] Pruebas automatizadas (testing) y calidad de código
+  [ ] Terminal, entornos Linux y despliegue básico
+  [ ] Conexión a bases de datos y desarrollo de APIs
+  [ ] Lectura de documentación técnica e investigación en inglés
+  [ ] Metodologías de trabajo profesional y arquitectura de software
+  [ ] Ninguna en particular
 
-REACTIVO 22: 22. ¿Tienes actualmente un portafolio técnico activo o repositorio público con proyectos? [OBLIGATORIA]
-Tipo: Selección única (Opción excluyente)
-Instrucción: Perfil de GitHub, GitLab, portafolio web o proyectos demostrables.
-Opciones de respuesta:
-   [ ] Sí, estructurado y actualizado con proyectos personales o de equipo
-   [ ] Sí, pero tiene pocos proyectos o requiere orden y documentación
-   [ ] No, pero tengo interés prioritario en construirlo
-   [ ] No tengo y requiero orientación para empezar desde cero
+PREGUNTA 14: 14. Nivel de dominio del inglés técnico aplicado a la computación [OBLIGATORIO]
+Descripción: Capacidad para comprender documentación oficial, errores de terminal y literatura técnica.
+Tipo: radio
+Opciones:
+  [ ] Leo y comprendo documentación técnica y errores sin dificultad
+  [ ] Nivel básico / intermedio (me apoyo frecuentemente con traductor)
+  [ ] Comprendo lectura y puedo redactar o comunicarme técnicamente en inglés
+  [ ] Mi nivel de inglés técnico es muy limitado o nulo
 
-REACTIVO 23: 23. Dominio del idioma inglés para el ámbito profesional de TI [OBLIGATORIA]
-Tipo: Matriz / Tabla de evaluación multidimensional
-Instrucción: Autoevalúa tu competencia funcional en inglés técnico.
-Escala de columnas (Opciones de evaluación):
-   • Avanzado / Fluido
-   • Intermedio / Funcional
-   • Básico / Con apoyo de traductor
-   • Nulo / Muy limitado
-Filas de evaluación (Aspectos a calificar):
-   - Lectura y comprensión fluida de documentación técnica oficial (ing_lectura)
-   - Comunicación verbal / Capacidad de sostener entrevistas de trabajo (ing_comunicacion)
-
-REACTIVO 24: 24. Preparación para procesos de selección y reclutamiento técnico [OBLIGATORIA]
-Tipo: Matriz / Tabla de evaluación multidimensional
-Instrucción: Nivel de confianza en etapas habituales de contratación en la industria de software.
-Escala de columnas (Opciones de evaluación):
-   • Muy preparado / Con práctica
-   • Moderadamente preparado
-   • Poco preparado / Inseguro
-   • Nada preparado / Desconozco la dinámica
-Filas de evaluación (Aspectos a calificar):
-   - Resolución de retos de código y algoritmos en vivo (LeetCode, HackerRank) (rec_algoritmos)
-   - Elaboración de CV de alto impacto con métricas y estándares de la industria (rec_cv)
-   - Entrevistas técnicas de arquitectura y conductuales (STAR method) (rec_entrevistas)
-
-REACTIVO 25: 25. ¿Cuál consideras que es la necesidad más urgente en tu preparación para ingresar al mercado laboral? [OPCIONAL]
-Tipo: Pregunta abierta (Texto libre)
-Instrucción: Describe qué habilidad, certificación, conocimiento o recurso te hace mayor falta.
-Formato: Campo de respuesta abierta.
-
+PREGUNTA 15: 15. Nivel de confianza para enfrentar situaciones profesionales de tecnología [OBLIGATORIO]
+Descripción: Qué tan seguro/a te sientes ante los siguientes escenarios de la industria.
+Tipo: matrix
+Columnas (Escala):
+  - Nada preparado
+  - Poco preparado
+  - Algo preparado
+  - Bien preparado
+  - Muy preparado
+Filas (Reactivos a evaluar):
+  [ ] conf_explicar_proyecto: Explicar técnicamente la arquitectura de un proyecto propio
+  [ ] conf_codigo_existente: Integrarte a un proyecto existente y entender código ajeno
+  [ ] conf_aprender_tech: Aprender una nueva tecnología requerida en 2 a 3 semanas
+  [ ] conf_trabajo_equipo: Colaborar técnicamente en un equipo multidisciplinario
+  [ ] conf_entrevista_tecnica: Resolver problemas o preguntas en una entrevista técnica
 
 --------------------------------------------------------------------------------
-📌 MÓDULO 5: INTELIGENCIA ARTIFICIAL EN LA FORMACIÓN ACADÉMICA
-   Frecuencia, casos de uso habituales y prácticas de verificación crítica del código generado.
+MÓDULO 4: PREPARACIÓN PROFESIONAL, IA Y PROYECCIÓN TECNOLÓGICA
+Percepción laboral, entrevistas técnicas, portafolio GitHub y uso responsable de IA.
 --------------------------------------------------------------------------------
 
-REACTIVO 26: 26. ¿Con qué frecuencia utilizas herramientas de Inteligencia Artificial en tus estudios y código? [OBLIGATORIA]
-Tipo: Selección única (Opción excluyente)
-Instrucción: Uso de ChatGPT, Claude, GitHub Copilot, Gemini, Cursor u otros LLMs.
-Opciones de respuesta:
-   [ ] A diario / Prácticamente en cada sesión de trabajo
-   [ ] Varias veces por semana
-   [ ] Ocasionalmente / Pocas veces al mes
-   [ ] Rara vez o nunca
+PREGUNTA 16: 16. ¿Qué tan preparado/a te sientes para integrarte al campo laboral en TI? [OBLIGATORIO]
+Descripción: Autopercepción general de tu preparación práctica para residencia o empleo.
+Tipo: radio
+Opciones:
+  [ ] 1 - Muy poco preparado/a
+  [ ] 2 - Con preparación básica pero muchas dudas prácticas
+  [ ] 3 - Nivel intermedio (con bases pero requiero mentoría)
+  [ ] 4 - Bien preparado/a para iniciar con éxito
+  [ ] 5 - Totalmente preparado/a y competitivo/a
+  [ ] Aún es muy temprano en mi carrera para evaluarlo
 
-REACTIVO 27: 27. Principales propósitos con los que utilizas asistentes de Inteligencia Artificial [OPCIONAL]
-Tipo: Selección múltiple (Casillas de verificación)
-Instrucción: Selecciona todas las opciones que apliquen a tu rutina de estudio.
-Opciones de respuesta:
-   [ ] Explicación didáctica y comprensión de conceptos teóricos o matemáticos
-   [ ] Detección y solución de errores de sintaxis o bugs (debugging)
-   [ ] Generación directa de fragmentos o funciones completas de código
-   [ ] Optimización, limpieza y refactorización de código propio
-   [ ] Redacción de reportes, documentación técnica y síntesis
-   [ ] No utilizo herramientas de IA
+PREGUNTA 17: 17. Experiencia previa en procesos de selección o entrevistas técnicas [OBLIGATORIO]
+Descripción: Participación en filtros de reclutamiento o simulaciones técnicas de software.
+Tipo: radio
+Opciones:
+  [ ] Sí, en procesos reales de trabajo, prácticas o becas
+  [ ] Sí, en simulaciones académicas, torneos o hackathones
+  [ ] Sí, tanto en procesos reales como en simulaciones
+  [ ] Todavía no he tenido la experiencia
+  [ ] No estoy familiarizado/a con cómo son ese tipo de evaluaciones
 
-REACTIVO 28: 28. Prácticas de verificación y pensamiento crítico al emplear IA [OBLIGATORIA]
-Tipo: Matriz / Tabla de evaluación multidimensional
-Instrucción: Evalúa la rigurosidad con la que manejas el código generado por IA.
-Escala de columnas (Opciones de evaluación):
-   • Siempre
-   • Casi siempre
-   • A veces
-   • Rara vez
-   • Nunca
-Filas de evaluación (Aspectos a calificar):
-   - Leo y analizo minuciosamente cada línea antes de integrarla a mi proyecto (ia_inspeccion)
-   - Escribo pruebas locales o verifico casos borde para confirmar que funciona (ia_pruebas)
-   - Copio y pego la respuesta directamente sin verificar si compila a la primera (ia_copia_directa)
+PREGUNTA 18: 18. Estado actual de tu perfil de GitHub o portafolio de proyectos [OBLIGATORIO]
+Descripción: Evidencia pública de tu trabajo y código desarrollado.
+Tipo: radio
+Opciones:
+  [ ] Cuento con un perfil activo con proyectos documentados y actualizados
+  [ ] Tengo cuenta de GitHub pero con pocos proyectos, desorganizados o desactualizados
+  [ ] No tengo portafolio ni GitHub activo, pero me gustaría crearlo y aprender a mantenerlo
+  [ ] No sé cómo empezar a construir un portafolio profesional de software
 
+PREGUNTA 19: 19. Uso de herramientas de Inteligencia Artificial para programar [OBLIGATORIO]
+Descripción: Forma en la que incorporas asistentes de IA (ChatGPT, Claude, Copilot) al codificar.
+Tipo: radio
+Opciones:
+  [ ] No las utilizo para programar o estudiar
+  [ ] Principalmente para aclarar dudas teóricas o buscar ideas iniciales
+  [ ] Genero código y siempre lo reviso, entiendo y pruebo antes de usarlo
+  [ ] Las utilizo con mucha frecuencia apoyándome también en la documentación oficial
+  [ ] A veces copio sugerencias directamente sin terminar de comprender todo su funcionamiento
 
---------------------------------------------------------------------------------
-📌 MÓDULO 6: ESPECIALIDADES, RESIDENCIA PROFESIONAL E INNOVACIÓN
-   Pertinencia curricular, retos para inserción profesional y aspiraciones de carrera.
---------------------------------------------------------------------------------
-
-REACTIVO 29: 29. ¿Qué opinas sobre la oferta actual de materias de especialidad en Sistemas del ITCM? [OBLIGATORIA]
-Tipo: Selección única (Opción excluyente)
-Instrucción: Pertinencia curricular de las materias avanzadas respecto a las tendencias mundiales.
-Opciones de respuesta:
-   [ ] Muy actualizada y estrechamente alineada con la demanda del mercado
-   [ ] Moderadamente actualizada, pero requiere renovar contenidos clave
-   [ ] Desactualizada frente a los estándares tecnológicos contemporáneos
-   [ ] Aún no conozco a profundidad la oferta de especialidades
-
-REACTIVO 30: 30. ¿Cuál consideras que es el mayor reto al buscar residencia profesional? [OBLIGATORIA]
-Tipo: Selección única (Opción excluyente)
-Instrucción: Principal obstáculo previsto o experimentado en la transición profesional.
-Opciones de respuesta:
-   [ ] Escasez de empresas locales de desarrollo de software en la zona conurbada
-   [ ] Requisitos técnicos elevados que exceden lo enseñado en las aulas
-   [ ] Nivel de inglés técnico requerido para vacantes remotas o trasnacionales
-   [ ] Falta de convenios institucionales activos con empresas tecnológicas
-   [ ] Procesos de selección largos y complejos
-   [ ] Aún no curso los semestres de residencia / No lo he contemplado
-
-REACTIVO 31: 31. ¿Conoces o has participado en eventos como InnovaTecNM o Hackathones? [OBLIGATORIA]
-Tipo: Selección única (Opción excluyente)
-Instrucción: Involucramiento en certámenes de desarrollo, emprendimiento o innovación.
-Opciones de respuesta:
-   [ ] He participado activamente en uno o más eventos
-   [ ] Los conozco, pero no he participado por falta de equipo o tiempo
-   [ ] Los conozco, pero no me siento con la preparación técnica suficiente para competir
-   [ ] No los conozco / No se difunden con claridad en la comunidad
-
-REACTIVO 32: 32. ¿Qué rol profesional aspiras desempeñar prioritariamente al graduarte? [OBLIGATORIA]
-Tipo: Selección única (Opción excluyente)
-Instrucción: Especialización profesional a la que orientas tu carrera futura.
-Opciones de respuesta:
-   [ ] Desarrollador de Software / Full Stack / Frontend / Backend
-   [ ] Ingeniero de Datos / Analista de Datos / Data Scientist
-   [ ] Especialista en Cloud Computing & DevOps
-   [ ] Especialista en Ciberseguridad / Seguridad Ofensiva o Defensiva
-   [ ] Administrador de Infraestructura de Redes y Telecomunicaciones
-   [ ] Project Manager TI / Product Owner / Scrum Master
-   [ ] Emprendedor / Fundador de startup tecnológica propia
-   [ ] Investigador / Posgrado académico
-   [ ] Otro / Aún explorando opciones
-
+PREGUNTA 20: 20. Proyectos de software de ACM desarrollados para el ITCM [OBLIGATORIO]
+Descripción: ¿Qué opinas de que el Capítulo ACM impulse plataformas de software real hechas por alumnos?
+Tipo: radio
+Opciones:
+  [ ] Es excelente y me encantaría participar como desarrollador/a o colaborador/a
+  [ ] Me parece una gran iniciativa y la apoyaría aunque no participe directamente como programador/a
+  [ ] Me resulta indiferente
+  [ ] Preferiría que ACM se concentre únicamente en conferencias o cursos teóricos
 
 --------------------------------------------------------------------------------
-📌 MÓDULO 7: INFRAESTRUCTURA, CONDICIONES FÍSICAS Y BIENESTAR
-   Evaluación de laboratorios, conectividad en aulas, ergonomía y salud del estudiante.
+MÓDULO 5: TALLERES, EVENTOS Y PARTICIPACIÓN EN ACM ITCM
+Temas de alta demanda práctica, formato de eventos masivos, voluntariado y propuestas.
 --------------------------------------------------------------------------------
 
-REACTIVO 33: 33. Evaluación de la infraestructura de los laboratorios del Departamento de Sistemas [OBLIGATORIA]
-Tipo: Matriz / Tabla de evaluación multidimensional
-Instrucción: Califica el estado de los recursos físicos del departamento.
-Escala de columnas (Opciones de evaluación):
-   • Excelente
-   • Bueno
-   • Regular
-   • Deficiente
-   • No utilizo los laboratorios
-Filas de evaluación (Aspectos a calificar):
-   - Capacidad y velocidad de cómputo en equipos de laboratorios (lab_rendimiento)
-   - Estabilidad y velocidad de red cableada y Wi-Fi en laboratorios (lab_red)
-   - Disponibilidad de entornos de desarrollo, IDEs y licencias actualizadas (lab_software)
-   - Climatización (AC), ergonomía de sillas, iluminación y limpieza (lab_ambiente)
+PREGUNTA 21: 21. Temas prioritarios para talleres prácticos intensivos (Bootcamps) [OBLIGATORIO]
+Descripción: Selecciona hasta 3 temas en los que te inscribirías con mayor prioridad.
+Tipo: checkbox
+Opciones:
+  [ ] Git y flujos de trabajo colaborativos en GitHub a nivel profesional
+  [ ] Desarrollo Web Fullstack moderno (Frontend y Backend con Node/React/Python)
+  [ ] Entornos Linux, terminal avanzada y Docker / DevOps básico
+  [ ] Creación y consumo de APIs REST y bases de datos relacionales/NoSQL
+  [ ] Pruebas automatizadas (Testing), Clean Code y Arquitectura de Software
+  [ ] Fundamentos de Ciberseguridad y hacking ético
+  [ ] Inteligencia Artificial aplicada y Machine Learning
+  [ ] Preparación de CV técnico, portafolio y entrevistas laborales de programación
 
-REACTIVO 34: 34. Deficiencias físicas o materiales que consideras prioritario atender en el departamento [OPCIONAL]
-Tipo: Selección múltiple (Casillas de verificación)
-Instrucción: Selecciona las necesidades más apremiantes en las instalaciones.
-Opciones de respuesta:
-   [ ] Instalación de contactos eléctricos accesibles para laptops en aulas comunes
-   [ ] Ampliación de ancho de banda y cobertura de Wi-Fi institucional
-   [ ] Mantenimiento correctivo urgente a sistemas de aire acondicionado
-   [ ] Actualización de hardware en computadoras de laboratorios especializados
-   [ ] Habilitación de cubículos o áreas tranquilas para trabajo colaborativo y estudio
-   [ ] Ninguna / Las condiciones actuales me parecen adecuadas
+PREGUNTA 22: 22. Formato preferido para eventos tecnológicos masivos de Sistemas [OBLIGATORIO]
+Descripción: Tipo de evento que mayor impacto y motivación te generaría en el campus.
+Tipo: radio
+Opciones:
+  [ ] Hackathón tecnológico de 24 a 36 horas con retos y premios
+  [ ] Torneo o concurso de programación competitiva y algorítmica
+  [ ] Congreso o simposio con conferencistas de la industria tech
+  [ ] Ciclos continuos de charlas técnicas cortas (Tech Talks) y networking estudiantil
 
-REACTIVO 35: 35. Molestias de salud asociadas a las jornadas intensivas de estudio y programación [OBLIGATORIA]
-Tipo: Matriz / Tabla de evaluación multidimensional
-Instrucción: Frecuencia con la que experimentas las siguientes condiciones derivadas de la carga escolar.
-Escala de columnas (Opciones de evaluación):
-   • Frecuentemente
-   • Ocasionalmente
-   • Rara vez
-   • Nunca
-Filas de evaluación (Aspectos a calificar):
-   - Fatiga visual, ardor ocular o dolor de cabeza por pantallas (salud_visual)
-   - Dolores musculares en cuello, espalda o muñecas (túnel carpiano) (salud_postural)
-   - Estrés agudo, sobrecarga mental o trastornos del sueño por entregas (salud_estres)
+PREGUNTA 23: 23. Probabilidad de asistir a actividades extracurriculares de ACM [OBLIGATORIO]
+Descripción: Qué tan factible es que asistas a talleres, hackathones o eventos del capítulo.
+Tipo: radio
+Opciones:
+  [ ] 1 - Nada probable (complicaciones de horario, transporte o trabajo)
+  [ ] 2 - Poco probable
+  [ ] 3 - Probable si los horarios se adaptan a mi turno
+  [ ] 4 - Muy probable (tengo alto interés en participar)
+  [ ] 5 - Definitivamente asistiré y me involucraré
 
-REACTIVO 36: 36. ¿Consideras oportuno organizar actividades de convivencia, recreación y pausas activas? [OBLIGATORIA]
-Tipo: Selección única (Opción excluyente)
-Instrucción: Espacios recreativos (torneos de e-sports, convivencia, pausas ergonómicas) para la comunidad estudiantil.
-Opciones de respuesta:
-   [ ] Totalmente de acuerdo
-   [ ] De acuerdo
-   [ ] Indiferente / Neutral
-   [ ] En desacuerdo
-   [ ] Totalmente en desacuerdo
+PREGUNTA 24: 24. Comités de trabajo de ACM ITCM en los que te gustaría colaborar [OBLIGATORIO]
+Descripción: Elige las áreas donde te gustaría integrarte como voluntario/a activo o asistente.
+Tipo: checkbox
+Opciones:
+  [ ] Comité de Desarrollo de Software (plataformas y sistemas web del capítulo)
+  [ ] Comité de Logística y Organización de Eventos / Hackathones
+  [ ] Comité Académico y de Talleres (asesorías técnicas e impartición de bootcamps)
+  [ ] Comité de Difusión, Medios y Diseño Multimedia
+  [ ] Prefiero participar únicamente como asistente a los eventos y actividades
 
+PREGUNTA 25: 25. Si pudieras cambiar o proponer una sola cosa en la carrera, ¿cuál sería? (Opcional) [OPCIONAL]
+Descripción: Espacio libre para tus sugerencias, necesidades prioritarias o ideas para enriquecer la formación en Sistemas.
+Tipo: textarea
 
---------------------------------------------------------------------------------
-📌 MÓDULO 8: TALLERES, EVENTOS Y ACTIVIDADES TÉCNICAS ACM
-   Temas de alta demanda, formatos de eventos tecnológicos masivos y condicionantes de asistencia.
---------------------------------------------------------------------------------
-
-REACTIVO 37: 37. Temas en los que tendrías mayor interés para talleres prácticos extracurriculares (Elige hasta 3) [OPCIONAL]
-Tipo: Selección múltiple (Casillas de verificación)
-Instrucción: Talleres técnicos orientados a proyectos aplicados organizados por ACM.
-Opciones de respuesta:
-   [ ] Git & GitHub: Flujos profesionales en equipo y Open Source
-   [ ] Desarrollo Web Moderno (React, Next.js, Node.js, TypeScript)
-   [ ] Arquitecturas Cloud y DevOps (AWS, Docker, CI/CD pipelines)
-   [ ] Ciberseguridad Práctica, Pentesting defensivo y Hardening
-   [ ] Inteligencia Artificial y Machine Learning aplicado con Python
-   [ ] Estructuras de Datos y resolución de algoritmos para LeetCode
-   [ ] Bases de Datos Avanzadas y optimización de consultas SQL/NoSQL
-   [ ] Desarrollo Móvil Multiplataforma (Flutter / React Native)
-   [ ] Preparación de CV Tech, LinkedIn y simulación de entrevistas
-
-REACTIVO 38: 38. Formato de eventos académicos y tecnológicos masivos que prefieres ver organizados [OBLIGATORIA]
-Tipo: Selección única (Opción excluyente)
-Instrucción: Actividades insignia de gran formato organizadas durante el ciclo escolar.
-Opciones de respuesta:
-   [ ] Hackathón presencial de 24 a 36 horas continuas con retos empresariales y premios
-   [ ] Congreso o Simposio con conferencistas de la industria tech nacional e internacional
-   [ ] Torneos de Programación Competitiva y retos algorítmicos por equipos
-   [ ] Feria de Software y Emprendimiento Estudiantil abierta al sector productivo
-   [ ] Charlas técnicas breves y periódicas (Tech Talks quincenales / mensuales)
-
-REACTIVO 39: 39. Factores determinantes que condicionan tu asistencia a talleres extracurriculares [OPCIONAL]
-Tipo: Selección múltiple (Casillas de verificación)
-Instrucción: Selecciona las condiciones indispensables para que puedas participar.
-Opciones de respuesta:
-   [ ] Horario compatible que no se traslape con mis materias curriculares
-   [ ] Enfoque 100% práctico con construcción de un proyecto funcional para portafolio
-   [ ] Entrega de constancia de acreditación o valor curricular formal
-   [ ] Costo gratuito o cuota mínima de recuperación totalmente accesible
-   [ ] Instructores con experiencia comprobable en la industria o proyectos reales
-   [ ] Modalidad flexible (presencial con opción a grabación para repaso asíncrono)
-
-REACTIVO 40: 40. Interés en apoyar o participar en iniciativas de talento femenino en tecnología (ACM-W) [OBLIGATORIA]
-Tipo: Selección única (Opción excluyente)
-Instrucción: Iniciativas para impulsar mentoría, liderazgo y visibilidad de mujeres ingenieras en computación.
-Opciones de respuesta:
-   [ ] Muy alto interés / Deseo participar activamente
-   [ ] Moderado interés / Asistiría a las conferencias y eventos
-   [ ] Neutral / Me es indistinto
-   [ ] No considero que sea prioritario
-
-
---------------------------------------------------------------------------------
-📌 MÓDULO 9: MENTORÍAS, DESARROLLO DE SOFTWARE COMUNITARIO Y VOLUNTARIADO
-   Comunidades de práctica, proyectos de código abierto locales y reclutamiento de comités estudiantiles.
---------------------------------------------------------------------------------
-
-REACTIVO 41: 41. ¿Estarías interesado en un programa formal de mentorías entre estudiantes y egresados? [OBLIGATORIA]
-Tipo: Selección única (Opción excluyente)
-Instrucción: Acompañamiento técnico y vocacional continuo.
-Opciones de respuesta:
-   [ ] Sí, me gustaría recibir mentoría de estudiantes avanzados o egresados en la industria
-   [ ] Sí, me gustaría ser mentor de estudiantes de semestres iniciales en temas que domino
-   [ ] Me interesaría en ambas modalidades (recibir orientación y también orientar a otros)
-   [ ] No por el momento debido a limitaciones de tiempo
-   [ ] No me interesa
-
-REACTIVO 42: 42. ¿Te interesaría colaborar en el desarrollo de software real de código abierto para el campus? [OBLIGATORIA]
-Tipo: Selección única (Opción excluyente)
-Instrucción: Creación de herramientas tecnológicas para el ITCM (portales, bots de biblioteca, sistemas de eventos).
-Opciones de respuesta:
-   [ ] Sí, con alto entusiasmo / Quiero programar en proyectos colectivos reales
-   [ ] Sí, siempre que los horarios y entregas sean razonables y coordinadas
-   [ ] Tal vez más adelante cuando adquiera mayor dominio en programación
-   [ ] No es de mi interés participar en desarrollo extracurricular
-
-REACTIVO 43: 43. ¿Te gustaría sumarte como colaborador voluntario al Capítulo Estudiantil ACM (2026–2027)? [OPCIONAL]
-Tipo: Selección múltiple (Casillas de verificación)
-Instrucción: Áreas donde podrías aportar tus habilidades dentro de la organización estudiantil.
-Opciones de respuesta:
-   [ ] Comité Técnico y Académico (impartición de talleres, preparación de retos)
-   [ ] Comité de Logística y Operaciones (organización de hackathones y eventos)
-   [ ] Comité de Medios, Diseño y Comunicación (redes sociales, fotografía, diseño gráfico)
-   [ ] Equipo de Desarrollo de Software (construcción de plataformas web y sistemas)
-   [ ] Comité de Vinculación y Patrocinios (contacto con empresas y egresados)
-   [ ] Prefiero participar únicamente como asistente a los eventos
-   [ ] No deseo integrarme a comités de voluntariado
-
-
---------------------------------------------------------------------------------
-📌 MÓDULO 10: LOGÍSTICA, AFILIACIÓN Y SUSTENTABILIDAD FINANCIERA
-   Horarios óptimos, canales de comunicación, percepción de membresías y modelos de financiamiento.
---------------------------------------------------------------------------------
-
-REACTIVO 44: 44. ¿Cuál es el horario más conveniente para tus actividades extracurriculares presenciales? [OBLIGATORIA]
-Tipo: Selección única (Opción excluyente)
-Instrucción: Momento idóneo para evitar deserciones por choques de horario.
-Opciones de respuesta:
-   [ ] Viernes por la tarde (a partir de las 14:00 o 15:00 hrs)
-   [ ] Sábados por la mañana (ej. 9:00 a 13:00 hrs)
-   [ ] Entre semana en horario intermedio (12:00 a 14:00 hrs)
-   [ ] Formato asíncrono o virtual con sesiones en vivo por la noche
-   [ ] No tengo posibilidad de asistir a actividades extracurriculares
-
-REACTIVO 45: 45. Duración que consideras más efectiva y sostenible para un taller práctico [OBLIGATORIA]
-Tipo: Selección única (Opción excluyente)
-Instrucción: Estructura pedagógica idónea para maximizar retención y práctica.
-Opciones de respuesta:
-   [ ] Sesión única intensiva de 2 a 3 horas en un solo día
-   [ ] Taller de fin de semana (sábado intensivo de 4 a 5 horas con pausas)
-   [ ] Serie modular semanal (1 a 2 horas por semana a lo largo de 3 o 4 semanas)
-   [ ] Bootcamp express intensivo durante periodos intersemestrales o vacacionales
-
-REACTIVO 46: 46. Medios mediante los cuales prefieres enterarte de avisos, talleres y convocatorias [OPCIONAL]
-Tipo: Selección múltiple (Casillas de verificación)
-Instrucción: Canales de mayor consulta cotidiana para enterarte oportunamente.
-Opciones de respuesta:
-   [ ] Comunidad o grupos oficiales en WhatsApp
-   [ ] Servidor o comunidad en Discord
-   [ ] Canal de difusión en Telegram
-   [ ] Página y publicaciones en Instagram
-   [ ] Difusión directa presencial salón por salón y carteles en mamparas
-   [ ] Correo institucional oficial
-
-REACTIVO 47: 47. Percepción sobre los beneficios de la afiliación institucional al ecosistema internacional ACM [OBLIGATORIA]
-Tipo: Matriz / Tabla de evaluación multidimensional
-Instrucción: Valora la relevancia que le atribuyes a cada beneficio de una membresía internacional.
-Escala de columnas (Opciones de evaluación):
-   • Altamente valioso
-   • Moderadamente valioso
-   • Poco valioso
-   • Desconocido / Sin información suficiente
-Filas de evaluación (Aspectos a calificar):
-   - Acceso a la ACM Digital Library (revistas, libros, papers y conferencias de investigación) (af_biblioteca)
-   - Membresía formal, correo institucional @acm.org y distinción en el CV profesional (af_credencial)
-   - Pertenencia a la red científica de computación más prestigiada a nivel global (af_networking)
-   - Becas para congresos internacionales, competencias globales y certificaciones (af_descuentos)
-
-REACTIVO 48: 48. Respecto a la sustentabilidad de eventos (kits, refrigerios, licencias), ¿cuál es tu postura? [OBLIGATORIA]
-Tipo: Selección única (Opción excluyente)
-Instrucción: Esquema viable para financiar hackathones de calidad, refrigerios en maratones y materiales.
-Opciones de respuesta:
-   [ ] Todas las actividades deben financiarse exclusivamente con patrocinios externos o apoyos institucionales
-   [ ] Aportación simbólica anual ($50 a $100 MXN) si incluye beneficios tangibles y descuentos en talleres
-   [ ] Aportación anual intermedia ($101 a $200 MXN) con acceso prioritario a eventos masivos y kits
-   [ ] Interés en adquirir la membresía estudiantil oficial internacional ACM con descuento institucional
-
-
---------------------------------------------------------------------------------
-📌 MÓDULO 11: PRIORIDADES DE GESTIÓN, BUZÓN Y PROPUESTAS
-   Ejes prioritarios para la Mesa Directiva 2026–2027 y propuestas abiertas para la carrera.
---------------------------------------------------------------------------------
-
-REACTIVO 49: 49. ¿Cuál debe ser la máxima prioridad de la próxima Mesa Directiva del Capítulo ACM 2026–2027? [OBLIGATORIA]
-Tipo: Selección única (Opción excluyente)
-Instrucción: Eje estratégico fundamental al que debe abocarse el equipo directivo.
-Opciones de respuesta:
-   [ ] Capacitación técnica de alto nivel y preparación para el empleo en la industria de software
-   [ ] Organización de hackathones presenciales y competencias de programación de gran impacto
-   [ ] Gestión y colaboración para resolver necesidades de laboratorios e infraestructura del departamento
-   [ ] Construcción de comunidad, programa de mentorías y bienvenida integral a nuevos estudiantes
-   [ ] Vinculación con empresas tecnológicas líderes y egresados destacados en la industria nacional e internacional
-
-REACTIVO 50: 50. Si pudieras cambiar o implementar una sola cosa en la carrera de Ingeniería en Sistemas del ITCM, ¿cuál sería? [OPCIONAL]
-Tipo: Pregunta abierta (Texto libre)
-Instrucción: Propuesta prioritaria de alto impacto para la formación académica y profesional.
-Formato: Campo de respuesta abierta.
-
-REACTIVO 51: Buzón abierto: Comentarios adicionales, observaciones o propuestas libres [OPCIONAL]
-Tipo: Pregunta abierta (Texto libre)
-Instrucción: Espacio abierto para cualquier idea, sugerencia para la directiva o inquietud no abordada.
-Formato: Campo de respuesta abierta.
