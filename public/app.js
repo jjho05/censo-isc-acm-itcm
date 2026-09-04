@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnCopySuccessLink = document.getElementById('btnCopySuccessLink');
 
   // --------------------------------------------------------------------------
-  // 1. SISTEMA DE DIFUSIÓN (COMPARTIR EN WHATSAPP Y COPIAR ENLACE)
+  // 1. SISTEMA DE DIFUSIÓN (COMPARTIR EN WHATSAPP, QR Y COPIAR ENLACE)
   // --------------------------------------------------------------------------
   function setupSharing() {
     const currentOrigin = (window.location.protocol === 'http:' || window.location.protocol === 'https:')
@@ -70,6 +70,84 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (btnCopyIntroLink) btnCopyIntroLink.addEventListener('click', copyUrlToClipboard);
     if (btnCopySuccessLink) btnCopySuccessLink.addEventListener('click', copyUrlToClipboard);
+
+    // ------------------------------------------------------------------------
+    // GESTIÓN DEL MODAL DE CÓDIGO QR
+    // ------------------------------------------------------------------------
+    const btnShowQrIntro = document.getElementById('btnShowQrIntro');
+    const btnShowQrSuccess = document.getElementById('btnShowQrSuccess');
+    const qrModal = document.getElementById('qrModal');
+    const btnCloseQrModal = document.getElementById('btnCloseQrModal');
+    const qrImageDisplay = document.getElementById('qrImageDisplay');
+    const qrUrlDisplay = document.getElementById('qrUrlDisplay');
+    const btnDownloadQr = document.getElementById('btnDownloadQr');
+    const btnShareQrWhatsApp = document.getElementById('btnShareQrWhatsApp');
+    const btnCopyQrUrl = document.getElementById('btnCopyQrUrl');
+
+    const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=12&data=${encodeURIComponent(currentOrigin)}`;
+
+    function openQrModal() {
+      if (!qrModal) return;
+      if (qrImageDisplay) {
+        qrImageDisplay.src = qrApiUrl;
+      }
+      if (qrUrlDisplay) {
+        qrUrlDisplay.textContent = currentOrigin;
+      }
+      if (btnShareQrWhatsApp) {
+        btnShareQrWhatsApp.href = waUrl;
+      }
+      qrModal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeQrModal() {
+      if (!qrModal) return;
+      qrModal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    if (btnShowQrIntro) btnShowQrIntro.addEventListener('click', openQrModal);
+    if (btnShowQrSuccess) btnShowQrSuccess.addEventListener('click', openQrModal);
+    if (btnCloseQrModal) btnCloseQrModal.addEventListener('click', closeQrModal);
+
+    if (qrModal) {
+      qrModal.addEventListener('click', (e) => {
+        if (e.target === qrModal) closeQrModal();
+      });
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && qrModal && qrModal.style.display === 'flex') {
+        closeQrModal();
+      }
+    });
+
+    if (btnDownloadQr) {
+      btnDownloadQr.addEventListener('click', async (e) => {
+        e.preventDefault();
+        try {
+          showToast('Descargando imagen QR en alta resolución...', 'info');
+          const response = await fetch(qrApiUrl);
+          const blob = await response.blob();
+          const blobUrl = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = blobUrl;
+          a.download = 'QR_Censo_ISC_ACM_ITCM.png';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(blobUrl);
+          showToast('¡Imagen QR descargada con éxito!', 'success');
+        } catch (err) {
+          window.open(qrApiUrl, '_blank');
+        }
+      });
+    }
+
+    if (btnCopyQrUrl) {
+      btnCopyQrUrl.addEventListener('click', copyUrlToClipboard);
+    }
   }
 
   // --------------------------------------------------------------------------

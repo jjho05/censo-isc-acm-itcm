@@ -1212,6 +1212,94 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --------------------------------------------------------------------------
+  // MODAL DE CÓDIGO QR PARA PROYECCIÓN / DIFUSIÓN
+  // --------------------------------------------------------------------------
+  const btnShowQrDashboard = document.getElementById('btnShowQrDashboard');
+  const qrModal = document.getElementById('qrModal');
+  const btnCloseQrModal = document.getElementById('btnCloseQrModal');
+  const qrImageDisplay = document.getElementById('qrImageDisplay');
+  const qrUrlDisplay = document.getElementById('qrUrlDisplay');
+  const btnDownloadQr = document.getElementById('btnDownloadQr');
+  const btnShareQrWhatsApp = document.getElementById('btnShareQrWhatsApp');
+  const btnCopyQrUrl = document.getElementById('btnCopyQrUrl');
+
+  const surveyUrl = (window.location.protocol === 'http:' || window.location.protocol === 'https:')
+    ? window.location.origin
+    : 'http://localhost:3000';
+  const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=12&data=${encodeURIComponent(surveyUrl)}`;
+  const shareMsg = `Compañero(a) de Sistemas ITCM, te invito a responder la Encuesta de Experiencia y Formación ISC 2026–2027 del Capítulo Estudiantil ACM. ¡Tu opinión cuenta!: ${surveyUrl}`;
+  const waUrl = `https://wa.me/?text=${encodeURIComponent(shareMsg)}`;
+
+  function openQrModal() {
+    if (!qrModal) return;
+    if (qrImageDisplay) qrImageDisplay.src = qrApiUrl;
+    if (qrUrlDisplay) qrUrlDisplay.textContent = surveyUrl;
+    if (btnShareQrWhatsApp) btnShareQrWhatsApp.href = waUrl;
+    qrModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeQrModal() {
+    if (!qrModal) return;
+    qrModal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  if (btnShowQrDashboard) btnShowQrDashboard.addEventListener('click', openQrModal);
+  if (btnCloseQrModal) btnCloseQrModal.addEventListener('click', closeQrModal);
+  if (qrModal) {
+    qrModal.addEventListener('click', (e) => {
+      if (e.target === qrModal) closeQrModal();
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && qrModal && qrModal.style.display === 'flex') {
+      closeQrModal();
+    }
+  });
+
+  if (btnDownloadQr) {
+    btnDownloadQr.addEventListener('click', async (e) => {
+      e.preventDefault();
+      try {
+        const response = await fetch(qrApiUrl);
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = 'QR_Censo_ISC_ACM_ITCM.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(blobUrl);
+      } catch (err) {
+        window.open(qrApiUrl, '_blank');
+      }
+    });
+  }
+
+  if (btnCopyQrUrl) {
+    btnCopyQrUrl.addEventListener('click', async () => {
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(surveyUrl);
+        } else {
+          const temp = document.createElement('input');
+          temp.value = surveyUrl;
+          document.body.appendChild(temp);
+          temp.select();
+          document.execCommand('copy');
+          document.body.removeChild(temp);
+        }
+        alert('¡Enlace del Censo copiado al portapapeles!');
+      } catch (err) {
+        prompt('Copia el enlace del Censo:', surveyUrl);
+      }
+    });
+  }
+
+  // --------------------------------------------------------------------------
   // 2. SISTEMA DE PESTAÑAS
   // --------------------------------------------------------------------------
   const tabButtons = document.querySelectorAll('.tab-btn');
