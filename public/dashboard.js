@@ -1223,6 +1223,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // MODAL DE CÓDIGO QR PARA PROYECCIÓN / DIFUSIÓN
   // --------------------------------------------------------------------------
   const btnShowQrDashboard = document.getElementById('btnShowQrDashboard');
+  const btnShowQrEmpty = document.getElementById('btnShowQrEmpty');
   const qrModal = document.getElementById('qrModal');
   const btnCloseQrModal = document.getElementById('btnCloseQrModal');
   const qrImageDisplay = document.getElementById('qrImageDisplay');
@@ -1254,6 +1255,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (btnShowQrDashboard) btnShowQrDashboard.addEventListener('click', openQrModal);
+  if (btnShowQrEmpty) btnShowQrEmpty.addEventListener('click', openQrModal);
   if (btnCloseQrModal) btnCloseQrModal.addEventListener('click', closeQrModal);
   if (qrModal) {
     qrModal.addEventListener('click', (e) => {

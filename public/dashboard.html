@@ -149,17 +149,24 @@
          ==================================================================== -->
     <section class="tab-content active" id="tab-dashboard">
       
-      <!-- Estado Vacío cuando no hay datos -->
+      <!-- Estado Vacío cuando no hay datos (Censo en vivo a la espera de respuestas) -->
       <div id="emptyStateGeneral" class="empty-state-box" style="display: none;">
-        <div class="badge-tag" style="margin-bottom: 12px; display: inline-block;">BASE DE DATOS EN BLANCO</div>
-        <h3 class="empty-state-title">Censo Sin Respuestas Registradas (0 Alumnos)</h3>
+        <div class="badge-tag" style="margin-bottom: 12px; display: inline-block; background: var(--tecnm-blue); color: #FFFFFF;">CENSO OFICIAL ACTIVO &bull; EN TIEMPO REAL</div>
+        <h3 class="empty-state-title">Esperando Respuestas de la Comunidad Estudiantil (0 Registros)</h3>
         <p class="empty-state-desc">
-          El censo se encuentra limpio y listo para recibir las respuestas de los estudiantes. 
-          En cuanto se envíe la primera encuesta, las gráficas interactivas y las métricas se poblarán automáticamente.
+          El sistema está 100% operativo y listo para registrar las respuestas de los estudiantes de ISC del ITCM.
+          En cuanto los alumnos comiencen a enviar sus respuestas, las métricas, correlaciones y directorios se sincronizarán en tiempo real.
         </p>
-        <a href="/" target="_blank" class="btn btn-primary" style="display: inline-flex; text-decoration: none; margin-top: 8px;">
-          Abrir Censo de Prueba
-        </a>
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 14px;">
+          <a href="/" target="_blank" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            <span>Ver Encuesta Oficial</span>
+          </a>
+          <button type="button" class="btn-refresh" id="btnShowQrEmpty" style="display: inline-flex; align-items: center; gap: 8px; background: rgba(27, 57, 106, 0.08); border-color: var(--tecnm-blue); color: var(--tecnm-blue-dark); cursor: pointer; font-weight: 700; padding: 10px 18px; border-radius: var(--radius-sm);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <span>Proyectar / Compartir Código QR</span>
+          </button>
+        </div>
       </div>
 
       <div id="dashboardDataGrid">
