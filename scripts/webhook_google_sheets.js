@@ -36,7 +36,7 @@ function doPost(e) {
 
     // Encabezados oficiales con las 52 preguntas y matrices
     const headers = [
-      "Marca Temporal", "Fecha Actualización", "ID Respuesta", "Número de Control", "Correo Electrónico", "Teléfono / WhatsApp",
+      "Marca Temporal", "Fecha Actualización", "ID Respuesta", "Nombre Completo (Opcional)", "Número de Control", "Correo Electrónico", "Teléfono / WhatsApp",
       "Edad", "Género", "Semestre", "Turno", "Situación Laboral", "Horas Trabajo Semanal",
       // Matriz P9
       "Recurso: PC Propia", "Recurso: Internet Estable", "Recurso: Espacio Estudio",
@@ -96,6 +96,7 @@ function doPost(e) {
       data.timestamp || new Date().toISOString(),
       formatVal(data.fechaActualizacion),
       formatVal(data.id),
+      formatVal(data.nombre),
       formatVal(data.numeroControl),
       formatVal(data.correo),
       formatVal(data.telefono),

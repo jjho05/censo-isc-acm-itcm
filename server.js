@@ -39,6 +39,7 @@ const CSV_HEADERS = [
   "timestamp",
   "fechaActualizacion",
   "id",
+  "nombre",
   "numeroControl",
   "correo",
   "telefono",
@@ -581,6 +582,7 @@ const server = http.createServer((req, res) => {
           return res.end(JSON.stringify({ success: false, error: 'El texto del buzón no debe exceder 2,500 caracteres.' }));
         }
 
+        payload.nombre = nombre || '';
         payload.numeroControl = numeroControl;
         payload.correo = correo;
         payload.telefono = telefono || '';

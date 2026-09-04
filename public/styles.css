@@ -1646,24 +1646,47 @@ textarea.input-control {
 }
 
 /* ==========================================================================
-   RESPONSIVIDAD Y REPORTE IMPRESO
+   OPTIMIZACIONES PARA IMPRESIÓN / EXPORTACIÓN A PDF
    ========================================================================== */
 @media print {
-  .header-top-bar, .tabs-nav, .filter-bar, .header-actions, #authGate {
+  .header-top-bar, .tabs-nav, .filter-bar, .header-actions, #authGate, #qrModal, .modal-backdrop, .btn-qr-action, .toast-msg {
     display: none !important;
   }
   body {
-    background: #FFF !important;
+    background: #FFFFFF !important;
+    color: #0F2137 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
   .cockpit-container {
     max-width: 100% !important;
     padding: 0 !important;
     margin: 0 !important;
   }
-  .chart-card {
+  .survey-title-banner {
+    border: 1px solid #CBD5E1 !important;
+    background: #F8FAFC !important;
+    margin-bottom: 20px !important;
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+  .chart-card, .kpi-card, .table-card, .strategy-callout {
     box-shadow: none !important;
-    border: 1px solid #CCC !important;
+    border: 1px solid #CBD5E1 !important;
     page-break-inside: avoid;
+    break-inside: avoid;
+    margin-bottom: 16px !important;
+  }
+  .tab-content {
+    display: none !important;
+  }
+  .tab-content.active {
+    display: block !important;
+  }
+  .data-table th {
+    background: #0F2137 !important;
+    color: #FFFFFF !important;
+    -webkit-print-color-adjust: exact;
   }
 }
 

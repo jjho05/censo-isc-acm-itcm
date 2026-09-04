@@ -1095,6 +1095,14 @@ document.addEventListener('DOMContentLoaded', () => {
     "title": "Buzón abierto: Comentarios adicionales, observaciones o propuestas libres",
     "type": "textarea",
     "options": []
+  },
+  {
+    "step": 11,
+    "module": "Módulo 11: Prioridades de Gestión, Buzón y Propuestas",
+    "key": "nombre",
+    "title": "51. Nombre Completo (Opcional)",
+    "type": "textarea",
+    "options": []
   }
 ];
 
