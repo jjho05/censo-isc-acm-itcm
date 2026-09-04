@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     "step": 1,
     "module": "Módulo 1: Registro y Contexto Personal",
     "key": "numeroControl",
-    "title": "1. Número de control (8 dígitos)",
+    "title": "1. Número de control (8 dígitos o C + 8 dígitos)",
     "type": "text",
     "options": []
   },
@@ -1092,7 +1092,7 @@ document.addEventListener('DOMContentLoaded', () => {
     "step": 11,
     "module": "Módulo 11: Prioridades de Gestión, Buzón y Propuestas",
     "key": "comentarios_finales",
-    "title": "Buzón abierto: Comentarios adicionales, observaciones o propuestas libres",
+    "title": "51. Buzón abierto: Comentarios adicionales, observaciones o propuestas libres",
     "type": "textarea",
     "options": []
   },
@@ -1100,7 +1100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     "step": 11,
     "module": "Módulo 11: Prioridades de Gestión, Buzón y Propuestas",
     "key": "nombre",
-    "title": "51. Nombre Completo (Opcional)",
+    "title": "52. Nombre Completo (Opcional)",
     "type": "textarea",
     "options": []
   }
