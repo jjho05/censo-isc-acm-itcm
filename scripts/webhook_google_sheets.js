@@ -72,7 +72,8 @@ function doPost(e) {
       "ACM Intl: Biblioteca Digital", "ACM Intl: Membresía y CV", "ACM Intl: Red Global", "ACM Intl: Becas y Concursos",
       "Disposición Cuota Sustentabilidad",
       // Módulo 11: Gestión y Buzón
-      "Prioridad Próxima Mesa Directiva ACM", "Propuesta de Cambio Único en Sistemas", "Buzón Abierto / Comentarios Libres"
+      "Prioridad Próxima Mesa Directiva ACM", "Propuesta de Cambio Único en Sistemas", "Buzón Abierto / Comentarios Libres",
+      "JSON_DATA"
     ];
 
     // Si la hoja está vacía, insertar encabezados con formato institucional TecNM
@@ -185,7 +186,8 @@ function doPost(e) {
       // P49 a P51
       formatVal(data.prioridad_mesa_directiva),
       formatVal(data.propuesta_cambio_unico),
-      formatVal(data.comentarios_finales)
+      formatVal(data.comentarios_finales),
+      JSON.stringify(data)
     ];
 
     // Verificar si ya existe el número de control en la columna E (índice 4)
@@ -214,6 +216,40 @@ function doPost(e) {
 
   } catch (error) {
     return ContentService.createTextOutput(JSON.stringify({ success: false, error: error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+/**
+ * Endpoint GET: Devuelve todas las respuestas en formato JSON puro para restaurar
+ * el servidor Node en caso de reinicio de contenedor o despliegue.
+ */
+function doGet(e) {
+  try {
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    const allData = sheet.getDataRange().getValues();
+    if (allData.length <= 1) {
+      return ContentService.createTextOutput(JSON.stringify([]))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    const headers = allData[0];
+    let jsonIdx = headers.indexOf("JSON_DATA");
+    if (jsonIdx === -1) {
+      jsonIdx = headers.length - 1;
+    }
+    const list = [];
+    for (let i = 1; i < allData.length; i++) {
+      const cellVal = allData[i][jsonIdx];
+      if (cellVal && typeof cellVal === "string" && cellVal.startsWith("{")) {
+        try {
+          list.push(JSON.parse(cellVal));
+        } catch (jsonErr) {}
+      }
+    }
+    return ContentService.createTextOutput(JSON.stringify(list))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({ error: error.toString() }))
       .setMimeType(ContentService.MimeType.JSON);
   }
 }

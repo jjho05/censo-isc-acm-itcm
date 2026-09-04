@@ -709,6 +709,18 @@ const server = http.createServer((req, res) => {
     return res.end(JSON.stringify(voluntarios));
   }
 
+  if (req.method === 'GET' && (pathname === '/api/sync-sheets' || pathname === '/api/sync')) {
+    sincronizarDesdeGoogleSheets().then(() => {
+      const respuestas = leerRespuestas();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: true, total: respuestas.length }));
+    }).catch(err => {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: false, error: err.message }));
+    });
+    return;
+  }
+
   // 2. ENRUTAMIENTO DE PÁGINAS PRINCIPALES
   let filePath = '';
   if (pathname === '/' || pathname === '/index.html') {
@@ -740,6 +752,45 @@ const server = http.createServer((req, res) => {
   });
 });
 
+async function sincronizarDesdeGoogleSheets() {
+  const webhookUrl = process.env.GOOGLE_SHEET_WEBHOOK_URL;
+  if (!webhookUrl) return;
+
+  try {
+    console.log('[*] Sincronizando respaldo desde Google Sheets...');
+    const res = await fetch(webhookUrl, { redirect: 'follow' });
+    if (!res.ok) return;
+    const remoteData = await res.json();
+    if (Array.isArray(remoteData) && remoteData.length > 0) {
+      const localData = leerRespuestas();
+      const map = new Map();
+      localData.forEach(r => {
+        const key = (r.numeroControl && r.numeroControl !== 'ANÓNIMO') ? String(r.numeroControl).toUpperCase() : r.id;
+        if (key) map.set(key, r);
+      });
+      remoteData.forEach(r => {
+        const key = (r.numeroControl && r.numeroControl !== 'ANÓNIMO') ? String(r.numeroControl).toUpperCase() : r.id;
+        if (key && (!map.has(key) || !map.get(key).timestamp || (r.timestamp && r.timestamp > map.get(key).timestamp))) {
+          map.set(key, r);
+        }
+      });
+      const fused = Array.from(map.values());
+      if (fused.length > localData.length) {
+        fs.writeFileSync(JSON_FILE, JSON.stringify(fused, null, 2), 'utf8');
+        const csvLines = [CSV_HEADERS.map(h => `"${h}"`).join(',')];
+        fused.forEach(r => {
+          const line = CSV_HEADERS.map(header => escaparCSV(r[header]));
+          csvLines.push(line.join(','));
+        });
+        fs.writeFileSync(CSV_FILE, '\ufeff' + csvLines.join('\n') + '\n', 'utf8');
+        console.log(`[+] Sincronización exitosa: ${fused.length} registros restaurados desde Google Sheets.`);
+      }
+    }
+  } catch (err) {
+    console.warn('[!] No se pudo sincronizar desde Google Sheets:', err.message);
+  }
+}
+
 server.listen(PORT, () => {
   const localIP = obtenerIPLocal();
   console.log('\n' + '='.repeat(70));
@@ -751,4 +802,7 @@ server.listen(PORT, () => {
   console.log(`  📊 Dashboard en Vivo: http://localhost:${PORT}/dashboard`);
   console.log('='.repeat(70));
   console.log('  💡 Comparte el enlace de red o genera un código QR para salones.\n');
+
+  // Intentar restaurar datos desde Google Sheets si está configurado
+  sincronizarDesdeGoogleSheets();
 });
