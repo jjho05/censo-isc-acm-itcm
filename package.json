@@ -1,0 +1,12 @@
+{
+  "name": "censo-estudiantil-acm-itcm",
+  "version": "1.0.0",
+  "description": "Plataforma Web Soberana de Diagnóstico Estudiantil y Censo ISC ITCM 2026-2027",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "author": "Jesús Javier Hernández Olvera",
+  "license": "MIT"
+}

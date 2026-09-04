@@ -1,0 +1,1039 @@
+{
+  "metadata": {
+    "title": "Encuesta sobre la Experiencia y Formación en Ingeniería en Sistemas Computacionales",
+    "institution": "Instituto Tecnológico de Ciudad Madero (ITCM) - TecNM",
+    "organization": "Capítulo Estudiantil ACM ITCM",
+    "period": "2026–2027",
+    "total_questions": 52,
+    "modules": 11,
+    "academic_rigor_version": "4.0-FUSION",
+    "privacy_policy": "El número de control y correo se solicitan estrictamente para validación de padrón institucional y eliminación de duplicados. No se publican, no se grafican y no se vinculan con cruces analíticos sensibles."
+  },
+  "sections": [
+    {
+      "id": "modulo1",
+      "title": "Módulo 1: Registro y Contexto Personal",
+      "desc": "Datos de control para verificación de padrón (no publicables) y características demográficas básicas."
+    },
+    {
+      "id": "modulo2",
+      "title": "Módulo 2: Trayectoria Académica y Condiciones de Estudio",
+      "desc": "Disponibilidad de equipo, conectividad, traslados y dedicación horaria al estudio autónomo."
+    },
+    {
+      "id": "modulo3",
+      "title": "Módulo 3: Experiencia en la Carrera y Aprendizaje",
+      "desc": "Materias de mayor complejidad, factores de dificultad, trabajo colaborativo y fortalezas institucionales."
+    },
+    {
+      "id": "modulo4",
+      "title": "Módulo 4: Competencias Técnicas y Preparación Laboral",
+      "desc": "Dominio de herramientas modernas, fuentes de aprendizaje, inglés técnico y preparación para entrevistas."
+    },
+    {
+      "id": "modulo5",
+      "title": "Módulo 5: Inteligencia Artificial en la Formación Académica",
+      "desc": "Frecuencia, casos de uso habituales y prácticas de verificación crítica del código generado."
+    },
+    {
+      "id": "modulo6",
+      "title": "Módulo 6: Especialidades, Residencia Profesional e Innovación",
+      "desc": "Pertinencia curricular, retos para inserción profesional y aspiraciones de carrera."
+    },
+    {
+      "id": "modulo7",
+      "title": "Módulo 7: Infraestructura, Condiciones Físicas y Bienestar",
+      "desc": "Evaluación de laboratorios, conectividad en aulas, ergonomía y salud del estudiante."
+    },
+    {
+      "id": "modulo8",
+      "title": "Módulo 8: Talleres, Eventos y Actividades Técnicas ACM",
+      "desc": "Temas de alta demanda, formatos de eventos tecnológicos masivos y condicionantes de asistencia."
+    },
+    {
+      "id": "modulo9",
+      "title": "Módulo 9: Mentorías, Desarrollo de Software Comunitario y Voluntariado",
+      "desc": "Comunidades de práctica, proyectos de código abierto locales y reclutamiento de comités estudiantiles."
+    },
+    {
+      "id": "modulo10",
+      "title": "Módulo 10: Logística, Afiliación y Sustentabilidad Financiera",
+      "desc": "Horarios óptimos, canales de comunicación, percepción de membresías y modelos de financiamiento."
+    },
+    {
+      "id": "modulo11",
+      "title": "Módulo 11: Prioridades de Gestión, Buzón y Propuestas",
+      "desc": "Ejes prioritarios para la Mesa Directiva 2026–2027 y propuestas abiertas para la carrera."
+    }
+  ],
+  "questions": [
+    {
+      "id": "numeroControl",
+      "num": 1,
+      "section": "modulo1",
+      "type": "text",
+      "title": "1. Número de control (8 dígitos)",
+      "desc": "Se solicita exclusivamente para control de participación, validación de padrón estudiantil y eliminación de duplicados. No se incluye en gráficas, informes públicos ni cruces analíticos.",
+      "required": true,
+      "placeholder": "Ej. 22070123"
+    },
+    {
+      "id": "correo",
+      "num": 2,
+      "section": "modulo1",
+      "type": "email",
+      "title": "2. Correo electrónico (institucional o personal)",
+      "desc": "Para validar autenticidad de respuesta y canal de contacto en caso de voluntariado.",
+      "required": true,
+      "placeholder": "l22070123@cdmadero.tecnm.mx"
+    },
+    {
+      "id": "telefono",
+      "num": "2b",
+      "section": "modulo1",
+      "type": "tel",
+      "title": "Teléfono de WhatsApp (Opcional)",
+      "desc": "Si te interesa integrarte a comités de voluntariado, proyectos de software o recibir avisos directos.",
+      "required": false,
+      "placeholder": "Ej. 833 123 4567"
+    },
+    {
+      "id": "edad",
+      "num": 3,
+      "section": "modulo1",
+      "type": "select",
+      "title": "3. Edad",
+      "desc": "Rango de edad del participante.",
+      "required": true,
+      "options": [
+        "17 años o menos",
+        "18 años",
+        "19 años",
+        "20 años",
+        "21 años",
+        "22 años",
+        "23 años",
+        "24 años",
+        "25 años o más",
+        "Prefiero no responder"
+      ]
+    },
+    {
+      "id": "genero",
+      "num": 4,
+      "section": "modulo1",
+      "type": "radio",
+      "title": "4. Género",
+      "desc": "Selecciona la opción con la que te identifiques.",
+      "required": true,
+      "options": [
+        "Femenino",
+        "Masculino",
+        "No binario",
+        "Prefiero no responder",
+        "Otro"
+      ]
+    },
+    {
+      "id": "semestre",
+      "num": 5,
+      "section": "modulo1",
+      "type": "select",
+      "title": "5. Semestre actual",
+      "desc": "Semestre en el que estás inscrito formalmente.",
+      "required": true,
+      "options": [
+        "1° semestre",
+        "2° semestre",
+        "3° semestre",
+        "4° semestre",
+        "5° semestre",
+        "6° semestre",
+        "7° semestre",
+        "8° semestre",
+        "9° semestre",
+        "10° semestre o superior",
+        "Egresado reciente"
+      ]
+    },
+    {
+      "id": "turno",
+      "num": 6,
+      "section": "modulo1",
+      "type": "radio",
+      "title": "6. Turno principal en el que cursas tus materias",
+      "desc": "Turno de asistencia habitual.",
+      "required": true,
+      "options": [
+        "Matutino",
+        "Vespertino",
+        "Mixto (materias en ambos turnos)"
+      ]
+    },
+    {
+      "id": "situacion_laboral",
+      "num": 7,
+      "section": "modulo1",
+      "type": "radio",
+      "title": "7. ¿Actualmente trabajas?",
+      "desc": "Situación de ocupación laboral complementaria a los estudios.",
+      "required": true,
+      "options": [
+        "No trabajo actualmente",
+        "Trabajo en algo no relacionado con tecnología a tiempo parcial",
+        "Trabajo en algo no relacionado con tecnología a tiempo completo",
+        "Trabajo en tecnología / software a tiempo parcial",
+        "Trabajo en tecnología / software a tiempo completo o freelance formal",
+        "Realizo prácticas profesionales / Estadía laboral"
+      ]
+    },
+    {
+      "id": "horas_trabajo",
+      "num": 8,
+      "section": "modulo1",
+      "type": "select",
+      "title": "8. Si trabajas, ¿cuántas horas aproximadas dedicas al trabajo por semana?",
+      "desc": "Carga horaria laboral semanal.",
+      "required": false,
+      "options": [
+        "No aplica / No trabajo",
+        "Menos de 10 horas semanales",
+        "10 a 20 horas semanales",
+        "21 a 30 horas semanales",
+        "31 a 40 horas semanales",
+        "Más de 40 horas semanales"
+      ]
+    },
+    {
+      "id": "matriz_recursos",
+      "num": 9,
+      "section": "modulo2",
+      "type": "matrix",
+      "title": "9. Disponibilidad y calidad de tus recursos de estudio y desarrollo",
+      "desc": "Evalúa las condiciones con las que cuentas fuera del campus universitario.",
+      "required": true,
+      "rows": [
+        {
+          "id": "rec_pc",
+          "label": "Computadora propia con capacidad para programar y compilar"
+        },
+        {
+          "id": "rec_internet",
+          "label": "Conexión a internet estable en tu domicilio de estudio"
+        },
+        {
+          "id": "rec_espacio",
+          "label": "Espacio físico adecuado, iluminado y libre de distracciones para estudiar"
+        }
+      ],
+      "columns": [
+        "Siempre / Excelente",
+        "Casi siempre / Buena",
+        "A veces / Regular",
+        "Rara vez / Deficiente",
+        "Nunca / No dispongo"
+      ]
+    },
+    {
+      "id": "tiempo_traslado",
+      "num": 10,
+      "section": "modulo2",
+      "type": "radio",
+      "title": "10. Tiempo aproximado de traslado diario de ida y vuelta al ITCM",
+      "desc": "Tiempo total invertido en transporte diariamente.",
+      "required": true,
+      "options": [
+        "Menos de 30 minutos",
+        "Entre 30 y 60 minutos",
+        "Entre 1 y 2 horas",
+        "Más de 2 horas al día"
+      ]
+    },
+    {
+      "id": "cuidado_familia",
+      "num": 11,
+      "section": "modulo2",
+      "type": "radio",
+      "title": "11. ¿Tienes responsabilidades familiares o de cuidado que limiten tu tiempo extracurricular?",
+      "desc": "Cuidado de familiares, dependientes económicos u obligaciones del hogar.",
+      "required": true,
+      "options": [
+        "Sí, de manera significativa (afecta ampliamente mi disponibilidad)",
+        "Sí, de manera moderada",
+        "No / Mínimo impacto en mi tiempo libre"
+      ]
+    },
+    {
+      "id": "sistema_operativo",
+      "num": 12,
+      "section": "modulo2",
+      "type": "radio",
+      "title": "12. Sistema operativo principal que utilizas para desarrollar y estudiar",
+      "desc": "Plataforma principal en tu equipo de uso cotidiano.",
+      "required": true,
+      "options": [
+        "Windows",
+        "GNU/Linux (Ubuntu, Fedora, Arch, etc.)",
+        "macOS",
+        "Entorno dual (Windows + Linux)",
+        "No cuento con equipo propio / Dependo de equipos de la institución",
+        "Otro"
+      ]
+    },
+    {
+      "id": "horas_autonomas",
+      "num": 13,
+      "section": "modulo2",
+      "type": "radio",
+      "title": "13. Horas aproximadas a la semana que dedicas al estudio autónomo y programación fuera de clases",
+      "desc": "Tiempo invertido por cuenta propia en proyectos, tareas o aprendizaje autodidacta.",
+      "required": true,
+      "options": [
+        "Menos de 3 horas semanales",
+        "Entre 3 y 6 horas semanales",
+        "Entre 7 y 12 horas semanales",
+        "Más de 12 horas semanales"
+      ]
+    },
+    {
+      "id": "materias_dificultad",
+      "num": 14,
+      "section": "modulo3",
+      "type": "checkbox",
+      "title": "14. ¿Cuáles áreas curriculares han presentado mayor dificultad o rezago en tu avance?",
+      "desc": "Puedes seleccionar una o más opciones.",
+      "required": false,
+      "options": [
+        "Programación básica y Fundamentos de POO",
+        "Estructuras de Datos y Algoritmos avanzados",
+        "Matemáticas discretas, Cálculo y Física",
+        "Arquitectura de computadoras y Sistemas Operativos",
+        "Bases de Datos (modelado, consultas complejas, administración)",
+        "Redes y Conectividad (enrutamiento, configuración física/lógica)",
+        "Ingeniería de Software y Gestión de Proyectos",
+        "Ninguna en particular / Mi avance ha sido regular"
+      ]
+    },
+    {
+      "id": "factores_dificultad",
+      "num": 15,
+      "section": "modulo3",
+      "type": "checkbox",
+      "title": "15. Factores principales que consideras dificultan tu aprendizaje en la carrera",
+      "desc": "Selecciona las causas que más han influido negativamente en tu desempeño.",
+      "required": false,
+      "options": [
+        "Desfase o desactualización en temarios respecto a la industria moderna",
+        "Metodologías de enseñanza excesivamente teóricas o poco prácticas",
+        "Falta de laboratorios funcionales o equipo suficiente en clases",
+        "Falta de tiempo personal por trabajo, familia o traslados largos",
+        "Deficiencias o falta de bases previas en lógica matemática y razonamiento",
+        "Falta de acompañamiento o asesorías extracurriculares oportunas",
+        "Ninguno / Considero que el proceso de aprendizaje es fluido",
+        "Otro"
+      ]
+    },
+    {
+      "id": "oportunidades_proyectos",
+      "num": 16,
+      "section": "modulo3",
+      "type": "radio",
+      "title": "16. ¿Consideras que la carrera te brinda suficientes oportunidades de desarrollo de proyectos reales?",
+      "desc": "Proyectos con usuarios reales, especificaciones formales o impacto práctico.",
+      "required": true,
+      "options": [
+        "Totalmente suficientes",
+        "Suficientes",
+        "Apenas suficientes / Muy limitadas",
+        "Insuficientes",
+        "Totalmente insuficientes / Nulas"
+      ]
+    },
+    {
+      "id": "matriz_trabajo_equipo",
+      "num": 17,
+      "section": "modulo3",
+      "type": "matrix",
+      "title": "17. Experiencia y dinámica de trabajo colaborativo en equipo",
+      "desc": "Evalúa cómo se desarrollan los proyectos en equipo dentro de las materias.",
+      "required": true,
+      "rows": [
+        {
+          "id": "eq_coordinacion",
+          "label": "Coordinación y comunicación entre integrantes del equipo"
+        },
+        {
+          "id": "eq_distribucion",
+          "label": "Distribución equitativa de carga y esfuerzo técnico"
+        },
+        {
+          "id": "eq_herramientas",
+          "label": "Uso de herramientas formales de colaboración (Git, GitHub, Trello, Jira)"
+        }
+      ],
+      "columns": [
+        "Excelente",
+        "Buena",
+        "Regular",
+        "Deficiente",
+        "Muy deficiente"
+      ]
+    },
+    {
+      "id": "fortalezas_itcm",
+      "num": 18,
+      "section": "modulo3",
+      "type": "textarea",
+      "title": "18. Principales fortalezas que reconoces en la formación que ofrece el ITCM",
+      "desc": "Menciona aspectos positivos, docentes destacados, enfoques o fortalezas del departamento.",
+      "required": false,
+      "placeholder": "Escribe aquí las principales ventajas o fortalezas que percibes..."
+    },
+    {
+      "id": "matriz_dominio_tecnico",
+      "num": 19,
+      "section": "modulo4",
+      "type": "matrix",
+      "title": "19. Nivel percibido de dominio en tecnologías clave",
+      "desc": "Califica tu nivel de experiencia práctica en cada una de las siguientes áreas.",
+      "required": true,
+      "rows": [
+        {
+          "id": "dom_git",
+          "label": "Control de versiones (Git / GitHub / GitLab)"
+        },
+        {
+          "id": "dom_db",
+          "label": "Bases de Datos SQL (PostgreSQL, MySQL) y NoSQL"
+        },
+        {
+          "id": "dom_web",
+          "label": "Desarrollo Web (Frontend: React/Vue/HTML/CSS, Backend: Node/Python/Java)"
+        },
+        {
+          "id": "dom_movil",
+          "label": "Desarrollo Móvil (Flutter, React Native, Android nativo)"
+        },
+        {
+          "id": "dom_cloud",
+          "label": "Computación en la Nube (AWS, GCP, Azure)"
+        },
+        {
+          "id": "dom_devops",
+          "label": "DevOps, Contenedores y CI/CD (Docker, Linux Server)"
+        },
+        {
+          "id": "dom_sec",
+          "label": "Ciberseguridad y Principios de Desarrollo Seguro"
+        },
+        {
+          "id": "dom_ia",
+          "label": "Inteligencia Artificial y Machine Learning Aplicado"
+        }
+      ],
+      "columns": [
+        "Ninguno / Desconocido",
+        "Básico / Académico elemental",
+        "Intermedio / Proyectos funcionales",
+        "Avanzado / Nivel producción laboral"
+      ]
+    },
+    {
+      "id": "matriz_fuente_aprendizaje",
+      "num": 20,
+      "section": "modulo4",
+      "type": "matrix",
+      "title": "20. Principal fuente donde has adquirido tus conocimientos técnicos prácticos",
+      "desc": "Indica el origen predominante de tus habilidades para cada área.",
+      "required": true,
+      "rows": [
+        {
+          "id": "fnt_lenguajes",
+          "label": "Lenguajes y frameworks de programación modernos"
+        },
+        {
+          "id": "fnt_arquitectura",
+          "label": "Buenas prácticas de arquitectura, patrones y código limpio"
+        },
+        {
+          "id": "fnt_despliegue",
+          "label": "Herramientas de despliegue, servidores y nube"
+        }
+      ],
+      "columns": [
+        "Clases escolares obligatorias",
+        "Cursos externos / Bootcamps / Certificaciones",
+        "Autoaprendizaje autodidacta (YouTube, documentación, libros)",
+        "Experiencia laboral formal o proyectos freelance personales"
+      ]
+    },
+    {
+      "id": "experiencia_laboral_ti",
+      "num": 21,
+      "section": "modulo4",
+      "type": "radio",
+      "title": "21. ¿Has tenido experiencia laboral o profesional en el área de TI?",
+      "desc": "Trayectoria previa en el ecosistema informático.",
+      "required": true,
+      "options": [
+        "Sí, cuento con empleo formal activo o previo en TI",
+        "Sí, mediante proyectos freelance o desarrollo por encargo",
+        "Sí, a través de servicio social o prácticas en áreas de TI",
+        "No, aún no cuento con experiencia en el sector"
+      ]
+    },
+    {
+      "id": "portafolio_github",
+      "num": 22,
+      "section": "modulo4",
+      "type": "radio",
+      "title": "22. ¿Tienes actualmente un portafolio técnico activo o repositorio público con proyectos?",
+      "desc": "Perfil de GitHub, GitLab, portafolio web o proyectos demostrables.",
+      "required": true,
+      "options": [
+        "Sí, estructurado y actualizado con proyectos personales o de equipo",
+        "Sí, pero tiene pocos proyectos o requiere orden y documentación",
+        "No, pero tengo interés prioritario en construirlo",
+        "No tengo y requiero orientación para empezar desde cero"
+      ]
+    },
+    {
+      "id": "matriz_ingles_tecnico",
+      "num": 23,
+      "section": "modulo4",
+      "type": "matrix",
+      "title": "23. Dominio del idioma inglés para el ámbito profesional de TI",
+      "desc": "Autoevalúa tu competencia funcional en inglés técnico.",
+      "required": true,
+      "rows": [
+        {
+          "id": "ing_lectura",
+          "label": "Lectura y comprensión fluida de documentación técnica oficial"
+        },
+        {
+          "id": "ing_comunicacion",
+          "label": "Comunicación verbal / Capacidad de sostener entrevistas de trabajo"
+        }
+      ],
+      "columns": [
+        "Avanzado / Fluido",
+        "Intermedio / Funcional",
+        "Básico / Con apoyo de traductor",
+        "Nulo / Muy limitado"
+      ]
+    },
+    {
+      "id": "matriz_reclutamiento_tech",
+      "num": 24,
+      "section": "modulo4",
+      "type": "matrix",
+      "title": "24. Preparación para procesos de selección y reclutamiento técnico",
+      "desc": "Nivel de confianza en etapas habituales de contratación en la industria de software.",
+      "required": true,
+      "rows": [
+        {
+          "id": "rec_algoritmos",
+          "label": "Resolución de retos de código y algoritmos en vivo (LeetCode, HackerRank)"
+        },
+        {
+          "id": "rec_cv",
+          "label": "Elaboración de CV de alto impacto con métricas y estándares de la industria"
+        },
+        {
+          "id": "rec_entrevistas",
+          "label": "Entrevistas técnicas de arquitectura y conductuales (STAR method)"
+        }
+      ],
+      "columns": [
+        "Muy preparado / Con práctica",
+        "Moderadamente preparado",
+        "Poco preparado / Inseguro",
+        "Nada preparado / Desconozco la dinámica"
+      ]
+    },
+    {
+      "id": "necesidad_laboral_urgente",
+      "num": 25,
+      "section": "modulo4",
+      "type": "textarea",
+      "title": "25. ¿Cuál consideras que es la necesidad más urgente en tu preparación para ingresar al mercado laboral?",
+      "desc": "Describe qué habilidad, certificación, conocimiento o recurso te hace mayor falta.",
+      "required": false,
+      "placeholder": "Ej. Talleres de preparación para entrevistas en inglés, proyectos con arquitecturas reales..."
+    },
+    {
+      "id": "frecuencia_ia",
+      "num": 26,
+      "section": "modulo5",
+      "type": "radio",
+      "title": "26. ¿Con qué frecuencia utilizas herramientas de Inteligencia Artificial en tus estudios y código?",
+      "desc": "Uso de ChatGPT, Claude, GitHub Copilot, Gemini, Cursor u otros LLMs.",
+      "required": true,
+      "options": [
+        "A diario / Prácticamente en cada sesión de trabajo",
+        "Varias veces por semana",
+        "Ocasionalmente / Pocas veces al mes",
+        "Rara vez o nunca"
+      ]
+    },
+    {
+      "id": "usos_ia",
+      "num": 27,
+      "section": "modulo5",
+      "type": "checkbox",
+      "title": "27. Principales propósitos con los que utilizas asistentes de Inteligencia Artificial",
+      "desc": "Selecciona todas las opciones que apliquen a tu rutina de estudio.",
+      "required": false,
+      "options": [
+        "Explicación didáctica y comprensión de conceptos teóricos o matemáticos",
+        "Detección y solución de errores de sintaxis o bugs (debugging)",
+        "Generación directa de fragmentos o funciones completas de código",
+        "Optimización, limpieza y refactorización de código propio",
+        "Redacción de reportes, documentación técnica y síntesis",
+        "No utilizo herramientas de IA"
+      ]
+    },
+    {
+      "id": "matriz_verificacion_ia",
+      "num": 28,
+      "section": "modulo5",
+      "type": "matrix",
+      "title": "28. Prácticas de verificación y pensamiento crítico al emplear IA",
+      "desc": "Evalúa la rigurosidad con la que manejas el código generado por IA.",
+      "required": true,
+      "rows": [
+        {
+          "id": "ia_inspeccion",
+          "label": "Leo y analizo minuciosamente cada línea antes de integrarla a mi proyecto"
+        },
+        {
+          "id": "ia_pruebas",
+          "label": "Escribo pruebas locales o verifico casos borde para confirmar que funciona"
+        },
+        {
+          "id": "ia_copia_directa",
+          "label": "Copio y pego la respuesta directamente sin verificar si compila a la primera"
+        }
+      ],
+      "columns": [
+        "Siempre",
+        "Casi siempre",
+        "A veces",
+        "Rara vez",
+        "Nunca"
+      ]
+    },
+    {
+      "id": "opinion_especialidad",
+      "num": 29,
+      "section": "modulo6",
+      "type": "radio",
+      "title": "29. ¿Qué opinas sobre la oferta actual de materias de especialidad en Sistemas del ITCM?",
+      "desc": "Pertinencia curricular de las materias avanzadas respecto a las tendencias mundiales.",
+      "required": true,
+      "options": [
+        "Muy actualizada y estrechamente alineada con la demanda del mercado",
+        "Moderadamente actualizada, pero requiere renovar contenidos clave",
+        "Desactualizada frente a los estándares tecnológicos contemporáneos",
+        "Aún no conozco a profundidad la oferta de especialidades"
+      ]
+    },
+    {
+      "id": "reto_residencia",
+      "num": 30,
+      "section": "modulo6",
+      "type": "radio",
+      "title": "30. ¿Cuál consideras que es el mayor reto al buscar residencia profesional?",
+      "desc": "Principal obstáculo previsto o experimentado en la transición profesional.",
+      "required": true,
+      "options": [
+        "Escasez de empresas locales de desarrollo de software en la zona conurbada",
+        "Requisitos técnicos elevados que exceden lo enseñado en las aulas",
+        "Nivel de inglés técnico requerido para vacantes remotas o trasnacionales",
+        "Falta de convenios institucionales activos con empresas tecnológicas",
+        "Procesos de selección largos y complejos",
+        "Aún no curso los semestres de residencia / No lo he contemplado"
+      ]
+    },
+    {
+      "id": "participacion_innovatecnm",
+      "num": 31,
+      "section": "modulo6",
+      "type": "radio",
+      "title": "31. ¿Conoces o has participado en eventos como InnovaTecNM o Hackathones?",
+      "desc": "Involucramiento en certámenes de desarrollo, emprendimiento o innovación.",
+      "required": true,
+      "options": [
+        "He participado activamente en uno o más eventos",
+        "Los conozco, pero no he participado por falta de equipo o tiempo",
+        "Los conozco, pero no me siento con la preparación técnica suficiente para competir",
+        "No los conozco / No se difunden con claridad en la comunidad"
+      ]
+    },
+    {
+      "id": "rol_aspirado",
+      "num": 32,
+      "section": "modulo6",
+      "type": "radio",
+      "title": "32. ¿Qué rol profesional aspiras desempeñar prioritariamente al graduarte?",
+      "desc": "Especialización profesional a la que orientas tu carrera futura.",
+      "required": true,
+      "options": [
+        "Desarrollador de Software / Full Stack / Frontend / Backend",
+        "Ingeniero de Datos / Analista de Datos / Data Scientist",
+        "Especialista en Cloud Computing & DevOps",
+        "Especialista en Ciberseguridad / Seguridad Ofensiva o Defensiva",
+        "Administrador de Infraestructura de Redes y Telecomunicaciones",
+        "Project Manager TI / Product Owner / Scrum Master",
+        "Emprendedor / Fundador de startup tecnológica propia",
+        "Investigador / Posgrado académico",
+        "Otro / Aún explorando opciones"
+      ]
+    },
+    {
+      "id": "matriz_labs_infra",
+      "num": 33,
+      "section": "modulo7",
+      "type": "matrix",
+      "title": "33. Evaluación de la infraestructura de los laboratorios del Departamento de Sistemas",
+      "desc": "Califica el estado de los recursos físicos del departamento.",
+      "required": true,
+      "rows": [
+        {
+          "id": "lab_rendimiento",
+          "label": "Capacidad y velocidad de cómputo en equipos de laboratorios"
+        },
+        {
+          "id": "lab_red",
+          "label": "Estabilidad y velocidad de red cableada y Wi-Fi en laboratorios"
+        },
+        {
+          "id": "lab_software",
+          "label": "Disponibilidad de entornos de desarrollo, IDEs y licencias actualizadas"
+        },
+        {
+          "id": "lab_ambiente",
+          "label": "Climatización (AC), ergonomía de sillas, iluminación y limpieza"
+        }
+      ],
+      "columns": [
+        "Excelente",
+        "Bueno",
+        "Regular",
+        "Deficiente",
+        "No utilizo los laboratorios"
+      ]
+    },
+    {
+      "id": "deficiencias_urgentes",
+      "num": 34,
+      "section": "modulo7",
+      "type": "checkbox",
+      "title": "34. Deficiencias físicas o materiales que consideras prioritario atender en el departamento",
+      "desc": "Selecciona las necesidades más apremiantes en las instalaciones.",
+      "required": false,
+      "options": [
+        "Instalación de contactos eléctricos accesibles para laptops en aulas comunes",
+        "Ampliación de ancho de banda y cobertura de Wi-Fi institucional",
+        "Mantenimiento correctivo urgente a sistemas de aire acondicionado",
+        "Actualización de hardware en computadoras de laboratorios especializados",
+        "Habilitación de cubículos o áreas tranquilas para trabajo colaborativo y estudio",
+        "Ninguna / Las condiciones actuales me parecen adecuadas"
+      ]
+    },
+    {
+      "id": "matriz_salud_ergonomia",
+      "num": 35,
+      "section": "modulo7",
+      "type": "matrix",
+      "title": "35. Molestias de salud asociadas a las jornadas intensivas de estudio y programación",
+      "desc": "Frecuencia con la que experimentas las siguientes condiciones derivadas de la carga escolar.",
+      "required": true,
+      "rows": [
+        {
+          "id": "salud_visual",
+          "label": "Fatiga visual, ardor ocular o dolor de cabeza por pantallas"
+        },
+        {
+          "id": "salud_postural",
+          "label": "Dolores musculares en cuello, espalda o muñecas (túnel carpiano)"
+        },
+        {
+          "id": "salud_estres",
+          "label": "Estrés agudo, sobrecarga mental o trastornos del sueño por entregas"
+        }
+      ],
+      "columns": [
+        "Frecuentemente",
+        "Ocasionalmente",
+        "Rara vez",
+        "Nunca"
+      ]
+    },
+    {
+      "id": "actividades_integracion",
+      "num": 36,
+      "section": "modulo7",
+      "type": "radio",
+      "title": "36. ¿Consideras oportuno organizar actividades de convivencia, recreación y pausas activas?",
+      "desc": "Espacios recreativos (torneos de e-sports, convivencia, pausas ergonómicas) para la comunidad estudiantil.",
+      "required": true,
+      "options": [
+        "Totalmente de acuerdo",
+        "De acuerdo",
+        "Indiferente / Neutral",
+        "En desacuerdo",
+        "Totalmente en desacuerdo"
+      ]
+    },
+    {
+      "id": "interes_talleres",
+      "num": 37,
+      "section": "modulo8",
+      "type": "checkbox",
+      "title": "37. Temas en los que tendrías mayor interés para talleres prácticos extracurriculares (Elige hasta 3)",
+      "desc": "Talleres técnicos orientados a proyectos aplicados organizados por ACM.",
+      "required": false,
+      "options": [
+        "Git & GitHub: Flujos profesionales en equipo y Open Source",
+        "Desarrollo Web Moderno (React, Next.js, Node.js, TypeScript)",
+        "Arquitecturas Cloud y DevOps (AWS, Docker, CI/CD pipelines)",
+        "Ciberseguridad Práctica, Pentesting defensivo y Hardening",
+        "Inteligencia Artificial y Machine Learning aplicado con Python",
+        "Estructuras de Datos y resolución de algoritmos para LeetCode",
+        "Bases de Datos Avanzadas y optimización de consultas SQL/NoSQL",
+        "Desarrollo Móvil Multiplataforma (Flutter / React Native)",
+        "Preparación de CV Tech, LinkedIn y simulación de entrevistas"
+      ]
+    },
+    {
+      "id": "formato_eventos_masivos",
+      "num": 38,
+      "section": "modulo8",
+      "type": "radio",
+      "title": "38. Formato de eventos académicos y tecnológicos masivos que prefieres ver organizados",
+      "desc": "Actividades insignia de gran formato organizadas durante el ciclo escolar.",
+      "required": true,
+      "options": [
+        "Hackathón presencial de 24 a 36 horas continuas con retos empresariales y premios",
+        "Congreso o Simposio con conferencistas de la industria tech nacional e internacional",
+        "Torneos de Programación Competitiva y retos algorítmicos por equipos",
+        "Feria de Software y Emprendimiento Estudiantil abierta al sector productivo",
+        "Charlas técnicas breves y periódicas (Tech Talks quincenales / mensuales)"
+      ]
+    },
+    {
+      "id": "factores_asistencia",
+      "num": 39,
+      "section": "modulo8",
+      "type": "checkbox",
+      "title": "39. Factores determinantes que condicionan tu asistencia a talleres extracurriculares",
+      "desc": "Selecciona las condiciones indispensables para que puedas participar.",
+      "required": false,
+      "options": [
+        "Horario compatible que no se traslape con mis materias curriculares",
+        "Enfoque 100% práctico con construcción de un proyecto funcional para portafolio",
+        "Entrega de constancia de acreditación o valor curricular formal",
+        "Costo gratuito o cuota mínima de recuperación totalmente accesible",
+        "Instructores con experiencia comprobable en la industria o proyectos reales",
+        "Modalidad flexible (presencial con opción a grabación para repaso asíncrono)"
+      ]
+    },
+    {
+      "id": "iniciativa_acm_w",
+      "num": 40,
+      "section": "modulo8",
+      "type": "radio",
+      "title": "40. Interés en apoyar o participar en iniciativas de talento femenino en tecnología (ACM-W)",
+      "desc": "Iniciativas para impulsar mentoría, liderazgo y visibilidad de mujeres ingenieras en computación.",
+      "required": true,
+      "options": [
+        "Muy alto interés / Deseo participar activamente",
+        "Moderado interés / Asistiría a las conferencias y eventos",
+        "Neutral / Me es indistinto",
+        "No considero que sea prioritario"
+      ]
+    },
+    {
+      "id": "interes_mentoria",
+      "num": 41,
+      "section": "modulo9",
+      "type": "radio",
+      "title": "41. ¿Estarías interesado en un programa formal de mentorías entre estudiantes y egresados?",
+      "desc": "Acompañamiento técnico y vocacional continuo.",
+      "required": true,
+      "options": [
+        "Sí, me gustaría recibir mentoría de estudiantes avanzados o egresados en la industria",
+        "Sí, me gustaría ser mentor de estudiantes de semestres iniciales en temas que domino",
+        "Me interesaría en ambas modalidades (recibir orientación y también orientar a otros)",
+        "No por el momento debido a limitaciones de tiempo",
+        "No me interesa"
+      ]
+    },
+    {
+      "id": "desarrollo_software_comunitario",
+      "num": 42,
+      "section": "modulo9",
+      "type": "radio",
+      "title": "42. ¿Te interesaría colaborar en el desarrollo de software real de código abierto para el campus?",
+      "desc": "Creación de herramientas tecnológicas para el ITCM (portales, bots de biblioteca, sistemas de eventos).",
+      "required": true,
+      "options": [
+        "Sí, con alto entusiasmo / Quiero programar en proyectos colectivos reales",
+        "Sí, siempre que los horarios y entregas sean razonables y coordinadas",
+        "Tal vez más adelante cuando adquiera mayor dominio en programación",
+        "No es de mi interés participar en desarrollo extracurricular"
+      ]
+    },
+    {
+      "id": "voluntariado_comites",
+      "num": 43,
+      "section": "modulo9",
+      "type": "checkbox",
+      "title": "43. ¿Te gustaría sumarte como colaborador voluntario al Capítulo Estudiantil ACM (2026–2027)?",
+      "desc": "Áreas donde podrías aportar tus habilidades dentro de la organización estudiantil.",
+      "required": false,
+      "options": [
+        "Comité Técnico y Académico (impartición de talleres, preparación de retos)",
+        "Comité de Logística y Operaciones (organización de hackathones y eventos)",
+        "Comité de Medios, Diseño y Comunicación (redes sociales, fotografía, diseño gráfico)",
+        "Equipo de Desarrollo de Software (construcción de plataformas web y sistemas)",
+        "Comité de Vinculación y Patrocinios (contacto con empresas y egresados)",
+        "Prefiero participar únicamente como asistente a los eventos",
+        "No deseo integrarme a comités de voluntariado"
+      ]
+    },
+    {
+      "id": "horario_conveniente",
+      "num": 44,
+      "section": "modulo10",
+      "type": "radio",
+      "title": "44. ¿Cuál es el horario más conveniente para tus actividades extracurriculares presenciales?",
+      "desc": "Momento idóneo para evitar deserciones por choques de horario.",
+      "required": true,
+      "options": [
+        "Viernes por la tarde (a partir de las 14:00 o 15:00 hrs)",
+        "Sábados por la mañana (ej. 9:00 a 13:00 hrs)",
+        "Entre semana en horario intermedio (12:00 a 14:00 hrs)",
+        "Formato asíncrono o virtual con sesiones en vivo por la noche",
+        "No tengo posibilidad de asistir a actividades extracurriculares"
+      ]
+    },
+    {
+      "id": "duracion_talleres",
+      "num": 45,
+      "section": "modulo10",
+      "type": "radio",
+      "title": "45. Duración que consideras más efectiva y sostenible para un taller práctico",
+      "desc": "Estructura pedagógica idónea para maximizar retención y práctica.",
+      "required": true,
+      "options": [
+        "Sesión única intensiva de 2 a 3 horas en un solo día",
+        "Taller de fin de semana (sábado intensivo de 4 a 5 horas con pausas)",
+        "Serie modular semanal (1 a 2 horas por semana a lo largo de 3 o 4 semanas)",
+        "Bootcamp express intensivo durante periodos intersemestrales o vacacionales"
+      ]
+    },
+    {
+      "id": "canales_comunicacion",
+      "num": 46,
+      "section": "modulo10",
+      "type": "checkbox",
+      "title": "46. Medios mediante los cuales prefieres enterarte de avisos, talleres y convocatorias",
+      "desc": "Canales de mayor consulta cotidiana para enterarte oportunamente.",
+      "required": false,
+      "options": [
+        "Comunidad o grupos oficiales en WhatsApp",
+        "Servidor o comunidad en Discord",
+        "Canal de difusión en Telegram",
+        "Página y publicaciones en Instagram",
+        "Difusión directa presencial salón por salón y carteles en mamparas",
+        "Correo institucional oficial"
+      ]
+    },
+    {
+      "id": "matriz_afiliacion_acm",
+      "num": 47,
+      "section": "modulo10",
+      "type": "matrix",
+      "title": "47. Percepción sobre los beneficios de la afiliación institucional al ecosistema internacional ACM",
+      "desc": "Valora la relevancia que le atribuyes a cada beneficio de una membresía internacional.",
+      "required": true,
+      "rows": [
+        {
+          "id": "af_biblioteca",
+          "label": "Acceso a la ACM Digital Library (revistas, libros, papers y conferencias de investigación)"
+        },
+        {
+          "id": "af_credencial",
+          "label": "Membresía formal, correo institucional @acm.org y distinción en el CV profesional"
+        },
+        {
+          "id": "af_networking",
+          "label": "Pertenencia a la red científica de computación más prestigiada a nivel global"
+        },
+        {
+          "id": "af_descuentos",
+          "label": "Becas para congresos internacionales, competencias globales y certificaciones"
+        }
+      ],
+      "columns": [
+        "Altamente valioso",
+        "Moderadamente valioso",
+        "Poco valioso",
+        "Desconocido / Sin información suficiente"
+      ]
+    },
+    {
+      "id": "disposicion_sustentabilidad",
+      "num": 48,
+      "section": "modulo10",
+      "type": "radio",
+      "title": "48. Respecto a la sustentabilidad de eventos (kits, refrigerios, licencias), ¿cuál es tu postura?",
+      "desc": "Esquema viable para financiar hackathones de calidad, refrigerios en maratones y materiales.",
+      "required": true,
+      "options": [
+        "Todas las actividades deben financiarse exclusivamente con patrocinios externos o apoyos institucionales",
+        "Aportación simbólica anual ($50 a $100 MXN) si incluye beneficios tangibles y descuentos en talleres",
+        "Aportación anual intermedia ($101 a $200 MXN) con acceso prioritario a eventos masivos y kits",
+        "Interés en adquirir la membresía estudiantil oficial internacional ACM con descuento institucional"
+      ]
+    },
+    {
+      "id": "prioridad_mesa_directiva",
+      "num": 49,
+      "section": "modulo11",
+      "type": "radio",
+      "title": "49. ¿Cuál debe ser la máxima prioridad de la próxima Mesa Directiva del Capítulo ACM 2026–2027?",
+      "desc": "Eje estratégico fundamental al que debe abocarse el equipo directivo.",
+      "required": true,
+      "options": [
+        "Capacitación técnica de alto nivel y preparación para el empleo en la industria de software",
+        "Organización de hackathones presenciales y competencias de programación de gran impacto",
+        "Gestión y colaboración para resolver necesidades de laboratorios e infraestructura del departamento",
+        "Construcción de comunidad, programa de mentorías y bienvenida integral a nuevos estudiantes",
+        "Vinculación con empresas tecnológicas líderes y egresados destacados en la industria nacional e internacional"
+      ]
+    },
+    {
+      "id": "propuesta_cambio_unico",
+      "num": 50,
+      "section": "modulo11",
+      "type": "textarea",
+      "title": "50. Si pudieras cambiar o implementar una sola cosa en la carrera de Ingeniería en Sistemas del ITCM, ¿cuál sería?",
+      "desc": "Propuesta prioritaria de alto impacto para la formación académica y profesional.",
+      "required": false,
+      "placeholder": "Tu propuesta más importante para transformar la carrera..."
+    },
+    {
+      "id": "comentarios_finales",
+      "num": 51,
+      "section": "modulo11",
+      "type": "textarea",
+      "title": "Buzón abierto: Comentarios adicionales, observaciones o propuestas libres",
+      "desc": "Espacio abierto para cualquier idea, sugerencia para la directiva o inquietud no abordada.",
+      "required": false,
+      "placeholder": "Escribe tus observaciones o comentarios libres aquí..."
+    }
+  ]
+}
