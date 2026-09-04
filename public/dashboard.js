@@ -1550,57 +1550,83 @@ document.addEventListener('DOMContentLoaded', () => {
     if (kpiTotal) kpiTotal.textContent = total;
     if (kpiTotalMeta) kpiTotalMeta.textContent = `${total} ${total === 1 ? 'respuesta registrada' : 'respuestas registradas'}`;
 
-    let sumaTut = 0;
     let altaTut = 0;
     let sinGithub = 0;
     const voluntariosList = [];
     const buzonList = [];
 
     filtered.forEach(r => {
-      const tut = parseInt(r.urgenciaTutorias, 10);
-      if (!isNaN(tut)) {
-        sumaTut += tut;
-        if (tut >= 4) altaTut++;
+      // 1. Demanda de Mentoría / Tutorías
+      const mentoria = getFieldValue(r, ['interes_mentoria', 'urgenciaTutorias']);
+      if (mentoria) {
+        const s = String(mentoria).toLowerCase();
+        if (s.includes('recibir mentoría') || s.includes('ambas modalidades') || s === '4' || s === '5') {
+          altaTut++;
+        }
       }
 
-      if (r.githubEstado && (r.githubEstado.toLowerCase().includes('no tengo') || r.githubEstado.toLowerCase().includes('vacía'))) {
-        sinGithub++;
+      // 2. Brecha GitHub
+      const gh = getFieldValue(r, ['portafolio_github', 'githubEstado']);
+      if (gh) {
+        const s = String(gh).toLowerCase();
+        if (s.startsWith('no') || s.includes('no tengo') || s.includes('pocos proyectos') || s.includes('vacía')) {
+          sinGithub++;
+        }
       }
 
-      if (Array.isArray(r.comitesVoluntariado) && r.comitesVoluntariado.some(c => !c.toLowerCase().includes('no me interesa') && !c.toLowerCase().includes('solo asistente'))) {
-        voluntariosList.push(r);
+      // 3. Voluntarios
+      const comites = getFieldValue(r, ['voluntariado_comites', 'comitesVoluntariado']);
+      if (comites) {
+        const arr = Array.isArray(comites) ? comites : [comites];
+        const esVol = arr.some(c => {
+          const s = String(c).toLowerCase();
+          return s.includes('comité') || s.includes('equipo') || (s.length > 5 && !s.includes('no deseo') && !s.includes('no me interesa') && !s.includes('únicamente como asistente') && !s.includes('solo asistente'));
+        });
+        if (esVol) {
+          voluntariosList.push(r);
+        }
       }
 
-      if (r.buzonAbierto && r.buzonAbierto.trim().length > 3) {
+      // 4. Buzón Estudiantil
+      const comentarios = (r.comentarios_finales || '').trim();
+      const propuesta = (r.propuesta_cambio_unico || '').trim();
+      const legacyBuzon = (r.buzonAbierto || '').trim();
+
+      const textos = [];
+      if (comentarios && comentarios.length > 3) textos.push(comentarios);
+      if (propuesta && propuesta.length > 3 && propuesta !== comentarios) textos.push(`Propuesta: ${propuesta}`);
+      if (!textos.length && legacyBuzon && legacyBuzon.length > 3) textos.push(legacyBuzon);
+
+      textos.forEach(t => {
         buzonList.push({
-          texto: r.buzonAbierto.trim(),
+          texto: t,
           semestre: r.semestre || 'No especificado',
           timestamp: r.timestamp
         });
-      }
+      });
     });
 
-    if (kpiTutorias) kpiTutorias.textContent = (sumaTut / total).toFixed(1);
-    if (kpiTutoriasPct) kpiTutoriasPct.textContent = `${Math.round((altaTut / total) * 100)}% alta prioridad`;
-    if (kpiGithub) kpiGithub.textContent = `${Math.round((sinGithub / total) * 100)}%`;
+    if (kpiTutorias) kpiTutorias.textContent = total > 0 ? `${Math.round((altaTut / total) * 100)}%` : '0%';
+    if (kpiTutoriasPct) kpiTutoriasPct.textContent = total > 0 ? `${altaTut} de ${total} solicitan mentoría` : '0% alta prioridad';
+    if (kpiGithub) kpiGithub.textContent = total > 0 ? `${Math.round((sinGithub / total) * 100)}%` : '0%';
     if (kpiVoluntarios) kpiVoluntarios.textContent = voluntariosList.length;
     if (kpiVoluntariosSub) kpiVoluntariosSub.textContent = `${voluntariosList.length} en este segmento`;
     if (tabCountVoluntarios) tabCountVoluntarios.textContent = voluntariosList.length;
     if (tabCountBuzon) tabCountBuzon.textContent = buzonList.length;
 
-    // 4. Gráficas del Cuadro de Mando
-    renderCountsBar('chartMateriasCanvas', countField(filtered, 'materiasDificiles'), total, 6, COLORS.red);
-    renderCountsDonut('chartPresenciaCanvas', countField(filtered, 'githubEstado'));
-    renderCountsBar('chartTalleresCanvas', countField(filtered, 'talleresMastery'), total, 6, COLORS.blue);
-    renderCountsDonut('chartSoberaniaCanvas', countField(filtered, 'soberaniaTecnologica'));
-    renderCountsBar('chartEventosCanvas', countField(filtered, 'eventosMasivos'), total, 5, COLORS.green);
-    renderCountsBar('chartRolesCanvas', countField(filtered, 'rolesAspirados'), total, 6, COLORS.blueLight);
+    // 4. Gráficas del Cuadro de Mando Ejecutivo (Con campos oficiales del censo y fallbacks)
+    renderCountsBar('chartMateriasCanvas', countField(filtered, ['materias_dificultad', 'materiasDificiles']), total, 6, COLORS.red);
+    renderCountsDonut('chartPresenciaCanvas', countField(filtered, ['portafolio_github', 'githubEstado']));
+    renderCountsBar('chartTalleresCanvas', countField(filtered, ['interes_talleres', 'talleresMastery']), total, 6, COLORS.blue);
+    renderCountsDonut('chartSoberaniaCanvas', countField(filtered, ['desarrollo_software_comunitario', 'soberaniaTecnologica']));
+    renderCountsBar('chartEventosCanvas', countField(filtered, ['formato_eventos_masivos', 'eventosMasivos']), total, 5, COLORS.green);
+    renderCountsBar('chartRolesCanvas', countField(filtered, ['rol_aspirado', 'rolesAspirados']), total, 6, COLORS.blueLight);
 
     // 5. Cruces Multivariables
-    renderCrossTab('chartCruceIACanvas', filtered, 'frecuenciaIA', 'impactoIA');
-    renderCrossTab('chartCruceTutoriasCanvas', filtered, 'semestre', 'urgenciaTutorias');
-    renderCrossTab('chartCruceGithubCanvas', filtered, 'githubEstado', 'confianzaEntrevista');
-    renderCrossTab('chartCruceClimaCanvas', filtered, 'climaEstudiantil', 'sindromeImpostor');
+    renderCrossTab('chartCruceIACanvas', filtered, ['frecuencia_ia', 'frecuenciaIA'], ['ia_copia_directa', 'impactoIA', 'ia_inspeccion']);
+    renderCrossTab('chartCruceTutoriasCanvas', filtered, 'semestre', ['interes_mentoria', 'urgenciaTutorias', 'materias_dificultad']);
+    renderCrossTab('chartCruceGithubCanvas', filtered, ['portafolio_github', 'githubEstado'], ['rec_entrevistas', 'confianzaEntrevista']);
+    renderCrossTab('chartCruceClimaCanvas', filtered, ['salud_estres', 'climaEstudiantil'], ['salud_postural', 'sindromeImpostor']);
 
     // 6. Explorador de Reactivos
     renderSingleQuestionExplorer(preguntaSelector ? preguntaSelector.value : 'semestre');
@@ -1771,10 +1797,19 @@ document.addEventListener('DOMContentLoaded', () => {
   // --------------------------------------------------------------------------
   // 8. HELPERS DE CONTEO Y MATRIZ DE CRUCES
   // --------------------------------------------------------------------------
-  function countField(dataset, key) {
+  function getFieldValue(r, keyOrKeys) {
+    if (!r) return null;
+    const keys = Array.isArray(keyOrKeys) ? keyOrKeys : [keyOrKeys];
+    for (const k of keys) {
+      if (r[k] !== undefined && r[k] !== null && r[k] !== '') return r[k];
+    }
+    return null;
+  }
+
+  function countField(dataset, keyOrKeys) {
     const counts = {};
     dataset.forEach(r => {
-      const val = r[key];
+      const val = getFieldValue(r, keyOrKeys);
       if (!val) return;
       if (Array.isArray(val)) {
         val.forEach(v => {
@@ -1806,13 +1841,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const countY = countField(dataset, keyY);
     const topY = Object.entries(countY).sort((a, b) => b[1] - a[1]).slice(0, 3).map(e => e[0]);
 
-    if (topX.length === 0 || topY.length === 0) return;
+    if (topX.length === 0 || topY.length === 0) {
+      const ctx = canvas.getContext('2d');
+      chartInstances[canvasId] = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['En espera de más respuestas para cruce'],
+          datasets: [{ data: [0], backgroundColor: '#E2E8F0' }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { enabled: false } },
+          scales: {
+            x: { grid: { display: false } },
+            y: { beginAtZero: true, grid: { color: '#F1F5F9' } }
+          }
+        }
+      });
+      return;
+    }
 
     const datasets = topY.map((labelY, idx) => {
       const data = topX.map(labelX => {
         return dataset.filter(r => {
-          const vx = Array.isArray(r[keyX]) ? r[keyX].includes(labelX) : r[keyX] === labelX;
-          const vy = Array.isArray(r[keyY]) ? r[keyY].includes(labelY) : r[keyY] === labelY;
+          const rawX = getFieldValue(r, keyX);
+          const rawY = getFieldValue(r, keyY);
+          const vx = Array.isArray(rawX) ? rawX.includes(labelX) : rawX === labelX;
+          const vy = Array.isArray(rawY) ? rawY.includes(labelY) : rawY === labelY;
           return vx && vy;
         }).length;
       });
@@ -1860,14 +1916,18 @@ document.addEventListener('DOMContentLoaded', () => {
       chartInstances[canvasId] = new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: ['Sin datos'],
-          datasets: [{ data: [0], backgroundColor: '#E2E8F0' }]
+          labels: ['En espera de respuestas'],
+          datasets: [{ data: [0], backgroundColor: '#CBD5E1', borderRadius: 4 }]
         },
         options: {
+          indexAxis: 'y',
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: { x: { display: false }, y: { display: false } }
+          plugins: { legend: { display: false }, tooltip: { enabled: false } },
+          scales: {
+            x: { beginAtZero: true, max: 5, grid: { color: '#F1F5F9' }, ticks: { stepSize: 1, font: { size: 10 } } },
+            y: { grid: { display: false }, ticks: { font: { size: 11, weight: '600' }, color: '#64748B' } }
+          }
         }
       });
       return;
@@ -1901,7 +1961,7 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         },
         scales: {
-          x: { beginAtZero: true, grid: { color: '#F1F5F9' }, ticks: { font: { size: 10 } } },
+          x: { beginAtZero: true, grid: { color: '#F1F5F9' }, ticks: { stepSize: 1, font: { size: 10 } } },
           y: { grid: { display: false }, ticks: { font: { size: 11, weight: '600' }, color: '#0F2137' } }
         }
       }
@@ -1917,11 +1977,33 @@ document.addEventListener('DOMContentLoaded', () => {
       chartInstances[canvasId].destroy();
     }
 
-    if (!countsObj || Object.keys(countsObj).length === 0) return;
-
-    const entries = Object.entries(countsObj);
+    const entries = countsObj ? Object.entries(countsObj) : [];
     const total = entries.reduce((a, b) => a + b[1], 0);
-    if (total === 0) return;
+
+    if (entries.length === 0 || total === 0) {
+      const ctx = canvas.getContext('2d');
+      chartInstances[canvasId] = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['En espera de respuestas'],
+          datasets: [{
+            data: [1],
+            backgroundColor: ['#E2E8F0'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } },
+            tooltip: { enabled: false }
+          },
+          cutout: '65%'
+        }
+      });
+      return;
+    }
 
     const labels = entries.map(e => e[0].length > 25 ? e[0].substring(0, 22) + '...' : e[0]);
     const values = entries.map(e => e[1]);
@@ -1978,9 +2060,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const tel = v.telefono ? String(v.telefono).trim() : '';
       const telClean = tel.replace(/\D/g, '');
       
-      const comites = Array.isArray(v.comitesVoluntariado) 
-        ? v.comitesVoluntariado.filter(c => !c.toLowerCase().includes('solo asistente')).join(', ')
-        : (v.comitesVoluntariado || 'General');
+      const rawComites = getFieldValue(v, ['voluntariado_comites', 'comitesVoluntariado']);
+      const comites = Array.isArray(rawComites) 
+        ? rawComites.filter(c => !c.toLowerCase().includes('solo asistente') && !c.toLowerCase().includes('no deseo')).join(', ')
+        : (rawComites || 'General');
 
       const waBtn = telClean.length >= 10
         ? `<a href="https://wa.me/52${telClean}?text=Hola%20${encodeURIComponent(nombre)}%2C%20te%20escribimos%20del%20Cap%C3%ADtulo%20Estudiantil%20ACM%20ITCM%20sobre%20tu%20registro%20como%20voluntario" target="_blank" class="btn-action-whatsapp">WhatsApp (${escapeHtml(telClean.slice(-4))})</a>`
@@ -2004,12 +2087,18 @@ document.addEventListener('DOMContentLoaded', () => {
       const comite = filterComiteSelect ? filterComiteSelect.value.toLowerCase() : '';
 
       const filteredVoluntarios = rawResponses.filter(r => {
-        if (!Array.isArray(r.comitesVoluntariado) || !r.comitesVoluntariado.some(c => !c.toLowerCase().includes('solo asistente'))) {
-          return false;
-        }
+        const rawComites = getFieldValue(r, ['voluntariado_comites', 'comitesVoluntariado']);
+        if (!rawComites) return false;
+        const arr = Array.isArray(rawComites) ? rawComites : [rawComites];
+        const esVol = arr.some(c => {
+          const s = String(c).toLowerCase();
+          return s.includes('comité') || s.includes('equipo') || (s.length > 5 && !s.includes('no deseo') && !s.includes('no me interesa') && !s.includes('únicamente como asistente') && !s.includes('solo asistente'));
+        });
+        if (!esVol) return false;
+
         const matchText = (r.nombre && r.nombre.toLowerCase().includes(q)) || 
                           (r.numeroControl && r.numeroControl.toLowerCase().includes(q));
-        const matchComite = !comite || r.comitesVoluntariado.some(c => c.toLowerCase().includes(comite));
+        const matchComite = !comite || arr.some(c => c.toLowerCase().includes(comite));
         return matchText && matchComite;
       });
 
@@ -2049,21 +2138,30 @@ document.addEventListener('DOMContentLoaded', () => {
   if (searchBuzonInput) {
     searchBuzonInput.addEventListener('input', () => {
       const q = searchBuzonInput.value.toLowerCase().trim();
-      const buzonList = [];
+      const filteredBuzon = [];
 
       rawResponses.forEach(r => {
-        if (r.buzonAbierto && r.buzonAbierto.trim().length > 3) {
-          if (!q || r.buzonAbierto.toLowerCase().includes(q)) {
-            buzonList.push({
-              texto: r.buzonAbierto.trim(),
+        const comentarios = (r.comentarios_finales || '').trim();
+        const propuesta = (r.propuesta_cambio_unico || '').trim();
+        const legacy = (r.buzonAbierto || '').trim();
+
+        const textos = [];
+        if (comentarios && comentarios.length > 3) textos.push(comentarios);
+        if (propuesta && propuesta.length > 3 && propuesta !== comentarios) textos.push(`Propuesta: ${propuesta}`);
+        if (!textos.length && legacy && legacy.length > 3) textos.push(legacy);
+
+        textos.forEach(t => {
+          if (!q || t.toLowerCase().includes(q)) {
+            filteredBuzon.push({
+              texto: t,
               semestre: r.semestre || 'No especificado',
               timestamp: r.timestamp
             });
           }
-        }
+        });
       });
 
-      renderBuzonGrid(buzonList);
+      renderBuzonGrid(filteredBuzon);
     });
   }
 

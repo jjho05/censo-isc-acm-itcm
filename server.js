@@ -320,6 +320,13 @@ function calcularEstadisticas(respuestas) {
   let sumaEvaluacionLabs = 0;
   let countLabs = 0;
 
+  function getField(r, ...keys) {
+    for (const k of keys) {
+      if (r[k] !== undefined && r[k] !== null && r[k] !== '') return r[k];
+    }
+    return null;
+  }
+
   function addCount(val, map) {
     if (!val) return;
     if (Array.isArray(val)) {
@@ -334,92 +341,100 @@ function calcularEstadisticas(respuestas) {
   }
 
   respuestas.forEach(r => {
-    addCount(r.semestre, conteoSemestre);
-    addCount(r.turno, conteoTurno);
-    addCount(r.situacionLaboral, conteoSituacionLaboral);
-    addCount(r.disponibilidadLaptop, conteoDisponibilidadLaptop);
-    addCount(r.sistemaOperativo, conteoSO);
-    addCount(r.materiasDificiles, conteoMaterias);
-    addCount(r.causasReprobacion, conteoCausasReprobacion);
-    addCount(r.riesgoBaja, conteoRiesgoBaja);
-    addCount(r.lenguajesDominados, conteoLenguajes);
-    addCount(r.frecuenciaIA, conteoFrecuenciaIA);
-    addCount(r.impactoIA, conteoImpactoIA);
-    addCount(r.urgenciaTutorias, conteoUrgenciaTutorias);
-    addCount(r.githubEstado, conteoGitHub);
-    addCount(r.linkedinEstado, conteoLinkedIn);
-    addCount(r.inglesTecnico, conteoIngles);
-    addCount(r.certificaciones, conteoCertificaciones);
-    addCount(r.confianzaEntrevista, conteoConfianzaEntrevista);
-    addCount(r.especialidadInteres, conteoEspecialidad);
-    addCount(r.preocupacionResidencia, conteoPreocupacionResidencia);
-    addCount(r.innovaTecNM, conteoInnovaTecNM);
-    addCount(r.rolesAspirados, conteoRoles);
-    addCount(r.evaluacionLabs, conteoEvaluacionLabs);
-    addCount(r.deficienciasLabs, conteoDeficienciasLabs);
-    addCount(r.soberaniaTecnologica, conteoSoberania);
-    addCount(r.disposicionDev, conteoDisposicionDev);
-    addCount(r.climaEstudiantil, conteoClimaEstudiantil);
-    addCount(r.sindromeImpostor, conteoSindromeImpostor);
-    addCount(r.actividadesHorasMuertas, conteoActividadesHorasMuertas);
-    addCount(r.faltaEventosApatia, conteoFaltaEventosApatia);
-    addCount(r.talleresMastery, conteoTalleres);
-    addCount(r.eventosMasivos, conteoEventos);
-    addCount(r.softSkills, conteoSoftSkills);
-    addCount(r.apoyoACMW, conteoApoyoACMW);
-    addCount(r.alumniMentoring, conteoAlumniMentoring);
-    addCount(r.ergonomiaLabs, conteoErgonomiaLabs);
-    addCount(r.problemasSalud, conteoProblemasSalud);
-    addCount(r.convivenciasEstudiantiles, conteoConvivenciasEstudiantiles);
-    addCount(r.horarioTalleres, conteoHorarioTalleres);
-    addCount(r.duracionTalleres, conteoDuracionTalleres);
-    addCount(r.cajaDeCristal, conteoCajaDeCristal);
-    addCount(r.canalesAvisos, conteoCanalesAvisos);
-    addCount(r.perfilPresidente, conteoPerfilPresidente);
+    addCount(getField(r, 'semestre'), conteoSemestre);
+    addCount(getField(r, 'turno'), conteoTurno);
+    addCount(getField(r, 'situacion_laboral', 'situacionLaboral'), conteoSituacionLaboral);
+    addCount(getField(r, 'rec_pc', 'disponibilidadLaptop'), conteoDisponibilidadLaptop);
+    addCount(getField(r, 'sistema_operativo', 'sistemaOperativo'), conteoSO);
+    addCount(getField(r, 'materias_dificultad', 'materiasDificiles'), conteoMaterias);
+    addCount(getField(r, 'factores_dificultad', 'causasReprobacion'), conteoCausasReprobacion);
+    addCount(getField(r, 'fnt_lenguajes', 'lenguajesDominados'), conteoLenguajes);
+    addCount(getField(r, 'frecuencia_ia', 'frecuenciaIA'), conteoFrecuenciaIA);
+    addCount(getField(r, 'ia_copia_directa', 'impactoIA'), conteoImpactoIA);
+    addCount(getField(r, 'interes_mentoria', 'urgenciaTutorias'), conteoUrgenciaTutorias);
+    addCount(getField(r, 'portafolio_github', 'githubEstado'), conteoGitHub);
+    addCount(getField(r, 'rec_entrevistas', 'confianzaEntrevista'), conteoConfianzaEntrevista);
+    addCount(getField(r, 'opinion_especialidad', 'especialidadInteres'), conteoEspecialidad);
+    addCount(getField(r, 'reto_residencia', 'preocupacionResidencia'), conteoPreocupacionResidencia);
+    addCount(getField(r, 'participacion_innovatecnm', 'innovaTecNM'), conteoInnovaTecNM);
+    addCount(getField(r, 'rol_aspirado', 'rolesAspirados'), conteoRoles);
+    addCount(getField(r, 'deficiencias_urgentes', 'deficienciasLabs'), conteoDeficienciasLabs);
+    addCount(getField(r, 'desarrollo_software_comunitario', 'soberaniaTecnologica'), conteoSoberania);
+    addCount(getField(r, 'interes_talleres', 'talleresMastery'), conteoTalleres);
+    addCount(getField(r, 'formato_eventos_masivos', 'eventosMasivos'), conteoEventos);
+    addCount(getField(r, 'iniciativa_acm_w', 'apoyoACMW'), conteoApoyoACMW);
+    addCount(getField(r, 'salud_estres', 'sindromeImpostor'), conteoSindromeImpostor);
+    addCount(getField(r, 'salud_postural', 'ergonomiaLabs'), conteoErgonomiaLabs);
+    addCount(getField(r, 'salud_visual', 'problemasSalud'), conteoProblemasSalud);
+    addCount(getField(r, 'actividades_integracion', 'convivenciasEstudiantiles'), conteoConvivenciasEstudiantiles);
+    addCount(getField(r, 'horario_conveniente', 'horarioTalleres'), conteoHorarioTalleres);
+    addCount(getField(r, 'duracion_talleres', 'duracionTalleres'), conteoDuracionTalleres);
+    addCount(getField(r, 'canales_comunicacion', 'canalesAvisos'), conteoCanalesAvisos);
+    addCount(getField(r, 'prioridad_mesa_directiva', 'perfilPresidente'), conteoPerfilPresidente);
 
-    // Tutorías
-    const tutVal = parseInt(r.urgenciaTutorias, 10);
-    if (!isNaN(tutVal)) {
-      sumaTutorias += tutVal;
-      if (tutVal >= 4) tutoriasAltaUrgencia++;
-    }
-
-    // Labs
-    const labVal = parseInt(r.evaluacionLabs, 10);
-    if (!isNaN(labVal)) {
-      sumaEvaluacionLabs += labVal;
-      countLabs++;
+    // Tutorías / Mentoría
+    const mentoriaVal = getField(r, 'interes_mentoria', 'urgenciaTutorias');
+    if (mentoriaVal) {
+      const s = String(mentoriaVal).toLowerCase();
+      if (s.includes('recibir mentoría') || s.includes('ambas modalidades') || s === '4' || s === '5') {
+        tutoriasAltaUrgencia++;
+      }
+      const num = parseInt(mentoriaVal, 10);
+      if (!isNaN(num)) sumaTutorias += num;
+      else sumaTutorias += 4;
     }
 
     // Comités de voluntariado
-    if (Array.isArray(r.comitesVoluntariado)) {
-      r.comitesVoluntariado.forEach(c => {
-        if (!c.toLowerCase().includes("no me interesa")) {
-          conteoComites[c] = (conteoComites[c] || 0) + 1;
+    const comitesVal = getField(r, 'voluntariado_comites', 'comitesVoluntariado');
+    if (comitesVal) {
+      const arr = Array.isArray(comitesVal) ? comitesVal : [comitesVal];
+      arr.forEach(c => {
+        const str = String(c).trim();
+        if (str && !str.toLowerCase().includes("no deseo") && !str.toLowerCase().includes("no me interesa")) {
+          conteoComites[str] = (conteoComites[str] || 0) + 1;
         }
       });
 
-      const esVoluntario = r.comitesVoluntariado.some(c => 
-        !c.toLowerCase().includes("no me interesa") && !c.toLowerCase().includes("solo asistente")
-      );
+      const esVoluntario = arr.some(c => {
+        const str = String(c).toLowerCase();
+        return str.includes("comité") || str.includes("equipo") || (str.length > 5 && !str.includes("no deseo") && !str.includes("no me interesa") && !str.includes("únicamente como asistente") && !str.includes("solo asistente"));
+      });
 
       if (esVoluntario) {
         directorioVoluntarios.push({
-          nombre: r.nombre,
-          numeroControl: r.numeroControl,
-          correo: r.correo,
-          telefono: r.telefono,
-          semestre: r.semestre,
-          comites: r.comitesVoluntariado,
+          nombre: r.nombre || 'Estudiante Voluntario',
+          numeroControl: r.numeroControl || '-',
+          correo: r.correo || '-',
+          telefono: r.telefono || '',
+          semestre: r.semestre || '-',
+          comites: arr,
           timestamp: r.timestamp
         });
       }
     }
 
-    // Buzón abierto
-    if (r.buzonAbierto && r.buzonAbierto.trim().length > 3) {
+    // Buzón abierto (comentarios finales y propuestas)
+    const coment = (r.comentarios_finales || '').trim();
+    const prop = (r.propuesta_cambio_unico || '').trim();
+    const legBuzon = (r.buzonAbierto || '').trim();
+
+    if (coment && coment.length > 3) {
       buzonAbierto.push({
-        texto: r.buzonAbierto.trim(),
+        texto: coment,
+        semestre: r.semestre || 'Semestre no especificado',
+        timestamp: r.timestamp
+      });
+    }
+    if (prop && prop.length > 3 && prop !== coment) {
+      buzonAbierto.push({
+        texto: `Propuesta de cambio: ${prop}`,
+        semestre: r.semestre || 'Semestre no especificado',
+        timestamp: r.timestamp
+      });
+    }
+    if (!coment && !prop && legBuzon && legBuzon.length > 3) {
+      buzonAbierto.push({
+        texto: legBuzon,
         semestre: r.semestre || 'Semestre no especificado',
         timestamp: r.timestamp
       });
